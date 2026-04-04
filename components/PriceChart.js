@@ -52,9 +52,6 @@ export default function PriceChart({ productId }) {
 
   return (
     <div className="w-full">
-      <h4 className="text-sm font-semibold mb-4 text-gray-700">
-        Price History
-      </h4>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -70,9 +67,9 @@ export default function PriceChart({ productId }) {
           <Line
             type="monotone"
             dataKey="price"
-            stroke="#FA5D19"
+            stroke="#6366f1"
             strokeWidth={2}
-            dot={{ fill: "#FA5D19", r: 4 }}
+            dot={{ fill: "#6366f1", r: 4 }}
             activeDot={{ r: 6 }}
           />
         </LineChart>

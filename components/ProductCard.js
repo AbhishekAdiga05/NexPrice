@@ -39,10 +39,10 @@ export default function ProductCard({ product }) {
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       layout
-      className="group"
+      className="group h-full flex flex-col"
     >
-      <Card className="h-full">
-        <CardHeader className="pb-4 border-b border-border/50">
+      <Card className="h-full flex flex-col justify-between">
+        <CardHeader className="pb-4 border-b border-border/50 flex-1">
           <div className="flex gap-4">
             {product.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -57,7 +57,7 @@ export default function ProductCard({ product }) {
               </div>
             )}
 
-            <div className="flex-1 min-w-0 flex flex-col justify-between p-3 w-min h-min">
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <div className="size-2 rounded-full bg-green-500 shadow-sm animate-[pulse_2s_ease-in-out_infinite]" />
@@ -83,8 +83,8 @@ export default function ProductCard({ product }) {
           </div>
         </CardHeader>
 
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-3 gap-3 p-4">
+        <CardContent className="px-6 pb-6 pt-0">
+          <div className="grid grid-cols-3 gap-3">
             <Button
               variant="outline"
               size="sm"
@@ -124,13 +124,11 @@ export default function ProductCard({ product }) {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <CardFooter className="border-t border-border/50 bg-muted/10 pt-6">
-                 <div className="w-full bg-background rounded-xl p-6 border border-border shadow-sm">
-                   <div className="font-semibold text-xs uppercase text-muted-foreground mb-4 border-b border-border/50 pb-2">
-                     PRICE HISTORY
-                   </div>
-                   <PriceChart productId={product.id} />
+              <CardFooter className="flex flex-col items-start border-t border-border/50 bg-muted/10 p-6">
+                 <div className="font-semibold text-xs uppercase text-muted-foreground w-full mb-4 border-b border-border/50 pb-2">
+                   PRICE HISTORY
                  </div>
+                 <PriceChart productId={product.id} />
               </CardFooter>
             </motion.div>
           )}
