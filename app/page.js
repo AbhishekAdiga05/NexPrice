@@ -3,7 +3,6 @@ import { getProducts } from "./actions";
 import AddProductForm from "@/components/AddProductForm";
 import ProductCard from "@/components/ProductCard";
 import { Shield, Bell, Zap, Power, Activity } from "lucide-react";
-import AuthButton from "@/components/AuthButton";
 import * as motion from "framer-motion/client";
 
 export default async function Home() {
@@ -36,21 +35,6 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen relative overflow-hidden font-sans">
-      {/* Header Panel */}
-      <header className="bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b-2 border-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="size-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse" />
-            </div>
-            <div className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-             <span className="text-accent text-shadow-embossed font-bold">NEXPRICE</span>
-            </div>
-          </div>
-
-          <AuthButton user={user} />
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-6 lg:px-12 max-w-7xl mx-auto relative">

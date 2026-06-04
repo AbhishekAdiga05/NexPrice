@@ -112,19 +112,193 @@ export async function deleteProduct(productId) {
 export async function getProducts() {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
+
+    const { data: products, error } = await supabase
       .from("products")
       .select("*")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return data || [];
+
+    const result = products || [];
+
+    // Attach price_alerts to each product via a separate query
+    const productIds = result.map((p) => p.id);
+    if (productIds.length > 0) {
+      const { data: alerts } = await supabase
+        .from("price_alerts")
+        .select("id, target_price, status, created_at, triggered_at, product_id")
+        .in("product_id", productIds);
+
+      const alertsByProduct = {};
+      for (const alert of alerts || []) {
+        if (!alertsByProduct[alert.product_id]) {
+          alertsByProduct[alert.product_id] = [];
+        }
+        alertsByProduct[alert.product_id].push(alert);
+      }
+
+      for (const product of result) {
+        product.price_alerts = alertsByProduct[product.id] || [];
+      }
+    }
+
+    return result;
   } catch (error) {
     console.error("Get products error:", error.message || error);
     if (error.details) console.error("Details:", error.details);
     if (error.hint) console.error("Hint:", error.hint);
     if (error.code) console.error("Code:", error.code);
     return [];
+  }
+}
+
+export async function setPriceAlert(productId, targetPrice) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "Not authenticated" };
+    }
+
+    // Verify the product belongs to this user
+    const { data: product, error: productError } = await supabase
+      .from("products")
+      .select("id")
+      .eq("id", productId)
+      .eq("user_id", user.id)
+      .single();
+
+    if (productError || !product) {
+      return { error: "Product not found" };
+    }
+
+    const price = parseFloat(targetPrice);
+    if (isNaN(price) || price <= 0) {
+      return { error: "Target price must be a positive number" };
+    }
+
+    // Check for existing active alert on this product
+    const { data: existing } = await supabase
+      .from("price_alerts")
+      .select("id, target_price")
+      .eq("user_id", user.id)
+      .eq("product_id", productId)
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (existing) {
+      return {
+        error: `You already have an active alert set at ${existing.target_price}`,
+      };
+    }
+
+    const { error: insertError } = await supabase.from("price_alerts").insert({
+      user_id: user.id,
+      product_id: productId,
+      target_price: price,
+    });
+
+    if (insertError) throw insertError;
+
+    revalidatePath("/");
+    revalidatePath("/alerts");
+    return { success: true, message: "Target price alert set! We'll email you when the price drops." };
+  } catch (error) {
+    console.error("Set price alert error:", error);
+    return { error: error.message || "Failed to set price alert" };
+  }
+}
+
+export async function removePriceAlert(alertId) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("price_alerts")
+      .update({ status: "disabled" })
+      .eq("id", alertId);
+
+    if (error) throw error;
+
+    revalidatePath("/");
+    revalidatePath("/alerts");
+    return { success: true };
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+export async function getAlerts() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return [];
+
+    const { data: alerts } = await supabase
+      .from("price_alerts")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (!alerts || alerts.length === 0) return [];
+
+    const productIds = [...new Set(alerts.map((a) => a.product_id))];
+
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, name, image_url, current_price, currency")
+      .in("id", productIds);
+
+    const productMap = {};
+    for (const p of products || []) {
+      productMap[p.id] = p;
+    }
+
+    return alerts.map((alert) => ({
+      ...alert,
+      product: productMap[alert.product_id] || null,
+    }));
+  } catch (error) {
+    console.error("Get alerts error:", error);
+    return [];
+  }
+}
+
+export async function getProductById(productId) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return null;
+
+    const { data: product } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", productId)
+      .eq("user_id", user.id)
+      .single();
+
+    if (!product) return null;
+
+    const { data: alerts } = await supabase
+      .from("price_alerts")
+      .select("*")
+      .eq("product_id", productId);
+
+    product.price_alerts = alerts || [];
+
+    return product;
+  } catch (error) {
+    console.error("Get product error:", error);
+    return null;
   }
 }
 

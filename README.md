@@ -2,7 +2,7 @@
 
 ![Price Tracker Preview](https://img.shields.io/badge/Status-Active-success) ![Next.js](https://img.shields.io/badge/Next.js-14+-black?logo=next.js) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white) 
 
-A modern, automated Next.js web application designed to help users track e-commerce product prices and receive instant email alerts when prices drop. This project features a clean "Modern Soft UI" aesthetic utilizing subtle glassmorphism and satisfying, fluid Framer Motion animations.
+AI-powered e-commerce price intelligence platform with automated monitoring, intelligent purchase recommendations, trend analysis, and personalized alerts.
 
 ## 🚀 Key Features
 

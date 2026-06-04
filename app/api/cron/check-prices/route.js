@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { scrapeProduct } from "@/lib/firecrawl";
-import { sendPriceDropAlert } from "@/lib/email";
+import { sendPriceDropAlert, sendTargetPriceAlert } from "@/lib/email";
 
 export async function POST(request) {
   try {
@@ -81,6 +81,42 @@ export async function POST(request) {
 
               if (emailResult.success) {
                 results.alertsSent++;
+              }
+            }
+          }
+
+          // Check target price alerts for this product
+          const { data: activeAlerts } = await supabase
+            .from("price_alerts")
+            .select("*")
+            .eq("product_id", product.id)
+            .eq("status", "active");
+
+          for (const alert of activeAlerts || []) {
+            if (newPrice <= alert.target_price) {
+              const {
+                data: { user: alertUser },
+              } = await supabase.auth.admin.getUserById(product.user_id);
+
+              if (alertUser?.email) {
+                const emailResult = await sendTargetPriceAlert(
+                  alertUser.email,
+                  product,
+                  alert.target_price,
+                  newPrice
+                );
+
+                if (emailResult.success) {
+                  await supabase
+                    .from("price_alerts")
+                    .update({
+                      status: "triggered",
+                      triggered_at: new Date().toISOString(),
+                    })
+                    .eq("id", alert.id);
+
+                  results.alertsSent++;
+                }
               }
             }
           }

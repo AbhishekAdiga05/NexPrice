@@ -4,6 +4,7 @@ import { useState } from "react";
 import { deleteProduct } from "@/app/actions";
 import DealAnalyzer from "./DealAnalyzer";
 import PriceChart from "./PriceChart";
+import SetPriceAlert from "./SetPriceAlert";
 import {
   Card,
   CardContent,
@@ -82,7 +83,14 @@ export default function ProductCard({ product }) {
           </div>
         </CardHeader>
 
-        <CardContent className="px-6 pb-6 pt-0">
+        <CardContent className="px-6 pb-6 pt-0 flex flex-col gap-3">
+          <SetPriceAlert
+            productId={product.id}
+            currentPrice={product.current_price}
+            currency={product.currency}
+            alerts={product.price_alerts}
+          />
+
           <div className="grid grid-cols-3 gap-3">
             <Button
               variant="outline"
