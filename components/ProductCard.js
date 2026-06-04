@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { deleteProduct } from "@/app/actions";
+import DealAnalyzer from "./DealAnalyzer";
 import PriceChart from "./PriceChart";
 import {
   Card,
@@ -14,8 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   ExternalLink,
   Power,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -124,10 +123,11 @@ export default function ProductCard({ product }) {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <CardFooter className="flex flex-col items-start border-t border-border/50 bg-muted/10 p-6">
-                 <div className="font-semibold text-xs uppercase text-muted-foreground w-full mb-4 border-b border-border/50 pb-2">
+              <CardFooter className="flex flex-col items-start gap-4 border-t border-border/50 bg-muted/10 p-6">
+                 <div className="font-semibold text-xs uppercase text-muted-foreground w-full border-b border-border/50 pb-2">
                    PRICE HISTORY
                  </div>
+                 <DealAnalyzer productId={product.id} />
                  <PriceChart productId={product.id} />
               </CardFooter>
             </motion.div>
