@@ -1,137 +1,30 @@
-<div align="center">
-  
-  # 🎯 NexPrice
+# Smart Product Price Tracker
 
-  **Intelligent, Automated E-Commerce Price Tracking Infrastructure**
+![Price Tracker Preview](https://img.shields.io/badge/Status-Active-success) ![Next.js](https://img.shields.io/badge/Next.js-14+-black?logo=next.js) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white) 
 
-  <p align="center">
-    A meticulously crafted full-stack Next.js application that autonomously monitors e-commerce products, visualizes price history data, and dispatches real-time automated email alerts. 
-    <br />
-    Designed with a premium "Modern Soft UI" aesthetic and resilient backend systems.
-  </p>
+A modern, automated Next.js web application designed to help users track e-commerce product prices and receive instant email alerts when prices drop. This project features a clean "Modern Soft UI" aesthetic utilizing subtle glassmorphism and satisfying, fluid Framer Motion animations.
 
-  <div>
-    <img src="https://img.shields.io/badge/Next.js-14+-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next JS" />
-    <img src="https://img.shields.io/badge/React-19.2-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-    <img src="https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-    <img src="https://img.shields.io/badge/Supabase-Database_&_Auth-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
-    <img src="https://img.shields.io/badge/PostgreSQL-Pg_Cron-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  </div>
-</div>
+## 🚀 Key Features
 
-<br />
+* **Automated Price Tracking**: Simply paste a product URL (Amazon, Walmart, etc.) and the system will actively monitor the item's cost.
+* **Instant Email Alerts**: Powered by **Resend**, users receive beautifully formatted email notifications the moment a product drops below their tracking threshold.
+* **Intelligent Scraping**: Leverages the **Firecrawl** API to accurately parse dynamic product metadata and pricing structures across multiple major web retailers.
+* **Automated Cron Jobs**: Uses **Supabase pg_cron** and backend API routes to automatically check active tracked links every day without manual user intervention.
+* **Authentication**: Seamlessly gated behind Google OAuth logic, enabling individual user profiles via Supabase Auth so you can manage your personalized tracking dashboard.
+* **Modern UI**: Constructed with Tailwind CSS v4, Radix UI primitives, and Framer Motion for a fluid, accessible, and highly aesthetic interface.
 
----
+## 💻 Tech Stack
 
-## 📑 Table of Contents
-- [About The Project](#-about-the-project)
-- [Key Features](#-key-features)
-- [System Architecture](#-system-architecture)
-- [Database ER Diagram](#-database-er-diagram)
-- [Getting Started (Local Dev)](#-getting-started-local-dev)
-- [Automation & Cron Jobs](#-automation--cron-jobs)
-- [Deployment Guide](#-deployment-guide)
+* **Frontend**: Next.js (App Router), React, Tailwind CSS v4, Framer Motion
+* **Backend Tools**: Next.js Server Actions, Next.js API Routes
+* **Database & Auth**: Supabase (PostgreSQL, Edge Functions, OAuth)
+* **Scraping Engine**: Firecrawl JS SDK
+* **Email Provider**: Resend SDK
+* **UI Components**: Shadcn / Radix UI, Recharts (for price history visualization)
 
----
+## 🛠️ Getting Started
 
-## 🌟 About The Project
-
-NexPrice tackles a common consumer problem: constantly checking product pages waiting for a price drop. By simply pasting a URL from major e-commerce platforms (Amazon, Walmart, BestBuy), this application parses the complex DOM structures, extracts price mathematics, saves data points into a historical PostgreSQL chart, and executes background CRON jobs without any further user intervention. 
-
-### Why This Tech Stack?
-- **Next.js (App Router)**: Utilizing React Server Components (RSC) to directly query the database from the server, entirely skipping unnecessary client-side data fetching spinners.
-- **Supabase**: Chosen for its robust PostgreSQL core, allowing execution of strict Row Level Security (RLS) policies and direct database triggering (`pg_cron`) to hit serverless Next.js API endpoints.
-- **Firecrawl**: A powerful LLM-driven scraping layer capable of rendering dynamic JavaScript-heavy stores and accurately resolving varied pricing structures into clean JSON.
-- **Resend**: Chosen for lightning-fast transactional email deliverability and native React-Email template support.
-
----
-
-## ✨ Key Features
-
-### 🛡️ Secure & Private Tracking
-- **Google OAuth**: Fast, secure user onboarding managed by Supabase Auth sessions.
-- **Row Level Security (RLS)**: PostgreSQL restrictions ensure users can strictly only view, update, and delete their own tracking queries.
-
-### 🧠 Intelligent Web Scraping
-- **URL Agnostic**: Paste an unstructured link, and the system intelligently extracts Name, Current Price, Currency, and High-Resolution Images.
-- **Bot Bypass**: Firecrawl handles proxy rotations and browser fingerprinting seamlessly.
-
-### 📉 Data Visualization
-- **Interactive Graphs**: Historic price data points are instantly plotted onto responsive `recharts` line graphs.
-- **Daily State Sync**: Active products run a differential analysis against yesterday's price to determine if a sale is active.
-
-### 🛎️ Automated Alerts
-- **Zero-Touch Execution**: A daily CRON job loops over all actively tracked products and re-scrapes the source URL.
-- **Transactional Delivery**: If `new_price < old_price`, an optimized HTML/React email is fired to the registered user.
-
----
-
-## 🏛️ System Architecture
-
-```mermaid
-graph TD
-    User([User Client]) --> |Authenticates| SupabaseAuth[Supabase OAuth]
-    User --> |Submit Tracking URL| Frontend[Next.js Server Actions]
-    
-    Frontend --> |Fetch Raw DOM Data| Firecrawl[Firecrawl Scraper API]
-    Firecrawl --> |Target Store| ECommerce[(Amazon / Retailer)]
-    
-    Frontend --> |Store Cleaned Data| Postgres[(Supabase PostgreSQL)]
-    
-    Cron[[Supabase pg_cron]] -.-> |Daily at Midnight| APIEndpoint[/api/cron/check-prices/]
-    APIEndpoint --> |Fetch all products| Postgres
-    APIEndpoint --> |Re-scrape| Firecrawl
-    APIEndpoint --> |If Price Drops| Resend[Resend API]
-    Resend --> |Delivery| UserInbox([User Inbox])
-```
-
----
-
-## 🗄️ Database ER Diagram
-
-The backend relies on two tightly coupled relational tables.
-
-```mermaid
-erDiagram
-    USERS ||--o{ PRODUCTS : creates
-    PRODUCTS ||--o{ PRICE_HISTORY : tracks
-
-    USERS {
-        uuid id PK
-        string email
-    }
-
-    PRODUCTS {
-        uuid id PK
-        uuid user_id FK
-        string url "Unique per user"
-        string name
-        numeric current_price
-        string image_url
-        timestamp created_at
-    }
-
-    PRICE_HISTORY {
-        uuid id PK
-        uuid product_id FK
-        numeric price
-        timestamp checked_at
-    }
-```
-
----
-
-## 🚀 Getting Started (Local Dev)
-
-Follow these instructions to boot the application securely on your local machine.
-
-### 1. Prerequisites
-- Node.js 18+
-- Supabase Account
-- Firecrawl API Key
-- Resend API Key
-
-### 2. Installation
+### 1. Clone & Install
 ```bash
 git clone https://github.com/ABHISHEK-ADIGA/smart-product-price-tracker.git
 cd smart-product-price-tracker
