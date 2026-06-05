@@ -107,11 +107,16 @@ export async function POST(request) {
                 );
 
                 if (emailResult.success) {
+                  const savings = alert.price_at_creation
+                    ? parseFloat(alert.price_at_creation) - newPrice
+                    : null;
+
                   await supabase
                     .from("price_alerts")
                     .update({
                       status: "triggered",
                       triggered_at: new Date().toISOString(),
+                      savings: savings && savings > 0 ? savings : 0,
                     })
                     .eq("id", alert.id);
 

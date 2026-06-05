@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import SetPriceAlert from "@/components/SetPriceAlert";
 import PriceChart from "@/components/PriceChart";
 import DealAnalyzer from "@/components/DealAnalyzer";
+import DealScoreBadge from "@/components/DealScoreBadge";
+import PricePrediction from "@/components/PricePrediction";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { deleteProduct } from "@/app/actions";
+import {
+  deleteProduct,
+  addToWatchlist,
+  removeFromWatchlist,
+} from "@/app/actions";
 import {
   ArrowLeft,
   ExternalLink,
@@ -17,13 +23,23 @@ import {
   ShoppingCart,
   Trash2,
   Loader2,
+  Plus,
+  Check,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function ProductDetail({ product, priceHistory }) {
+export default function ProductDetail({
+  product,
+  priceHistory,
+  watchlistEntry,
+}) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const [onWatchlist, setOnWatchlist] = useState(
+    watchlistEntry ? watchlistEntry.priority || "medium" : false
+  );
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm("Stop tracking this product?")) return;
@@ -36,6 +52,28 @@ export default function ProductDetail({ product, priceHistory }) {
       toast.success("Product removed");
       router.push("/");
     }
+  };
+
+  const handleWatchlistToggle = async () => {
+    setWatchlistLoading(true);
+    if (onWatchlist) {
+      const result = await removeFromWatchlist(product.id);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        setOnWatchlist(false);
+        toast.success("Removed from watchlist");
+      }
+    } else {
+      const result = await addToWatchlist(product.id);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        setOnWatchlist("medium");
+        toast.success("Added to watchlist");
+      }
+    }
+    setWatchlistLoading(false);
   };
 
   return (
@@ -104,6 +142,10 @@ export default function ProductDetail({ product, priceHistory }) {
                   <span className="text-sm text-muted-foreground">
                     current price
                   </span>
+                  <DealScoreBadge
+                    productId={product.id}
+                    currentPrice={product.current_price}
+                  />
                 </div>
 
                 {priceHistory.length >= 2 && (
@@ -163,6 +205,26 @@ export default function ProductDetail({ product, priceHistory }) {
                   </Link>
                 </Button>
                 <Button
+                  variant={onWatchlist ? "default" : "outline"}
+                  size="sm"
+                  onClick={handleWatchlistToggle}
+                  disabled={watchlistLoading}
+                  className={`gap-2 cursor-pointer ${
+                    onWatchlist
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                      : ""
+                  }`}
+                >
+                  {watchlistLoading ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : onWatchlist ? (
+                    <Check className="size-3.5" />
+                  ) : (
+                    <Plus className="size-3.5" />
+                  )}
+                  {onWatchlist ? "On Watchlist" : "Add to Watchlist"}
+                </Button>
+                <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleDelete}
@@ -198,6 +260,15 @@ export default function ProductDetail({ product, priceHistory }) {
             {/* Deal Analysis */}
             <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6">
               <DealAnalyzer productId={product.id} />
+            </div>
+
+            {/* Price Prediction */}
+            <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6">
+              <PricePrediction
+                productId={product.id}
+                currentPrice={product.current_price}
+                currency={product.currency}
+              />
             </div>
           </div>
 

@@ -55,9 +55,9 @@ export default function SetPriceAlert({ productId, currentPrice, currency, alert
         </div>
         <form onSubmit={handleSet} className="flex items-center gap-2">
           <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-mono text-muted-foreground pointer-events-none">
+            {/* <span className="absolute left-0 top-1/2 -translate-y-1/2 text-sm font-mono text-muted-foreground pointer-events-none">
               {currency}
-            </span>
+            </span> */}
             <Input
               type="number"
               step="0.01"
@@ -170,6 +170,11 @@ export default function SetPriceAlert({ productId, currentPrice, currency, alert
                 <span className="text-[11px] font-medium text-emerald-700 font-mono">
                   {currency} {parseFloat(alert.target_price).toFixed(2)}
                 </span>
+                {alert.savings > 0 && (
+                  <span className="text-[10px] font-semibold text-emerald-600">
+                    +{currency} {parseFloat(alert.savings).toFixed(2)}
+                  </span>
+                )}
                 {alert.triggered_at && (
                   <span className="text-[10px] text-emerald-400">
                     {new Date(alert.triggered_at).toLocaleDateString()}

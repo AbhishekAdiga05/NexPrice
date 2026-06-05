@@ -1,7 +1,21 @@
 import { createClient } from "@/utils/supabase/server";
-import { getProductById, getPriceHistory } from "@/app/actions";
+import {
+  getProductById,
+  getPriceHistory,
+  isOnWatchlist,
+} from "@/app/actions";
 import ProductDetail from "./ProductDetail";
 import { redirect } from "next/navigation";
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const product = await getProductById(id);
+  if (!product) return { title: "Product — NexPrice" };
+  return {
+    title: `${product.name} — NexPrice`,
+    description: `Track price history, alerts, and Deal Score for ${product.name}. Current price: ${product.currency} ${product.current_price}.`,
+  };
+}
 
 export default async function ProductPage({ params }) {
   const { id } = await params;
@@ -22,6 +36,13 @@ export default async function ProductPage({ params }) {
   }
 
   const priceHistory = await getPriceHistory(id);
+  const watchlistEntry = await isOnWatchlist(id);
 
-  return <ProductDetail product={product} priceHistory={priceHistory} />;
+  return (
+    <ProductDetail
+      product={product}
+      priceHistory={priceHistory}
+      watchlistEntry={watchlistEntry}
+    />
+  );
 }

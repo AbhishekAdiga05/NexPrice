@@ -1,6 +1,8 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { calculateDealScore } from "@/lib/deal-score";
+import { calculateBuyPriority } from "@/lib/buy-priority";
 import { scrapeProduct } from "@/lib/firecrawl";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -127,7 +129,7 @@ export async function getProducts() {
     if (productIds.length > 0) {
       const { data: alerts } = await supabase
         .from("price_alerts")
-        .select("id, target_price, status, created_at, triggered_at, product_id")
+        .select("id, target_price, status, created_at, triggered_at, product_id, price_at_creation, savings")
         .in("product_id", productIds);
 
       const alertsByProduct = {};
@@ -164,10 +166,10 @@ export async function setPriceAlert(productId, targetPrice) {
       return { error: "Not authenticated" };
     }
 
-    // Verify the product belongs to this user
+    // Verify the product belongs to this user and get current price
     const { data: product, error: productError } = await supabase
       .from("products")
-      .select("id")
+      .select("id, current_price")
       .eq("id", productId)
       .eq("user_id", user.id)
       .single();
@@ -200,6 +202,7 @@ export async function setPriceAlert(productId, targetPrice) {
       user_id: user.id,
       product_id: productId,
       target_price: price,
+      price_at_creation: parseFloat(product.current_price),
     });
 
     if (insertError) throw insertError;
@@ -316,6 +319,353 @@ export async function getPriceHistory(productId) {
   } catch (error) {
     console.error("Get price history error:", error);
     return [];
+  }
+}
+
+export async function getUserSettings() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return null;
+
+    const { data: existing } = await supabase
+      .from("user_settings")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existing) return existing;
+
+    // Auto-create settings row on first visit
+    const { data: created } = await supabase
+      .from("user_settings")
+      .insert({ user_id: user.id })
+      .select()
+      .single();
+
+    return created;
+  } catch (error) {
+    console.error("Get user settings error:", error);
+    return null;
+  }
+}
+
+export async function updateUserSettings(formData) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
+    const weeklyDigest = formData.get("weekly_digest") === "on";
+    const digestDay = formData.get("digest_day") || "sunday";
+
+    const { error } = await supabase
+      .from("user_settings")
+      .upsert(
+        {
+          user_id: user.id,
+          weekly_digest: weeklyDigest,
+          digest_day: digestDay,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      );
+
+    if (error) throw error;
+
+    revalidatePath("/settings");
+    return { success: true, message: "Settings saved" };
+  } catch (error) {
+    return { error: error.message || "Failed to save settings" };
+  }
+}
+
+export async function getInsights() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return null;
+
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, name, image_url, current_price, currency, url")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (!products || products.length === 0) {
+      return {
+        totalSavings: 0,
+        totalSavingsFormatted: "$0.00",
+        activeCount: 0,
+        triggeredCount: 0,
+        totalAlerts: 0,
+        productCount: 0,
+        topDeals: [],
+        recentSavings: [],
+      };
+    }
+
+    const alerts = await getAlerts();
+
+    const productIds = products.map((p) => p.id);
+    const { data: history } =
+      productIds.length > 0
+        ? await supabase
+            .from("price_history")
+            .select("product_id, price")
+            .in("product_id", productIds)
+            .order("checked_at", { ascending: true })
+        : { data: [] };
+
+    const historyByProduct = {};
+    for (const h of history || []) {
+      if (!historyByProduct[h.product_id])
+        historyByProduct[h.product_id] = [];
+      historyByProduct[h.product_id].push({ price: h.price });
+    }
+
+    const productsWithScores = products.map((p) => {
+      const price = parseFloat(p.current_price);
+      const pHistory = historyByProduct[p.id] || [];
+      const dealScore = calculateDealScore(price, pHistory);
+      return { ...p, current_price: price, dealScore };
+    });
+
+    const topDeals = productsWithScores
+      .filter((p) => p.dealScore.score !== null)
+      .sort((a, b) => b.dealScore.score - a.dealScore.score)
+      .slice(0, 5);
+
+    const triggeredAlerts = alerts.filter((a) => a.status === "triggered");
+    const totalSavings = triggeredAlerts.reduce(
+      (sum, a) => sum + (parseFloat(a.savings) || 0),
+      0
+    );
+
+    const currency = products[0]?.currency || "$";
+
+    const recentSavings = triggeredAlerts
+      .filter((a) => a.savings > 0)
+      .sort(
+        (a, b) =>
+          new Date(b.triggered_at || b.created_at) -
+          new Date(a.triggered_at || a.created_at)
+      )
+      .slice(0, 10)
+      .map((a) => ({
+        id: a.id,
+        productName: a.product?.name || "Unknown",
+        productId: a.product_id,
+        imageUrl: a.product?.image_url,
+        targetPrice: parseFloat(a.target_price),
+        currentPrice: parseFloat(a.product?.current_price || 0),
+        savings: parseFloat(a.savings),
+        currency: a.product?.currency || currency,
+        triggeredAt: a.triggered_at || a.created_at,
+      }));
+
+    return {
+      totalSavings,
+      totalSavingsFormatted: `${currency} ${totalSavings.toFixed(2)}`,
+      activeCount: alerts.filter((a) => a.status === "active").length,
+      triggeredCount: triggeredAlerts.length,
+      totalAlerts: alerts.length,
+      productCount: products.length,
+      topDeals,
+      recentSavings,
+    };
+  } catch (error) {
+    console.error("Get insights error:", error);
+    return null;
+  }
+}
+
+export async function addToWatchlist(productId, priority = "medium") {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
+    const { data: existing } = await supabase
+      .from("watchlist")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("product_id", productId)
+      .maybeSingle();
+
+    if (existing) {
+      return { error: "Already on your watchlist" };
+    }
+
+    const { error } = await supabase.from("watchlist").insert({
+      user_id: user.id,
+      product_id: productId,
+      priority,
+    });
+
+    if (error) throw error;
+
+    revalidatePath("/watchlist");
+    return { success: true, message: "Added to watchlist" };
+  } catch (error) {
+    console.error("Add to watchlist error:", error);
+    return { error: error.message || "Failed to add to watchlist" };
+  }
+}
+
+export async function removeFromWatchlist(productId) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
+    const { error } = await supabase
+      .from("watchlist")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("product_id", productId);
+
+    if (error) throw error;
+
+    revalidatePath("/watchlist");
+    return { success: true };
+  } catch (error) {
+    console.error("Remove from watchlist error:", error);
+    return { error: error.message || "Failed to remove from watchlist" };
+  }
+}
+
+export async function updateWatchlistPriority(productId, priority) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
+    const { error } = await supabase
+      .from("watchlist")
+      .update({ priority })
+      .eq("user_id", user.id)
+      .eq("product_id", productId);
+
+    if (error) throw error;
+
+    revalidatePath("/watchlist");
+    return { success: true };
+  } catch (error) {
+    return { error: error.message || "Failed to update priority" };
+  }
+}
+
+export async function getWatchlist() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return [];
+
+    const { data: items, error } = await supabase
+      .from("watchlist")
+      .select("id, product_id, priority, notes, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    if (!items || items.length === 0) return [];
+
+    const productIds = items.map((i) => i.product_id);
+
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, name, image_url, current_price, currency, url")
+      .in("id", productIds);
+
+    const productMap = {};
+    for (const p of products || []) {
+      productMap[p.id] = p;
+    }
+
+    const { data: history } = await supabase
+      .from("price_history")
+      .select("product_id, price")
+      .in("product_id", productIds)
+      .order("checked_at", { ascending: true });
+
+    const historyByProduct = {};
+    for (const h of history || []) {
+      if (!historyByProduct[h.product_id])
+        historyByProduct[h.product_id] = [];
+      historyByProduct[h.product_id].push({ price: h.price });
+    }
+
+    const result = items.map((item) => {
+      const product = productMap[item.product_id];
+      const pHistory = historyByProduct[item.product_id] || [];
+      const price = product ? parseFloat(product.current_price) : 0;
+      const dealScore = calculateDealScore(price, pHistory);
+      const buyPriority = calculateBuyPriority({
+        priority: item.priority,
+        createdAt: item.created_at,
+        dealScore: dealScore.score,
+      });
+
+      return {
+        id: item.id,
+        productId: item.product_id,
+        priority: item.priority,
+        notes: item.notes,
+        createdAt: item.created_at,
+        product: product || null,
+        dealScore,
+        buyPriority,
+      };
+    });
+
+    return result.sort((a, b) => b.buyPriority - a.buyPriority);
+  } catch (error) {
+    console.error("Get watchlist error:", error);
+    return [];
+  }
+}
+
+export async function isOnWatchlist(productId) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return false;
+
+    const { data } = await supabase
+      .from("watchlist")
+      .select("id, priority")
+      .eq("user_id", user.id)
+      .eq("product_id", productId)
+      .maybeSingle();
+
+    return data || false;
+  } catch (error) {
+    return false;
   }
 }
 

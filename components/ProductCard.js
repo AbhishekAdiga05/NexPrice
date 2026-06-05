@@ -5,6 +5,7 @@ import { deleteProduct } from "@/app/actions";
 import DealAnalyzer from "./DealAnalyzer";
 import PriceChart from "./PriceChart";
 import SetPriceAlert from "./SetPriceAlert";
+import DealScoreBadge from "./DealScoreBadge";
 import {
   Card,
   CardContent,
@@ -78,6 +79,10 @@ export default function ProductCard({ product }) {
                   <div className="size-1.5 rounded-full bg-accent" />
                   TRACKING
                 </Badge>
+                <DealScoreBadge
+                  productId={product.id}
+                  currentPrice={product.current_price}
+                />
               </div>
             </div>
           </div>

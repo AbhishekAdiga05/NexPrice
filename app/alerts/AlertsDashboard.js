@@ -170,6 +170,11 @@ function AlertCard({ alert, currency }) {
                 <span className="text-[11px] text-muted-foreground font-mono">
                   Target: {currency} {parseFloat(alert.target_price).toFixed(2)}
                 </span>
+                {isTriggered && alert.savings > 0 && (
+                  <span className="text-[11px] font-semibold text-emerald-600 font-mono">
+                    · Saved {currency} {parseFloat(alert.savings).toFixed(2)}
+                  </span>
+                )}
               </div>
             </div>
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AuthButton from "./AuthButton";
-import { LayoutDashboard, Bell } from "lucide-react";
+import { LayoutDashboard, Bell, Settings, TrendingUp, ListChecks } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function NavBar({ user }) {
@@ -12,7 +12,10 @@ export default function NavBar({ user }) {
   const navLinks = user
     ? [
         { href: "/", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/insights", label: "Insights", icon: TrendingUp },
+        { href: "/watchlist", label: "Watchlist", icon: ListChecks },
         { href: "/alerts", label: "Alerts", icon: Bell },
+        { href: "/settings", label: "Settings", icon: Settings },
       ]
     : [];
 
