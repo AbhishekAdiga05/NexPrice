@@ -72,7 +72,7 @@ function NewAlertDialog({ productId, currentPrice, currency, onClose }) {
             <div className="p-1.5 bg-accent/[0.08] rounded-lg">
               <Crosshair className="size-4 text-accent" />
             </div>
-            <h3 className="font-semibold text-sm text-foreground">New Target Price Alert</h3>
+            <h3 className="font-bold text-sm text-foreground tracking-tight">New Target Price Alert</h3>
           </div>
           <button
             onClick={onClose}
@@ -183,17 +183,17 @@ function AlertCard({ alert, currency }) {
             <div className="min-w-0">
               <Link
                 href={`/products/${alert.product_id}`}
-                className="text-sm font-semibold text-foreground hover:text-accent transition-colors line-clamp-1"
+                className="text-sm font-semibold text-foreground hover:text-accent transition-colors line-clamp-1 leading-snug"
               >
                 {alert.product?.name || "Unknown Product"}
               </Link>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
                 <StatusBadge status={alert.status} />
-                <span className="text-[11px] text-muted-foreground/70 font-mono">
+                <span className="text-[11px] text-muted-foreground/70 font-mono tracking-tight">
                   Target: {currency} {parseFloat(alert.target_price).toFixed(2)}
                 </span>
                 {isTriggered && alert.savings > 0 && (
-                  <span className="text-[11px] font-semibold text-emerald-400 font-mono">
+                  <span className="text-[11px] font-semibold text-emerald-400 font-mono tracking-tight">
                     · Saved {currency} {parseFloat(alert.savings).toFixed(2)}
                   </span>
                 )}
@@ -202,8 +202,8 @@ function AlertCard({ alert, currency }) {
 
             {alert.product && (
               <div className="text-right shrink-0">
-                <div className="text-[10px] text-muted-foreground/60 font-mono">Current</div>
-                <div className="text-base md:text-lg font-bold text-foreground font-mono">
+                <div className="text-[10px] text-muted-foreground/60 font-mono leading-none">Current</div>
+                <div className="text-base md:text-lg font-bold text-foreground font-mono tracking-tight leading-none">
                   {currency} {parseFloat(alert.product.current_price).toFixed(2)}
                 </div>
               </div>
@@ -221,7 +221,7 @@ function AlertCard({ alert, currency }) {
                     style={{ width: `${targetReached ? 100 : progress}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-muted-foreground/70 font-mono">
+                <span className="text-[10px] text-muted-foreground/70 font-mono leading-none">
                   {!targetReached
                     ? `${progress.toFixed(0)}% to target`
                     : "Target reached!"}
@@ -231,7 +231,7 @@ function AlertCard({ alert, currency }) {
 
             <div className="ml-auto flex items-center gap-1.5">
               {alert.created_at && (
-                <span className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
+                <span className="text-[10px] text-muted-foreground/60 flex items-center gap-1 leading-none">
                   <Clock className="size-2.5" />
                   {formatDate(alert.created_at)}
                 </span>
@@ -310,11 +310,11 @@ export default function AlertsDashboard({ alerts }) {
               >
                 <ArrowLeft className="size-3.5 md:size-4" />
               </Link>
-              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">
                 Alerts
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11">
+            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11 leading-relaxed">
               Monitor and manage target price alerts across all tracked products.
             </p>
           </div>
@@ -336,13 +336,13 @@ export default function AlertsDashboard({ alerts }) {
                   <span className={`size-1.5 rounded-full ${a.dot} opacity-40 group-hover:opacity-100 transition-opacity`} />
                 </div>
                 <div>
-                  <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground">
+                  <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground leading-none">
                     {value}
                   </div>
-                  <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                  <div className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-1 leading-none">
                     {label}
                   </div>
-                  <div className="flex items-center gap-1 mt-1.5 text-[10px] text-muted-foreground/60 font-mono">
+                  <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground/60 font-mono leading-none">
                     <span className={`size-1 rounded-full ${a.dot}`} />
                     {sub}
                   </div>
@@ -358,10 +358,10 @@ export default function AlertsDashboard({ alerts }) {
             <div className="size-16 md:size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-5 border border-white/[0.04]">
               <BellOff className="size-6 md:size-8 text-muted-foreground/60" />
             </div>
-            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5">
+            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5 leading-snug">
               No alerts set yet
             </h3>
-            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto mb-6 px-4">
+            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto mb-6 px-4 leading-relaxed">
               Set a target price on any tracked product and we&apos;ll notify you instantly
               when the price drops to your desired level.
             </p>
@@ -380,10 +380,10 @@ export default function AlertsDashboard({ alerts }) {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <BellRing className="size-4 text-indigo-400" />
-                <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-foreground">
+                <h2 className="text-xs md:text-sm font-mono font-semibold uppercase tracking-wider text-foreground">
                   Watching
                 </h2>
-                <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md leading-none">
                   {activeAlerts.length}
                 </span>
               </div>
@@ -407,10 +407,10 @@ export default function AlertsDashboard({ alerts }) {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <CheckCircle2 className="size-4 text-emerald-400" />
-                <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-foreground">
+                <h2 className="text-xs md:text-sm font-mono font-semibold uppercase tracking-wider text-foreground">
                   Captured
                 </h2>
-                <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md leading-none">
                   {triggeredAlerts.length}
                 </span>
               </div>
@@ -434,10 +434,10 @@ export default function AlertsDashboard({ alerts }) {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <BellOff className="size-4 text-muted-foreground/60" />
-                <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-muted-foreground/60">
+                <h2 className="text-xs md:text-sm font-mono font-semibold uppercase tracking-wider text-muted-foreground/60">
                   Disabled
                 </h2>
-                <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md leading-none">
                   {disabledAlerts.length}
                 </span>
               </div>

@@ -412,13 +412,13 @@ async function DashboardStats() {
               <span className={`size-1.5 rounded-full ${a.dot} opacity-40 group-hover:opacity-100 transition-opacity`} />
             </div>
             <div>
-              <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground">
+              <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground leading-none">
                 {s.value}
               </div>
-              <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+              <div className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-1 leading-none">
                 {s.label}
               </div>
-              <div className="flex items-center gap-1 mt-1.5 text-[10px] text-muted-foreground/60 font-mono">
+              <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground/60 font-mono leading-none">
                 <span className={`size-1 rounded-full ${a.dot}`} />
                 {s.trend}
               </div>
@@ -448,10 +448,10 @@ function QuickNav() {
         >
           <link.icon className="size-3.5 text-muted-foreground group-hover:text-accent transition-colors" />
           <div className="text-left">
-            <div className="text-xs font-semibold text-foreground group-hover:text-accent transition-colors">
+            <div className="text-xs font-medium text-foreground group-hover:text-accent transition-colors leading-tight">
               {link.label}
             </div>
-            <div className="text-[10px] text-muted-foreground/60">{link.desc}</div>
+            <div className="text-[10px] text-muted-foreground/60 leading-tight">{link.desc}</div>
           </div>
         </Link>
       ))}
@@ -485,14 +485,14 @@ export default async function Home() {
         {/* Welcome */}
         <div className="mb-8 md:mb-10">
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-xl md:text-3xl font-bold text-foreground tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight text-balance">
               Welcome back
               {user?.user_metadata?.full_name
                 ? `, ${user.user_metadata.full_name.split(" ")[0]}`
                 : ""}
             </h1>
           </div>
-          <p className="text-sm text-muted-foreground/80">
+          <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-xl">
             Your price tracking command center — here&apos;s everything happening with your products.
           </p>
         </div>
@@ -511,10 +511,10 @@ export default async function Home() {
                 <Zap className="size-4 md:size-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-base md:text-lg text-foreground">
+                <h2 className="font-bold text-base md:text-lg text-foreground tracking-tight leading-snug">
                   Track a New Product
                 </h2>
-                <p className="text-xs text-muted-foreground/70 mt-0.5">
+                <p className="text-xs text-muted-foreground/70 mt-0.5 leading-relaxed">
                   Paste a product URL to start monitoring prices and deal scores
                 </p>
               </div>
@@ -529,11 +529,11 @@ export default async function Home() {
         {products.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-base md:text-lg font-bold text-foreground tracking-tight flex items-center gap-2.5">
+              <h2 className="text-base md:text-lg font-bold text-foreground tracking-tight leading-snug flex items-center gap-2.5">
                 <Activity className="size-4 md:size-5 text-accent" />
                 Your Products
               </h2>
-              <span className="text-[11px] font-mono font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-md border border-white/[0.04]">
+              <span className="text-[11px] font-mono font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-md border border-white/[0.04] leading-none">
                 {products.length} product{products.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -554,10 +554,10 @@ export default async function Home() {
             <div className="size-16 md:size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-5 border border-white/[0.04]">
               <Search className="size-6 md:size-8 text-muted-foreground/60" />
             </div>
-            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5">
+            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5 leading-snug">
               No products tracked yet
             </h3>
-            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto px-4">
+            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto px-4 leading-relaxed">
               Paste a product URL above to start monitoring prices, set alerts,
               and unlock AI-powered deal insights.
             </p>

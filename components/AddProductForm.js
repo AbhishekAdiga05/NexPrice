@@ -41,9 +41,9 @@ export default function AddProductForm({ user }) {
   return (
     <>
       <form onSubmit={handleSubmit} className="w-full">
-        <label className="flex text-xs font-mono font-bold uppercase tracking-widest text-muted-foreground mb-3 items-center justify-between">
+        <label className="flex text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/80 mb-3 items-center justify-between">
           <span>Target URL</span>
-          <span className="text-[10px] text-white/30 tracking-[0.2em] opacity-80">HTTP/S</span>
+          <span className="text-[10px] text-white/30 tracking-[0.2em] opacity-60 leading-none">HTTP/S</span>
         </label>
         
         <div className="flex flex-col sm:flex-row gap-4 w-full">
@@ -52,7 +52,7 @@ export default function AddProductForm({ user }) {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Paste any product URL to start tracking..."
-            className="flex-1 font-mono text-sm h-14 bg-background border-white/10 shadow-sm focus-visible:ring-accent"
+            className="flex-1 font-mono text-sm h-14 bg-background border-white/10 shadow-sm focus-visible:ring-accent placeholder:text-muted-foreground/40"
             required
             disabled={loading}
           />
@@ -65,10 +65,10 @@ export default function AddProductForm({ user }) {
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ANALYZING...
+                Analyzing...
               </>
             ) : (
-              "TRACK PRICE"
+              "Track Price"
             )}
           </Button>
         </div>

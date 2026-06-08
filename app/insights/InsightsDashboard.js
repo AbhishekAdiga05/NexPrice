@@ -48,14 +48,14 @@ function StatCard({ label, value, icon: Icon, accent, sub }) {
         <span className={`size-1.5 rounded-full ${a.dot} opacity-40 group-hover:opacity-100 transition-opacity`} />
       </div>
       <div>
-        <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground">
+        <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground leading-none">
           {value}
         </div>
-        <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+        <div className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-1 leading-none">
           {label}
         </div>
         {sub && (
-          <div className="flex items-center gap-1 mt-1.5 text-[10px] text-muted-foreground/60 font-mono">
+          <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground/60 font-mono leading-none">
             <span className={`size-1 rounded-full ${a.dot}`} />
             {sub}
           </div>
@@ -140,11 +140,11 @@ export default function InsightsDashboard({ insights }) {
               >
                 <ArrowLeft className="size-3.5 md:size-4" />
               </Link>
-              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">
                 Insights
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11">
+            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11 leading-relaxed">
               Savings, deal scores, and tracking metrics — powered by real data.
             </p>
           </div>
@@ -162,10 +162,10 @@ export default function InsightsDashboard({ insights }) {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <Sparkles className="size-4 text-accent" />
-              <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-foreground">
+              <h2 className="text-xs md:text-sm font-mono font-semibold uppercase tracking-wider text-foreground">
                 Best Deals Now
               </h2>
-              <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md leading-none">
                 {topDeals.length}
               </span>
             </div>
@@ -176,7 +176,7 @@ export default function InsightsDashboard({ insights }) {
           {topDeals.length === 0 ? (
             <div className="text-center py-12 rounded-xl border border-dashed border-white/[0.06] bg-muted/20">
               <TrendingUp className="size-8 mx-auto text-muted-foreground/60 mb-2" />
-              <p className="text-sm text-muted-foreground/70">
+              <p className="text-sm text-muted-foreground/70 leading-relaxed">
                 Start tracking products to unlock deal scores and buying recommendations.
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function InsightsDashboard({ insights }) {
                       {deal.name}
                     </h3>
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-sm font-bold font-mono text-foreground">
+                      <span className="text-sm font-bold font-mono text-foreground tracking-tight">
                         {deal.currency} {deal.current_price.toFixed(2)}
                       </span>
                       <DealScoreBadgeSmall
@@ -227,10 +227,10 @@ export default function InsightsDashboard({ insights }) {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <Wallet className="size-4 text-emerald-400" />
-              <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-foreground">
+              <h2 className="text-xs md:text-sm font-mono font-semibold uppercase tracking-wider text-foreground">
                 Recent Savings
               </h2>
-              <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md leading-none">
                 {recentSavings.length}
               </span>
             </div>
@@ -241,7 +241,7 @@ export default function InsightsDashboard({ insights }) {
           {recentSavings.length === 0 ? (
             <div className="text-center py-12 rounded-xl border border-dashed border-white/[0.06] bg-muted/20">
               <DollarSign className="size-8 mx-auto text-muted-foreground/60 mb-2" />
-              <p className="text-sm text-muted-foreground/70">
+              <p className="text-sm text-muted-foreground/70 leading-relaxed">
                 Set your first target price alert to start saving. Hit your targets, watch your savings grow.
               </p>
             </div>
@@ -266,24 +266,24 @@ export default function InsightsDashboard({ insights }) {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-1">
+                    <div className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-1 leading-snug">
                       {item.productName}
                     </div>
                     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-muted-foreground/70 mt-0.5">
-                      <span className="font-mono">
+                      <span className="font-mono tracking-tight">
                         Target: {item.currency} {item.targetPrice.toFixed(2)}
                       </span>
                       <span className="text-muted-foreground/30 hidden sm:inline">·</span>
-                      <span className="font-mono">
+                      <span className="font-mono tracking-tight">
                         Paid: {item.currency} {item.currentPrice.toFixed(2)}
                       </span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <div className="text-base md:text-lg font-bold font-mono text-emerald-400">
+                    <div className="text-base md:text-lg font-bold font-mono text-emerald-400 tracking-tight leading-none">
                       +{item.currency} {item.savings.toFixed(2)}
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60 justify-end mt-0.5">
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60 justify-end mt-1 leading-none">
                       <Clock className="size-2.5" />
                       {new Date(item.triggeredAt).toLocaleDateString()}
                     </div>

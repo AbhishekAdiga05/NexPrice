@@ -38,9 +38,9 @@ function Section({ icon: Icon, title, description, children }) {
             <Icon className="size-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+            <h2 className="text-sm font-bold text-foreground tracking-tight">{title}</h2>
             {description && (
-              <p className="text-xs text-muted-foreground/70 mt-0.5">{description}</p>
+              <p className="text-xs text-muted-foreground/70 mt-0.5 leading-relaxed">{description}</p>
             )}
           </div>
         </div>
@@ -67,7 +67,7 @@ function Toggle({ checked, onChange, label, description }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground group-hover:text-accent transition-colors">
+          <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors leading-snug">
             {label}
           </span>
         </div>
@@ -116,11 +116,11 @@ export default function SettingsForm({ user, settings }) {
               >
                 <ArrowLeft className="size-3.5 md:size-4" />
               </Link>
-              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">
                 Settings
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11">
+            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11 leading-relaxed">
               Manage your account and notification preferences.
             </p>
           </div>
@@ -136,13 +136,13 @@ export default function SettingsForm({ user, settings }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <AtSign className="size-3.5 text-muted-foreground/60" />
-                  <span className="text-sm font-semibold text-foreground truncate">
+                  <span className="text-sm font-semibold text-foreground truncate leading-snug">
                     {user.email || "Signed in"}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className="size-1.5 rounded-full bg-emerald-500" />
-                  <span className="text-[11px] text-muted-foreground/70 font-mono">
+                  <span className="text-[11px] text-muted-foreground/70 font-mono leading-none">
                     Connected via Google
                   </span>
                 </div>
@@ -164,7 +164,7 @@ export default function SettingsForm({ user, settings }) {
                 <div className="ml-12 pl-5 border-l border-accent/20">
                   <div className="flex items-center gap-2 mb-3">
                     <Calendar className="size-3.5 text-muted-foreground/60" />
-                    <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/80">
+                    <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/80 leading-none">
                       Send on
                     </label>
                   </div>
@@ -174,7 +174,7 @@ export default function SettingsForm({ user, settings }) {
                         key={value}
                         type="button"
                         onClick={() => setDigestDay(value)}
-                        className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold font-mono uppercase tracking-wider transition-all duration-200 border ${
+                        className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold font-mono uppercase tracking-wider leading-none transition-all duration-200 border ${
                           digestDay === value
                             ? "bg-accent text-white border-accent shadow-sm"
                             : "bg-background text-muted-foreground/80 border-white/[0.06] hover:border-accent/40 hover:text-foreground"
@@ -194,7 +194,7 @@ export default function SettingsForm({ user, settings }) {
 
           {/* Save Footer */}
           <div className="flex items-center justify-between gap-4 px-1">
-            <p className="text-[11px] text-muted-foreground/50 font-mono">
+            <p className="text-[11px] text-muted-foreground/50 font-mono leading-none">
               Changes are saved to your account
             </p>
             <Button

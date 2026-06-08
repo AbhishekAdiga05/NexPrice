@@ -159,18 +159,18 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
         <div className="flex-1 min-w-0">
           <Link
             href={`/products/${item.productId}`}
-            className="text-sm font-semibold text-foreground hover:text-accent transition-colors line-clamp-1"
+            className="text-sm font-semibold text-foreground hover:text-accent transition-colors line-clamp-1 leading-snug"
           >
             {item.product?.name || "Unknown Product"}
           </Link>
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
             {item.product && (
-              <span className="text-sm font-bold font-mono text-foreground">
+              <span className="text-sm font-bold font-mono text-foreground tracking-tight">
                 {item.product.currency}{" "}
                 {parseFloat(item.product.current_price).toFixed(2)}
               </span>
             )}
-            <span className="text-[10px] text-muted-foreground/50 hidden sm:inline">|</span>
+            <span className="text-[10px] text-muted-foreground/40 hidden sm:inline">|</span>
             <DealScoreBadgeSmall
               score={item.dealScore?.score}
               tier={item.dealScore?.tier}
@@ -247,11 +247,11 @@ export default function WatchlistDashboard({ items: initialItems }) {
               >
                 <ArrowLeft className="size-3.5 md:size-4" />
               </Link>
-              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">
                 Watchlist
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11">
+            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11 leading-relaxed">
               Items ranked by buying urgency and deal quality.
             </p>
           </div>
@@ -260,8 +260,8 @@ export default function WatchlistDashboard({ items: initialItems }) {
         {/* Stats bar */}
         <div className="grid grid-cols-3 gap-3 mb-8">
           <div className="rounded-xl border border-white/[0.06] bg-card/50 px-4 py-3 shadow-soft">
-            <div className="text-xl md:text-2xl font-bold font-mono text-foreground">{items.length}</div>
-            <div className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/70 mt-0.5">
+            <div className="text-xl md:text-2xl font-bold font-mono text-foreground tracking-tight leading-none">{items.length}</div>
+            <div className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/70 mt-1 leading-none">
               Items
             </div>
           </div>
@@ -270,10 +270,10 @@ export default function WatchlistDashboard({ items: initialItems }) {
               ? "border-emerald-500/30 bg-emerald-500/[0.04]"
               : "border-white/[0.06] bg-card/50"
           }`}>
-            <div className={`text-xl md:text-2xl font-bold font-mono ${
+            <div className={`text-xl md:text-2xl font-bold font-mono tracking-tight leading-none ${
               highCount > 0 ? "text-emerald-400" : "text-foreground/40"
             }`}>{highCount}</div>
-            <div className={`text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider mt-0.5 ${
+            <div className={`text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider mt-1 leading-none ${
               highCount > 0 ? "text-emerald-400/70" : "text-muted-foreground/40"
             }`}>
               High Priority
@@ -284,10 +284,10 @@ export default function WatchlistDashboard({ items: initialItems }) {
               ? "border-indigo-500/30 bg-indigo-500/[0.04]"
               : "border-white/[0.06] bg-card/50"
           }`}>
-            <div className={`text-xl md:text-2xl font-bold font-mono ${
+            <div className={`text-xl md:text-2xl font-bold font-mono tracking-tight leading-none ${
               buyNowCount > 0 ? "text-indigo-400" : "text-foreground/40"
             }`}>{buyNowCount}</div>
-            <div className={`text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider mt-0.5 ${
+            <div className={`text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider mt-1 leading-none ${
               buyNowCount > 0 ? "text-indigo-400/70" : "text-muted-foreground/40"
             }`}>
               Buy Now
@@ -299,12 +299,12 @@ export default function WatchlistDashboard({ items: initialItems }) {
         {items.length > 0 && (
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <ListChecks className="size-4 text-accent" />
-              <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-foreground/70">
+              <ListChecks className="size-3.5 text-accent" />
+              <h2 className="text-[11px] md:text-xs font-mono font-semibold uppercase tracking-wider text-foreground/70 leading-none">
                 Flagged Items
               </h2>
             </div>
-            <span className="text-[10px] font-mono text-muted-foreground/50">
+            <span className="text-[10px] font-mono text-muted-foreground/50 leading-none">
               Sorted by buy priority
             </span>
           </div>
@@ -316,10 +316,10 @@ export default function WatchlistDashboard({ items: initialItems }) {
             <div className="size-16 md:size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-5 border border-white/[0.04]">
               <ListChecks className="size-6 md:size-8 text-muted-foreground/60" />
             </div>
-            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5">
+            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5 leading-snug">
               Nothing on your watchlist yet
             </h3>
-            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto mb-6 px-4">
+            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto mb-6 px-4 leading-relaxed">
               Flag products you&apos;re considering and we&apos;ll rank them by buying urgency, deal score, and your priorities.
             </p>
             <Button asChild className="cursor-pointer h-11 px-6">
