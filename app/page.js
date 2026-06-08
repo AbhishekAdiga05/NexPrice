@@ -345,83 +345,66 @@ async function DashboardStats() {
 
   const stats = [
     {
-      label: "Products Tracked",
+      label: "Tracked",
       value: insights.productCount,
       icon: Activity,
       accent: "accent",
-      trend: "Active",
-      trendValue: insights.productCount,
+      trend: `${insights.productCount} products`,
     },
     {
-      label: "Active Alerts",
+      label: "Alerts",
       value: insights.activeCount,
       icon: Target,
       accent: "indigo",
-      trend: `of ${insights.totalAlerts} total`,
+      trend: `${insights.totalAlerts} total`,
     },
     {
-      label: "Total Savings",
+      label: "Savings",
       value: insights.totalSavingsFormatted,
       icon: Wallet,
       accent: "emerald",
-      trend: `${insights.triggeredCount} triggered`,
+      trend: `${insights.triggeredCount} captured`,
     },
     {
       label: "Triggered",
       value: insights.triggeredCount,
       icon: Bell,
       accent: "emerald",
-      trend: "alerts captured",
+      trend: "alerts hit",
     },
   ];
 
   const accentMap = {
-    accent: {
-      bg: "bg-accent/[0.08]",
-      border: "border-accent/20",
-      text: "text-accent",
-      dot: "bg-accent",
-    },
-    indigo: {
-      bg: "bg-indigo-500/[0.08]",
-      border: "border-indigo-500/20",
-      text: "text-indigo-400",
-      dot: "bg-indigo-400",
-    },
-    emerald: {
-      bg: "bg-emerald-500/[0.08]",
-      border: "border-emerald-500/20",
-      text: "text-emerald-400",
-      dot: "bg-emerald-400",
-    },
+    accent: { bg: "bg-accent/[0.08]", border: "border-accent/20", text: "text-accent", dot: "bg-accent" },
+    indigo: { bg: "bg-indigo-500/[0.08]", border: "border-indigo-500/20", text: "text-indigo-400", dot: "bg-indigo-400" },
+    emerald: { bg: "bg-emerald-500/[0.08]", border: "border-emerald-500/20", text: "text-emerald-400", dot: "bg-emerald-400" },
   };
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3 mb-6 md:mb-8">
       {stats.map((s) => {
         const a = accentMap[s.accent];
         return (
           <div
             key={s.label}
-            className="group relative bg-card rounded-xl border border-white/[0.06] shadow-panel hover:shadow-elevated transition-all duration-300 p-4 md:p-5"
+            className="relative bg-card rounded-xl border border-white/[0.06] shadow-soft hover:shadow-elevated transition-all duration-300 p-3 md:p-4"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`size-9 md:size-10 rounded-lg border ${a.border} ${a.bg} flex items-center justify-center shrink-0`}>
-                <s.icon className={`size-4 md:size-5 ${a.text}`} />
+            <div className="flex items-center justify-between mb-2">
+              <div className={`size-7 md:size-8 rounded-lg border ${a.border} ${a.bg} flex items-center justify-center`}>
+                <s.icon className={`size-3.5 md:size-4 ${a.text}`} />
               </div>
-              <span className={`size-1.5 rounded-full ${a.dot} opacity-40 group-hover:opacity-100 transition-opacity`} />
+              <span className={`size-1.5 rounded-full ${a.dot} opacity-30`} />
             </div>
-            <div>
-              <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground leading-none">
-                {s.value}
-              </div>
-              <div className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-1 leading-none">
+            <div className="text-lg md:text-xl font-bold font-mono tracking-tight text-foreground leading-none">
+              {s.value}
+            </div>
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground leading-none">
                 {s.label}
-              </div>
-              <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground/60 font-mono leading-none">
-                <span className={`size-1 rounded-full ${a.dot}`} />
+              </span>
+              <span className="text-[9px] md:text-[10px] text-muted-foreground/50 font-mono leading-none">
                 {s.trend}
-              </div>
+              </span>
             </div>
           </div>
         );
@@ -432,27 +415,22 @@ async function DashboardStats() {
 
 function QuickNav() {
   const links = [
-    { label: "Insights", href: "/insights", icon: TrendingUp, desc: "Deal scores & savings" },
-    { label: "Alerts", href: "/alerts", icon: BellRing, desc: "Active & triggered" },
-    { label: "Watchlist", href: "/watchlist", icon: ListChecks, desc: "Buy priority rankings" },
-    { label: "Settings", href: "/settings", icon: Settings, desc: "Email preferences" },
+    { label: "Insights", href: "/insights", icon: TrendingUp },
+    { label: "Alerts", href: "/alerts", icon: BellRing },
+    { label: "Watchlist", href: "/watchlist", icon: ListChecks },
+    { label: "Settings", href: "/settings", icon: Settings },
   ];
 
   return (
-    <nav className="flex items-center gap-2 md:gap-3 mb-10 overflow-x-auto scrollbar-thin pb-1 -mx-1 px-1">
+    <nav className="flex items-center gap-1.5 md:gap-2 mb-6 md:mb-8 overflow-x-auto scrollbar-thin pb-0.5">
       {links.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className="group flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border border-white/[0.06] bg-card/50 hover:bg-card hover:border-white/10 transition-all duration-200 shrink-0 shadow-soft"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-white/[0.06] bg-card/30 hover:bg-card hover:border-white/10 transition-all duration-200 shrink-0 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
-          <link.icon className="size-3.5 text-muted-foreground group-hover:text-accent transition-colors" />
-          <div className="text-left">
-            <div className="text-xs font-medium text-foreground group-hover:text-accent transition-colors leading-tight">
-              {link.label}
-            </div>
-            <div className="text-[10px] text-muted-foreground/60 leading-tight">{link.desc}</div>
-          </div>
+          <link.icon className="size-3" />
+          {link.label}
         </Link>
       ))}
     </nav>
@@ -481,85 +459,77 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12">
-        {/* Welcome */}
-        <div className="mb-8 md:mb-10">
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight text-balance">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 md:py-10">
+        {/* Welcome header */}
+        <div className="flex items-center justify-between mb-6 md:mb-8">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">
               Welcome back
               {user?.user_metadata?.full_name
                 ? `, ${user.user_metadata.full_name.split(" ")[0]}`
                 : ""}
             </h1>
+            <p className="text-sm text-muted-foreground/70 leading-snug mt-0.5">
+              Here&apos;s what&apos;s happening with your products
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-xl">
-            Your price tracking command center — here&apos;s everything happening with your products.
-          </p>
+          <QuickNav />
         </div>
 
         {/* Stats */}
         <DashboardStats />
 
-        {/* Quick Nav */}
-        <QuickNav />
-
-        {/* Add Product */}
-        <section className="mb-10 bg-card rounded-xl border border-white/[0.06] shadow-panel overflow-hidden">
-          <div className="px-5 md:px-8 py-5 md:py-6 border-b border-white/[0.06]">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-accent/[0.08] rounded-lg text-accent shrink-0">
-                <Zap className="size-4 md:size-5" />
+        {/* Add Product + Products Grid — side by side on desktop */}
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-5 mb-6 md:mb-8">
+          <section className="w-full lg:w-[400px] xl:w-[440px] shrink-0 bg-card rounded-xl border border-white/[0.06] shadow-soft p-4 md:p-5">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="p-1.5 bg-accent/[0.08] rounded-lg text-accent">
+                <Zap className="size-3.5 md:size-4" />
               </div>
               <div>
-                <h2 className="font-bold text-base md:text-lg text-foreground tracking-tight leading-snug">
+                <h2 className="text-sm font-bold text-foreground tracking-tight leading-snug">
                   Track a New Product
                 </h2>
-                <p className="text-xs text-muted-foreground/70 mt-0.5 leading-relaxed">
-                  Paste a product URL to start monitoring prices and deal scores
+                <p className="text-[11px] text-muted-foreground/60 mt-0.5 leading-snug">
+                  Paste a URL to monitor prices and deals
                 </p>
               </div>
             </div>
-          </div>
-          <div className="px-5 md:px-8 py-5 md:py-6">
             <AddProductForm user={user} />
-          </div>
-        </section>
-
-        {/* Products Grid */}
-        {products.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-base md:text-lg font-bold text-foreground tracking-tight leading-snug flex items-center gap-2.5">
-                <Activity className="size-4 md:size-5 text-accent" />
-                Your Products
-              </h2>
-              <span className="text-[11px] font-mono font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-md border border-white/[0.04] leading-none">
-                {products.length} product{products.length !== 1 ? "s" : ""}
-              </span>
-            </div>
-
-            <div className="section-divider mb-6" />
-
-            <motion.div layout className="grid gap-5 md:grid-cols-2">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </motion.div>
           </section>
-        )}
 
-        {/* Empty state */}
-        {products.length === 0 && (
-          <div className="text-center py-16 md:py-20 rounded-xl border border-dashed border-white/[0.06] bg-muted/20">
-            <div className="size-16 md:size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-5 border border-white/[0.04]">
-              <Search className="size-6 md:size-8 text-muted-foreground/60" />
+          {products.length > 0 && (
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-bold text-foreground tracking-tight flex items-center gap-2">
+                  <Activity className="size-3.5 md:size-4 text-accent" />
+                  Your Products
+                </h2>
+                <span className="text-[10px] font-mono font-semibold text-muted-foreground/60 bg-muted px-2 py-0.5 rounded-md leading-none">
+                  {products.length}
+                </span>
+              </div>
+              <div className="section-divider mb-3" />
+              <motion.div layout className="grid gap-3 md:gap-4">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </motion.div>
             </div>
-            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5 leading-snug">
+          )}
+        </div>
+
+        {/* Empty state — standalone when no products */}
+        {products.length === 0 && (
+          <div className="text-center py-12 md:py-16 rounded-xl border border-dashed border-white/[0.06] bg-muted/20">
+            <div className="size-14 md:size-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-4 border border-white/[0.04]">
+              <Search className="size-5 md:size-6 text-muted-foreground/60" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground mb-1 leading-snug">
               No products tracked yet
             </h3>
-            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto px-4 leading-relaxed">
-              Paste a product URL above to start monitoring prices, set alerts,
-              and unlock AI-powered deal insights.
+            <p className="text-sm text-muted-foreground/70 max-w-sm mx-auto px-4 leading-relaxed">
+              Paste a product URL above to start monitoring prices and deal insights.
             </p>
           </div>
         )}
