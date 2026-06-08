@@ -46,6 +46,12 @@
   .shadow-elevated {
     box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3), 0 0 1px rgba(99,102,241,0.1);
   }
+  .shadow-soft {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.03);
+  }
+  .shadow-panel {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
+  }
   .shadow-glow-accent {
     box-shadow: 0 0 20px rgba(99,102,241,0.2);
   }
@@ -54,6 +60,19 @@
   }
   .shadow-glow-red {
     box-shadow: 0 0 12px rgba(239,68,68,0.2);
+  }
+
+  .section-divider {
+    @apply border-t border-white/[0.06];
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.08) transparent;
   }
 }
 

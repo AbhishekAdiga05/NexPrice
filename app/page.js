@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import {
   Zap,
   Bell,
+  BellRing,
   TrendingUp,
   Sparkles,
   ListChecks,
@@ -15,6 +16,7 @@ import {
   Search,
   Target,
   Brain,
+  Settings,
 } from "lucide-react";
 import * as motion from "framer-motion/client";
 import Link from "next/link";
@@ -346,106 +348,114 @@ async function DashboardStats() {
       label: "Products Tracked",
       value: insights.productCount,
       icon: Activity,
-      cardBg: "bg-card border-white/[0.06]",
-      iconBg: "bg-accent/[0.08] border-accent/20",
-      iconColor: "text-accent",
+      accent: "accent",
+      trend: "Active",
+      trendValue: insights.productCount,
     },
     {
       label: "Active Alerts",
       value: insights.activeCount,
       icon: Target,
-      cardBg: "bg-card border-white/[0.06]",
-      iconBg: "bg-indigo-500/[0.08] border-indigo-500/20",
-      iconColor: "text-indigo-400",
+      accent: "indigo",
+      trend: `of ${insights.totalAlerts} total`,
     },
     {
       label: "Total Savings",
       value: insights.totalSavingsFormatted,
       icon: Wallet,
-      cardBg: "bg-card border-white/[0.06]",
-      iconBg: "bg-emerald-500/[0.08] border-emerald-500/20",
-      iconColor: "text-emerald-400",
+      accent: "emerald",
+      trend: `${insights.triggeredCount} triggered`,
     },
     {
       label: "Triggered",
       value: insights.triggeredCount,
       icon: Bell,
-      cardBg: "bg-card border-white/[0.06]",
-      iconBg: "bg-emerald-500/[0.08] border-emerald-500/20",
-      iconColor: "text-emerald-400",
+      accent: "emerald",
+      trend: "alerts captured",
     },
   ];
 
+  const accentMap = {
+    accent: {
+      bg: "bg-accent/[0.08]",
+      border: "border-accent/20",
+      text: "text-accent",
+      dot: "bg-accent",
+    },
+    indigo: {
+      bg: "bg-indigo-500/[0.08]",
+      border: "border-indigo-500/20",
+      text: "text-indigo-400",
+      dot: "bg-indigo-400",
+    },
+    emerald: {
+      bg: "bg-emerald-500/[0.08]",
+      border: "border-emerald-500/20",
+      text: "text-emerald-400",
+      dot: "bg-emerald-400",
+    },
+  };
+
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-      {stats.map((s) => (
-        <div
-          key={s.label}
-          className={`rounded-xl border ${s.cardBg} p-5 flex items-center gap-4 shadow-card`}
-        >
-          <div className={`size-12 rounded-xl border ${s.iconBg} flex items-center justify-center shrink-0`}>
-            <s.icon className={`size-5 ${s.iconColor}`} />
-          </div>
-          <div>
-            <div className="text-2xl font-bold font-mono">{s.value}</div>
-            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
-              {s.label}
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
+      {stats.map((s) => {
+        const a = accentMap[s.accent];
+        return (
+          <div
+            key={s.label}
+            className="group relative bg-card rounded-xl border border-white/[0.06] shadow-panel hover:shadow-elevated transition-all duration-300 p-4 md:p-5"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className={`size-9 md:size-10 rounded-lg border ${a.border} ${a.bg} flex items-center justify-center shrink-0`}>
+                <s.icon className={`size-4 md:size-5 ${a.text}`} />
+              </div>
+              <span className={`size-1.5 rounded-full ${a.dot} opacity-40 group-hover:opacity-100 transition-opacity`} />
+            </div>
+            <div>
+              <div className="text-xl md:text-2xl font-bold font-mono tracking-tight text-foreground">
+                {s.value}
+              </div>
+              <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                {s.label}
+              </div>
+              <div className="flex items-center gap-1 mt-1.5 text-[10px] text-muted-foreground/60 font-mono">
+                <span className={`size-1 rounded-full ${a.dot}`} />
+                {s.trend}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
-function QuickActions() {
-  const actions = [
-    {
-      label: "Insights",
-      href: "/insights",
-      icon: TrendingUp,
-      desc: "Deal scores & savings",
-      styles: "text-accent border-white/[0.08] hover:bg-accent/[0.06] hover:border-accent/30",
-    },
-    {
-      label: "Manage Alerts",
-      href: "/alerts",
-      icon: Bell,
-      desc: "Active & triggered alerts",
-      styles: "text-indigo-400 border-white/[0.08] hover:bg-indigo-500/[0.06] hover:border-indigo-500/30",
-    },
-    {
-      label: "Watchlist",
-      href: "/watchlist",
-      icon: ListChecks,
-      desc: "Buy priority rankings",
-      styles: "text-emerald-400 border-white/[0.08] hover:bg-emerald-500/[0.06] hover:border-emerald-500/30",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-      icon: Activity,
-      desc: "Email preferences",
-      styles: "text-muted-foreground border-white/[0.08] hover:bg-white/[0.04] hover:border-white/20",
-    },
+function QuickNav() {
+  const links = [
+    { label: "Insights", href: "/insights", icon: TrendingUp, desc: "Deal scores & savings" },
+    { label: "Alerts", href: "/alerts", icon: BellRing, desc: "Active & triggered" },
+    { label: "Watchlist", href: "/watchlist", icon: ListChecks, desc: "Buy priority rankings" },
+    { label: "Settings", href: "/settings", icon: Settings, desc: "Email preferences" },
   ];
 
   return (
-    <div className="flex items-center gap-3 mb-10 overflow-x-auto pb-2">
-      {actions.map((action) => (
+    <nav className="flex items-center gap-2 md:gap-3 mb-10 overflow-x-auto scrollbar-thin pb-1 -mx-1 px-1">
+      {links.map((link) => (
         <Link
-          key={action.href}
-          href={action.href}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${action.styles} transition-all duration-200 shrink-0 hover:-translate-y-0.5 shadow-card`}
+          key={link.href}
+          href={link.href}
+          className="group flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border border-white/[0.06] bg-card/50 hover:bg-card hover:border-white/10 transition-all duration-200 shrink-0 shadow-soft"
         >
-          <action.icon className="size-4" />
+          <link.icon className="size-3.5 text-muted-foreground group-hover:text-accent transition-colors" />
           <div className="text-left">
-            <div className="text-xs font-bold">{action.label}</div>
-            <div className="text-[10px] text-muted-foreground">{action.desc}</div>
+            <div className="text-xs font-semibold text-foreground group-hover:text-accent transition-colors">
+              {link.label}
+            </div>
+            <div className="text-[10px] text-muted-foreground/60">{link.desc}</div>
           </div>
         </Link>
       ))}
-    </div>
+    </nav>
   );
 }
 
@@ -471,18 +481,18 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen font-sans">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12">
         {/* Welcome */}
-        <div className="mb-10 pb-6 border-b border-white/[0.08]">
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
+        <div className="mb-8 md:mb-10">
+          <div className="flex items-center gap-3 mb-1">
+            <h1 className="text-xl md:text-3xl font-bold text-foreground tracking-tight">
               Welcome back
               {user?.user_metadata?.full_name
                 ? `, ${user.user_metadata.full_name.split(" ")[0]}`
                 : ""}
             </h1>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground/80">
             Your price tracking command center — here&apos;s everything happening with your products.
           </p>
         </div>
@@ -490,41 +500,47 @@ export default async function Home() {
         {/* Stats */}
         <DashboardStats />
 
-        {/* Quick Actions */}
-        <QuickActions />
+        {/* Quick Nav */}
+        <QuickNav />
 
         {/* Add Product */}
-        <div className="mb-10 bg-card rounded-2xl border border-white/[0.06] shadow-card p-6 lg:p-8">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/[0.06]">
-            <div className="p-2 bg-accent/[0.08] rounded-lg text-accent">
-              <Zap className="size-5" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-lg text-foreground">
-                Track a New Product
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Paste any product URL and let NexPrice monitor it for the best deals
-              </p>
+        <section className="mb-10 bg-card rounded-xl border border-white/[0.06] shadow-panel overflow-hidden">
+          <div className="px-5 md:px-8 py-5 md:py-6 border-b border-white/[0.06]">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-accent/[0.08] rounded-lg text-accent shrink-0">
+                <Zap className="size-4 md:size-5" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-base md:text-lg text-foreground">
+                  Track a New Product
+                </h2>
+                <p className="text-xs text-muted-foreground/70 mt-0.5">
+                  Paste a product URL to start monitoring prices and deal scores
+                </p>
+              </div>
             </div>
           </div>
-          <AddProductForm user={user} />
-        </div>
+          <div className="px-5 md:px-8 py-5 md:py-6">
+            <AddProductForm user={user} />
+          </div>
+        </section>
 
         {/* Products Grid */}
         {products.length > 0 && (
           <section>
-            <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/[0.08]">
-              <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-3">
-                <Activity className="size-5 text-accent" />
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-base md:text-lg font-bold text-foreground tracking-tight flex items-center gap-2.5">
+                <Activity className="size-4 md:size-5 text-accent" />
                 Your Products
               </h2>
-              <span className="text-xs font-mono text-muted-foreground bg-muted px-2.5 py-1 rounded-full ml-auto">
+              <span className="text-[11px] font-mono font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-md border border-white/[0.04]">
                 {products.length} product{products.length !== 1 ? "s" : ""}
               </span>
             </div>
 
-            <motion.div layout className="grid gap-6 md:grid-cols-2">
+            <div className="section-divider mb-6" />
+
+            <motion.div layout className="grid gap-5 md:grid-cols-2">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -532,16 +548,16 @@ export default async function Home() {
           </section>
         )}
 
-        {/* Empty state for dashboard with no products yet */}
+        {/* Empty state */}
         {products.length === 0 && (
-          <div className="text-center py-20 rounded-2xl border border-dashed border-white/[0.08] bg-muted/30">
-            <div className="size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6">
-              <Search className="size-8 text-muted-foreground" />
+          <div className="text-center py-16 md:py-20 rounded-xl border border-dashed border-white/[0.06] bg-muted/20">
+            <div className="size-16 md:size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-5 border border-white/[0.04]">
+              <Search className="size-6 md:size-8 text-muted-foreground/60" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
+            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5">
               No products tracked yet
             </h3>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto px-4">
               Paste a product URL above to start monitoring prices, set alerts,
               and unlock AI-powered deal insights.
             </p>

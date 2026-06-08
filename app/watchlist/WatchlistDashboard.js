@@ -14,6 +14,9 @@ import {
   Trash2,
   Sparkles,
   Flag,
+  ChevronDown,
+  GripVertical,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -26,7 +29,7 @@ function BuyPriorityBadge({ score }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border ${color}`}
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider border ${color}`}
     >
       <Flag className="size-2.5" />
       {score}
@@ -45,7 +48,7 @@ function DealScoreBadgeSmall({ score, tier }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border ${colors[tier] || colors.none}`}
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider border ${colors[tier] || colors.none}`}
     >
       <Sparkles className="size-2.5" />
       {score !== null ? score : "—"}
@@ -53,9 +56,58 @@ function DealScoreBadgeSmall({ score, tier }) {
   );
 }
 
+function PriorityDropdown({ value, onChange, onClose }) {
+  const [open, setOpen] = useState(false);
+
+  const labels = { high: "High", medium: "Medium", low: "Low" };
+  const styles = {
+    high: "text-emerald-400 border-emerald-500/30 bg-emerald-500/[0.06]",
+    medium: "text-accent border-accent/30 bg-accent/[0.06]",
+    low: "text-muted-foreground border-white/[0.08] bg-white/[0.02]",
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider border transition-colors ${styles[value]}`}
+      >
+        {labels[value]}
+        <ChevronDown className="size-2.5" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute top-full left-0 mt-1 bg-popover rounded-lg border border-white/10 shadow-elevated z-20 py-1 min-w-[120px] overflow-hidden">
+            {["high", "medium", "low"].map((p) => (
+              <button
+                key={p}
+                onClick={() => {
+                  onChange(p);
+                  setOpen(false);
+                }}
+                className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs font-medium transition-colors ${
+                  value === p
+                    ? "text-accent bg-accent/[0.08]"
+                    : "text-foreground hover:bg-white/[0.04]"
+                }`}
+              >
+                <span className={`size-1.5 rounded-full ${
+                  p === "high" ? "bg-emerald-400" :
+                  p === "medium" ? "bg-accent" : "bg-muted-foreground"
+                }`} />
+                {labels[p]}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function WatchlistItem({ item, onRemove, onPriorityChange }) {
   const [removing, setRemoving] = useState(false);
-  const [priorityOpen, setPriorityOpen] = useState(false);
 
   const handleRemove = async () => {
     setRemoving(true);
@@ -77,7 +129,6 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
       toast.success(`Priority set to ${priority}`);
       onPriorityChange(item.productId, priority);
     }
-    setPriorityOpen(false);
   };
 
   const daysOnList = Math.floor(
@@ -86,95 +137,77 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
   );
 
   return (
-    <div className="group relative bg-card rounded-xl border border-white/[0.06] shadow-card hover:shadow-elevated transition-all duration-300 p-4">
-      <div className="flex items-center gap-4">
-        {item.product?.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.product.image_url}
-            alt={item.product.name}
-            className="size-14 rounded-lg object-cover border border-white/[0.08] shrink-0"
-          />
-        ) : (
-          <div className="size-14 rounded-lg border border-white/[0.08] bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
-            NO IMG
-          </div>
-        )}
+    <div className="group relative bg-card rounded-xl border border-white/[0.06] shadow-panel hover:shadow-elevated transition-all duration-300">
+      <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4">
+        {/* Product Image */}
+        <Link href={`/products/${item.productId}`} className="shrink-0">
+          {item.product?.image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={item.product.image_url}
+              alt={item.product.name}
+              className="size-12 md:size-14 rounded-lg object-cover border border-white/[0.08] group-hover:scale-[1.02] transition-transform duration-300"
+            />
+          ) : (
+            <div className="size-12 md:size-14 rounded-lg border border-white/[0.08] bg-muted flex items-center justify-center text-xs text-muted-foreground">
+              N/A
+            </div>
+          )}
+        </Link>
 
+        {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <Link
-                href={`/products/${item.productId}`}
-                className="text-sm font-semibold text-foreground hover:text-accent transition-colors line-clamp-1"
-              >
-                {item.product?.name || "Unknown Product"}
-              </Link>
-              <div className="flex items-center gap-2 mt-1.5">
-                {item.product && (
-                  <span className="text-sm font-bold font-mono text-foreground">
-                    {item.product.currency}{" "}
-                    {parseFloat(item.product.current_price).toFixed(2)}
-                  </span>
-                )}
-                <span className="text-[11px] text-muted-foreground">·</span>
-                <DealScoreBadgeSmall
-                  score={item.dealScore?.score}
-                  tier={item.dealScore?.tier}
-                />
-                <span className="text-[11px] text-muted-foreground">·</span>
-                <BuyPriorityBadge score={item.buyPriority} />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                <Clock className="size-2.5" />
-                {daysOnList}d on list
+          <Link
+            href={`/products/${item.productId}`}
+            className="text-sm font-semibold text-foreground hover:text-accent transition-colors line-clamp-1"
+          >
+            {item.product?.name || "Unknown Product"}
+          </Link>
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
+            {item.product && (
+              <span className="text-sm font-bold font-mono text-foreground">
+                {item.product.currency}{" "}
+                {parseFloat(item.product.current_price).toFixed(2)}
               </span>
-
-              <div className="relative">
-                <button
-                  onClick={() => setPriorityOpen(!priorityOpen)}
-                  className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/[0.08] text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
-                >
-                  {item.priority}
-                </button>
-                {priorityOpen && (
-                  <div className="absolute top-full left-0 mt-1 bg-popover rounded-lg border border-white/10 shadow-elevated z-10 py-1 min-w-[100px]">
-                    {["high", "medium", "low"].map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => handlePriority(p)}
-                        className={`block w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-white/[0.04] transition-colors ${
-                          item.priority === p
-                            ? "text-accent bg-accent/[0.08]"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {p.charAt(0).toUpperCase() + p.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <button
-              onClick={handleRemove}
-              disabled={removing}
-              className="size-7 rounded-full flex items-center justify-center text-muted-foreground hover:bg-red-500/[0.1] hover:text-red-400 transition-colors"
-              title="Remove from watchlist"
-            >
-              {removing ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Trash2 className="size-3.5" />
-              )}
-            </button>
+            )}
+            <span className="text-[10px] text-muted-foreground/50 hidden sm:inline">|</span>
+            <DealScoreBadgeSmall
+              score={item.dealScore?.score}
+              tier={item.dealScore?.tier}
+            />
+            <BuyPriorityBadge score={item.buyPriority} />
+            <span className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
+              <Clock className="size-2.5" />
+              {daysOnList}d
+            </span>
+            <PriorityDropdown
+              value={item.priority}
+              onChange={handlePriority}
+            />
           </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-1 shrink-0">
+          <Link
+            href={`/products/${item.productId}`}
+            className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/50 hover:text-accent hover:bg-accent/[0.06] transition-colors"
+            title="View product"
+          >
+            <Eye className="size-3.5" />
+          </Link>
+          <button
+            onClick={handleRemove}
+            disabled={removing}
+            className="size-8 rounded-lg flex items-center justify-center text-muted-foreground/50 hover:text-red-400 hover:bg-red-500/[0.08] transition-colors"
+            title="Remove from watchlist"
+          >
+            {removing ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="size-3.5" />
+            )}
+          </button>
         </div>
       </div>
     </div>
@@ -198,73 +231,98 @@ export default function WatchlistDashboard({ items: initialItems }) {
     );
   };
 
+  const highCount = items.filter((i) => i.priority === "high").length;
+  const buyNowCount = items.filter((i) => i.buyPriority >= 70).length;
+
   return (
-    <main className="min-h-screen relative overflow-hidden font-sans">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+    <main className="min-h-screen font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-10 pb-6 border-b border-white/[0.08]">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-1">
               <Link
                 href="/"
-                className="size-8 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
+                className="size-7 md:size-8 rounded-lg border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors shrink-0"
               >
-                <ArrowLeft className="size-4" />
+                <ArrowLeft className="size-3.5 md:size-4" />
               </Link>
-              <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-3">
-                <ListChecks className="size-6 text-accent" />
-                Smart Watchlist
+              <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+                Watchlist
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground ml-11">
-              Items you&apos;ve flagged, ranked by buying urgency and deal quality.
+            <p className="text-sm text-muted-foreground/70 ml-10 md:ml-11">
+              Items ranked by buying urgency and deal quality.
             </p>
           </div>
         </div>
 
         {/* Stats bar */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="rounded-xl border border-white/[0.06] bg-card px-5 py-3 shadow-card">
-            <div className="text-2xl font-bold font-mono">{items.length}</div>
-            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          <div className="rounded-xl border border-white/[0.06] bg-card/50 px-4 py-3 shadow-soft">
+            <div className="text-xl md:text-2xl font-bold font-mono text-foreground">{items.length}</div>
+            <div className="text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/70 mt-0.5">
               Items
             </div>
           </div>
-          {items.filter((i) => i.priority === "high").length > 0 && (
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.06] px-5 py-3 text-emerald-400">
-              <div className="text-2xl font-bold font-mono">
-                {items.filter((i) => i.priority === "high").length}
-              </div>
-              <div className="text-[11px] font-mono font-bold uppercase tracking-wider">
-                High Priority
-              </div>
+          <div className={`rounded-xl border px-4 py-3 shadow-soft transition-colors ${
+            highCount > 0
+              ? "border-emerald-500/30 bg-emerald-500/[0.04]"
+              : "border-white/[0.06] bg-card/50"
+          }`}>
+            <div className={`text-xl md:text-2xl font-bold font-mono ${
+              highCount > 0 ? "text-emerald-400" : "text-foreground/40"
+            }`}>{highCount}</div>
+            <div className={`text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider mt-0.5 ${
+              highCount > 0 ? "text-emerald-400/70" : "text-muted-foreground/40"
+            }`}>
+              High Priority
             </div>
-          )}
-          {items.filter((i) => i.buyPriority >= 70).length > 0 && (
-            <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/[0.06] px-5 py-3 text-indigo-400">
-              <div className="text-2xl font-bold font-mono">
-                {items.filter((i) => i.buyPriority >= 70).length}
-              </div>
-              <div className="text-[11px] font-mono font-bold uppercase tracking-wider">
-                Buy Now
-              </div>
+          </div>
+          <div className={`rounded-xl border px-4 py-3 shadow-soft transition-colors ${
+            buyNowCount > 0
+              ? "border-indigo-500/30 bg-indigo-500/[0.04]"
+              : "border-white/[0.06] bg-card/50"
+          }`}>
+            <div className={`text-xl md:text-2xl font-bold font-mono ${
+              buyNowCount > 0 ? "text-indigo-400" : "text-foreground/40"
+            }`}>{buyNowCount}</div>
+            <div className={`text-[10px] md:text-[11px] font-mono font-semibold uppercase tracking-wider mt-0.5 ${
+              buyNowCount > 0 ? "text-indigo-400/70" : "text-muted-foreground/40"
+            }`}>
+              Buy Now
             </div>
-          )}
+          </div>
         </div>
+
+        {/* Section header */}
+        {items.length > 0 && (
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <ListChecks className="size-4 text-accent" />
+              <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-foreground/70">
+                Flagged Items
+              </h2>
+            </div>
+            <span className="text-[10px] font-mono text-muted-foreground/50">
+              Sorted by buy priority
+            </span>
+          </div>
+        )}
 
         {/* Empty state */}
         {items.length === 0 ? (
-          <div className="text-center py-20">
-          <div className="size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6 border border-white/[0.06]">
-            <ListChecks className="size-8 text-muted-foreground" />
-          </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
+          <div className="text-center py-16 md:py-20 rounded-xl border border-dashed border-white/[0.06] bg-muted/20">
+            <div className="size-16 md:size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-5 border border-white/[0.04]">
+              <ListChecks className="size-6 md:size-8 text-muted-foreground/60" />
+            </div>
+            <h3 className="text-base md:text-lg font-semibold text-foreground mb-1.5">
               Nothing on your watchlist yet
             </h3>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            <p className="text-sm text-muted-foreground/70 max-w-md mx-auto mb-6 px-4">
               Flag products you&apos;re considering and we&apos;ll rank them by buying urgency, deal score, and your priorities.
             </p>
-            <Button asChild className="cursor-pointer">
+            <Button asChild className="cursor-pointer h-11 px-6">
               <Link href="/">
                 <ArrowLeft className="size-4" />
                 Browse Products
@@ -272,7 +330,7 @@ export default function WatchlistDashboard({ items: initialItems }) {
             </Button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {items.map((item) => (
               <WatchlistItem
                 key={item.id}
