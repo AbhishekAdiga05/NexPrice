@@ -31,7 +31,7 @@ export default function AddProductForm({ user }) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success(result.message || "Product tracked successfully!");
+      toast.success(result.message || "Product is being tracked!");
       setUrl("");
     }
 
@@ -51,8 +51,8 @@ export default function AddProductForm({ user }) {
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Paste product URL (Amazon, Walmart, etc.)"
-            className="flex-1 font-mono text-sm h-14 bg-white/80 border-border shadow-sm focus-visible:ring-accent"
+            placeholder="Paste any product URL to start tracking..."
+            className="flex-1 font-mono text-sm h-14 bg-background border-white/10 shadow-sm focus-visible:ring-accent"
             required
             disabled={loading}
           />
@@ -65,7 +65,7 @@ export default function AddProductForm({ user }) {
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ADDING...
+                ANALYZING...
               </>
             ) : (
               "TRACK PRICE"

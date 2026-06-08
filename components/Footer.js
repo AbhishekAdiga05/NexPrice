@@ -21,24 +21,21 @@ const footerFeatures = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border/50 bg-white mt-24">
+    <footer className="border-t border-white/[0.06] bg-card mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-2 group mb-4">
-              <div className="size-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+            <Link href="/" className="flex items-center gap-2.5 group mb-4">
+              <div className="size-2.5 rounded-full bg-emerald-500 shadow-glow-green" />
               <span className="text-xl font-bold tracking-tight">
                 <span className="text-accent">NEXPRICE</span>
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
-              Smart product price tracker with AI-powered predictions, Deal
-              Scores, and automated alerts. Save money effortlessly.
+              AI-powered price tracking platform that predicts, analyzes, and alerts you to the perfect buying moment. Never overpay again.
             </p>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono mb-4">
               Quick Links
@@ -63,7 +60,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Features */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono mb-4">
               Features
@@ -85,13 +81,13 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-border/50">
+      <div className="border-t border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} NexPrice. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Built with Next.js, Supabase &amp; Gemini AI
+            Precision price intelligence — powered by AI
           </p>
         </div>
       </div>

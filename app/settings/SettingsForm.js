@@ -50,10 +50,10 @@ export default function SettingsForm({ user, settings }) {
   return (
     <main className="min-h-screen relative overflow-hidden font-sans">
       <div className="max-w-3xl mx-auto px-6 lg:px-12 py-12">
-        <div className="flex items-center gap-3 mb-10 pb-6 border-b-2 border-border/40">
+        <div className="flex items-center gap-3 mb-10 pb-6 border-b border-white/[0.08]">
           <Link
             href="/"
-            className="size-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="size-8 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -63,15 +63,15 @@ export default function SettingsForm({ user, settings }) {
               Settings
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Manage your account preferences and notification settings.
+              Customize your account, notification preferences, and email digest settings.
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Profile Section */}
-          <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6">
-            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/50">
+          <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
+            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-white/[0.06]">
               <User className="size-4 text-accent" />
               <h2 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
                 Account
@@ -87,15 +87,15 @@ export default function SettingsForm({ user, settings }) {
                   {user.email || "Signed in"}
                 </div>
                 <div className="text-[11px] text-muted-foreground font-mono mt-0.5">
-                  Authenticated via Google
+                  Connected via Google
                 </div>
               </div>
             </div>
           </div>
 
           {/* Email Notifications Section */}
-          <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6">
-            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/50">
+          <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
+            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-white/[0.06]">
               <Bell className="size-4 text-accent" />
               <h2 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
                 Email Notifications
@@ -112,26 +112,25 @@ export default function SettingsForm({ user, settings }) {
                     onChange={(e) => setWeeklyDigest(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-10 h-6 rounded-full bg-muted-foreground/30 peer-checked:bg-accent transition-colors duration-200" />
-                  <div className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md peer-checked:translate-x-4 transition-transform duration-200" />
+                  <div className="w-10 h-6 rounded-full bg-white/[0.1] peer-checked:bg-accent transition-colors duration-200" />
+                  <div className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-foreground shadow-md peer-checked:translate-x-4 transition-transform duration-200" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <Mail className="size-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                     <span className="text-sm font-semibold text-foreground">
-                      Weekly Digest Email
+                      Weekly Digest
                     </span>
                   </div>
                   <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">
-                    Receive a weekly summary of all price changes across your tracked
-                    products, including biggest drops, alert highlights, and savings.
+                    Get a curated weekly report of every price change across your tracked products — biggest drops, alert activity, and total savings.
                   </p>
                 </div>
               </label>
 
               {/* Digest Day Selector */}
               {weeklyDigest && (
-                <div className="ml-14 pl-4 border-l-2 border-accent/20">
+                <div className="ml-14 pl-4 border-l-2 border-accent/30">
                   <label className="block text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-3">
                     Send on
                   </label>
@@ -144,7 +143,7 @@ export default function SettingsForm({ user, settings }) {
                         className={`px-3 py-1.5 rounded-md text-xs font-semibold font-mono uppercase tracking-wider transition-all duration-200 border ${
                           digestDay === value
                             ? "bg-accent text-white border-accent shadow-sm"
-                            : "bg-background text-muted-foreground border-border hover:border-accent/50 hover:text-foreground"
+                            : "bg-background text-muted-foreground border-white/10 hover:border-accent/50 hover:text-foreground"
                         }`}
                       >
                         {label}
@@ -168,7 +167,7 @@ export default function SettingsForm({ user, settings }) {
               ) : (
                 <Save className="size-4" />
               )}
-              {saving ? "SAVING..." : "SAVE SETTINGS"}
+              {saving ? "SAVING..." : "SAVE PREFERENCES"}
             </Button>
           </div>
         </form>

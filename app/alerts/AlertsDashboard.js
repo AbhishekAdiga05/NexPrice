@@ -24,22 +24,22 @@ import Link from "next/link";
 function StatusBadge({ status }) {
   if (status === "active") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 border border-indigo-200">
-        <span className="size-1.5 rounded-full bg-indigo-500 animate-pulse" />
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-500/[0.08] text-indigo-400 border border-indigo-500/30">
+        <span className="size-1.5 rounded-full bg-indigo-400 animate-pulse" />
         Active
       </span>
     );
   }
   if (status === "triggered") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/[0.08] text-emerald-400 border border-emerald-500/30">
         <CheckCircle2 className="size-2.5" />
         Triggered
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 text-slate-500 border border-slate-200">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-white/[0.04] text-muted-foreground border border-white/[0.08]">
       Disabled
     </span>
   );
@@ -63,16 +63,16 @@ function NewAlertDialog({ productId, currentPrice, currency, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-xl border border-border/50 w-full max-w-md p-6">
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-popover rounded-2xl shadow-elevated border border-white/10 w-full max-w-md p-6">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
           <div className="flex items-center gap-2">
             <Target className="size-5 text-accent" />
-            <h3 className="font-semibold text-lg">Set Target Price Alert</h3>
+              <h3 className="font-semibold text-lg">New Target Price Alert</h3>
           </div>
           <button
             onClick={onClose}
-            className="size-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+              className="size-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-white/[0.06] transition-colors"
           >
             <X className="size-4" />
           </button>
@@ -141,17 +141,17 @@ function AlertCard({ alert, currency }) {
   const isTriggered = alert.status === "triggered";
 
   return (
-    <div className="group relative bg-white rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+    <div className="group relative bg-card rounded-xl border border-white/[0.06] shadow-card hover:shadow-elevated transition-all duration-300 overflow-hidden">
       <div className="flex items-center gap-4 p-4">
         {alert.product?.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={alert.product.image_url}
             alt={alert.product.name}
-            className="size-14 rounded-lg object-cover border border-border shrink-0"
+            className="size-14 rounded-lg object-cover border border-white/[0.08] shrink-0"
           />
         ) : (
-          <div className="size-14 rounded-lg border border-border bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
+          <div className="size-14 rounded-lg border border-white/[0.08] bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
             NO_IMG
           </div>
         )}
@@ -171,7 +171,7 @@ function AlertCard({ alert, currency }) {
                   Target: {currency} {parseFloat(alert.target_price).toFixed(2)}
                 </span>
                 {isTriggered && alert.savings > 0 && (
-                  <span className="text-[11px] font-semibold text-emerald-600 font-mono">
+                  <span className="text-[11px] font-semibold text-emerald-400 font-mono">
                     · Saved {currency} {parseFloat(alert.savings).toFixed(2)}
                   </span>
                 )}
@@ -191,9 +191,9 @@ function AlertCard({ alert, currency }) {
           <div className="flex items-center gap-3 mt-2">
             {!isTriggered && alert.product && (
               <>
-                <div className="flex-1 h-1 rounded-full bg-slate-100 overflow-hidden max-w-[200px]">
+                <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden max-w-[200px]">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-indigo-600"
+                    className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-indigo-500"
                     style={{
                       width: `${Math.min(
                         100,
@@ -227,7 +227,7 @@ function AlertCard({ alert, currency }) {
                 <button
                   onClick={handleRemove}
                   disabled={removing}
-                  className="size-7 rounded-full flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-colors"
+                  className="size-7 rounded-full flex items-center justify-center text-muted-foreground hover:bg-red-500/[0.1] hover:text-red-400 transition-colors"
                   title="Remove alert"
                 >
                   {removing ? (
@@ -258,19 +258,25 @@ export default function AlertsDashboard({ alerts }) {
       label: "Active Alerts",
       value: activeAlerts.length,
       icon: BellRing,
-      color: "text-indigo-600 bg-indigo-50 border-indigo-200",
+      cardClass: "bg-card border-white/[0.06]",
+      iconClass: "bg-indigo-500/[0.08] border-indigo-500/20",
+      color: "text-indigo-400",
     },
     {
       label: "Triggered",
       value: triggeredAlerts.length,
       icon: CheckCircle2,
-      color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+      cardClass: "bg-card border-white/[0.06]",
+      iconClass: "bg-emerald-500/[0.08] border-emerald-500/20",
+      color: "text-emerald-400",
     },
     {
       label: "Total",
       value: alerts.length,
       icon: Target,
-      color: "text-accent bg-accent/5 border-accent/20",
+      cardClass: "bg-card border-white/[0.06]",
+      iconClass: "bg-accent/[0.08] border-accent/20",
+      color: "text-accent",
     },
   ];
 
@@ -278,39 +284,39 @@ export default function AlertsDashboard({ alerts }) {
     <main className="min-h-screen relative overflow-hidden font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-10 pb-6 border-b-2 border-border/40">
+        <div className="flex items-center justify-between mb-10 pb-6 border-b border-white/[0.08]">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <Link
                 href="/"
-                className="size-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="size-8 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
               >
                 <ArrowLeft className="size-4" />
               </Link>
               <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-3">
                 <Bell className="size-6 text-accent" />
-                Alerts Dashboard
+                Alerts
               </h1>
             </div>
             <p className="text-sm text-muted-foreground ml-11">
-              Manage your target price alerts across all tracked products.
+              Monitor and manage every target price alert across your tracked products.
             </p>
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-4 mb-10">
-          {stats.map(({ label, value, icon: Icon, color }) => (
+          {stats.map(({ label, value, icon: Icon, cardClass, iconClass, color }) => (
             <div
               key={label}
-              className={`rounded-xl border p-5 ${color} flex items-center gap-4`}
+              className={`rounded-xl border ${cardClass} p-5 flex items-center gap-4 shadow-card`}
             >
-              <div className="size-12 rounded-xl bg-white/60 border border-current/20 flex items-center justify-center shrink-0">
-                <Icon className="size-5" />
+              <div className={`size-12 rounded-xl border ${iconClass} flex items-center justify-center shrink-0`}>
+                <Icon className={`size-5 ${color}`} />
               </div>
               <div>
                 <div className="text-2xl font-bold font-mono">{value}</div>
-                <div className="text-[11px] font-mono font-bold uppercase tracking-wider opacity-70">
+                <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
                   {label}
                 </div>
               </div>
@@ -321,15 +327,15 @@ export default function AlertsDashboard({ alerts }) {
         {/* No alerts state */}
         {alerts.length === 0 && (
           <div className="text-center py-20">
-            <div className="size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6">
-              <BellOff className="size-8 text-muted-foreground" />
-            </div>
+          <div className="size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6 border border-white/[0.06]">
+            <BellOff className="size-8 text-muted-foreground" />
+          </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              No alerts yet
+              No alerts set yet
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
-              Set a target price alert on any tracked product and we&apos;ll email you when the
-              price drops to your desired level.
+              Set a target price on any tracked product and we&apos;ll notify you instantly
+              when the price drops to your desired level.
             </p>
             <Button asChild className="cursor-pointer">
               <Link href="/">
@@ -346,7 +352,7 @@ export default function AlertsDashboard({ alerts }) {
             <div className="flex items-center gap-2 mb-4">
               <BellRing className="size-4 text-indigo-500" />
               <h2 className="text-sm font-bold uppercase tracking-wider text-foreground font-mono">
-                Active Alerts
+                Watching
               </h2>
               <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                 {activeAlerts.length}
@@ -370,7 +376,7 @@ export default function AlertsDashboard({ alerts }) {
             <div className="flex items-center gap-2 mb-4">
               <CheckCircle2 className="size-4 text-emerald-500" />
               <h2 className="text-sm font-bold uppercase tracking-wider text-foreground font-mono">
-                Triggered Alerts
+                Captured
               </h2>
               <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                 {triggeredAlerts.length}

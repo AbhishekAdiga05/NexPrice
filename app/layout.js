@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata = {
   title: "NexPrice - Smart Product Price Tracker",
-  description: "Track product prices with mechanical precision and instant alerts",
+  description: "AI-powered price tracking that predicts, analyzes, and alerts you to the perfect buying moment.",
 };
 
 export default async function RootLayout({ children }) {

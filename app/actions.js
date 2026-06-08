@@ -209,7 +209,7 @@ export async function setPriceAlert(productId, targetPrice) {
 
     revalidatePath("/");
     revalidatePath("/alerts");
-    return { success: true, message: "Target price alert set! We'll email you when the price drops." };
+    return { success: true, message: "Alert set! We'll notify you when your target price is hit." };
   } catch (error) {
     console.error("Set price alert error:", error);
     return { error: error.message || "Failed to set price alert" };
@@ -380,7 +380,7 @@ export async function updateUserSettings(formData) {
     if (error) throw error;
 
     revalidatePath("/settings");
-    return { success: true, message: "Settings saved" };
+    return { success: true, message: "Preferences saved successfully" };
   } catch (error) {
     return { error: error.message || "Failed to save settings" };
   }
@@ -506,7 +506,7 @@ export async function addToWatchlist(productId, priority = "medium") {
       .maybeSingle();
 
     if (existing) {
-      return { error: "Already on your watchlist" };
+      return { error: "This product is already on your watchlist" };
     }
 
     const { error } = await supabase.from("watchlist").insert({
@@ -518,7 +518,7 @@ export async function addToWatchlist(productId, priority = "medium") {
     if (error) throw error;
 
     revalidatePath("/watchlist");
-    return { success: true, message: "Added to watchlist" };
+    return { success: true, message: "Added to your watchlist" };
   } catch (error) {
     console.error("Add to watchlist error:", error);
     return { error: error.message || "Failed to add to watchlist" };

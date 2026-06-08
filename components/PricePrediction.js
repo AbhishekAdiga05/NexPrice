@@ -6,9 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 function getConfidenceColor(confidence) {
-  if (confidence === "high") return "bg-emerald-100 text-emerald-700 border-emerald-200";
-  if (confidence === "medium") return "bg-indigo-100 text-indigo-700 border-indigo-200";
-  return "bg-amber-100 text-amber-700 border-amber-200";
+  if (confidence === "high") return "bg-emerald-500/[0.08] text-emerald-400 border-emerald-500/30";
+  if (confidence === "medium") return "bg-indigo-500/[0.08] text-indigo-400 border-indigo-500/30";
+  return "bg-amber-500/[0.08] text-amber-400 border-amber-500/30";
 }
 
 export default function PricePrediction({ productId, currentPrice, currency }) {
@@ -44,15 +44,15 @@ export default function PricePrediction({ productId, currentPrice, currency }) {
     return (
       <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
         <Loader2 className="size-3.5 animate-spin" />
-        Predicting price...
+        Generating prediction...
       </div>
     );
   }
 
   if (error && !data) {
     return (
-      <div className="rounded-md border border-red-200 bg-red-50 p-3">
-        <p className="text-xs text-red-600">{error}</p>
+      <div className="rounded-md border border-red-500/20 bg-red-500/[0.06] p-3">
+        <p className="text-xs text-red-400">{error}</p>
         <Button
           type="button"
           variant="outline"
@@ -71,7 +71,7 @@ export default function PricePrediction({ productId, currentPrice, currency }) {
   const { prediction, source, cached } = data;
 
   return (
-    <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
+    <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/[0.04] p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="size-3.5 text-accent" />
@@ -85,12 +85,12 @@ export default function PricePrediction({ productId, currentPrice, currency }) {
             {prediction.confidence}
           </Badge>
           {cached && (
-            <Badge variant="outline" className="text-[9px] uppercase bg-slate-100">
+            <Badge variant="outline" className="text-[9px] uppercase bg-white/5">
               cached
             </Badge>
           )}
           {source === "fallback" && (
-            <Badge variant="outline" className="text-[9px] uppercase bg-slate-100">
+            <Badge variant="outline" className="text-[9px] uppercase bg-white/5">
               rules
             </Badge>
           )}
@@ -115,8 +115,8 @@ export default function PricePrediction({ productId, currentPrice, currency }) {
       {prediction.predicted_price ? (
         <div className="space-y-2">
           <div className="flex items-baseline gap-2">
-            <TrendingDown className="size-4 text-emerald-600" />
-            <span className="text-lg font-bold font-mono text-emerald-600">
+            <TrendingDown className="size-4 text-emerald-400" />
+            <span className="text-lg font-bold font-mono text-emerald-400">
               {currency} {prediction.predicted_price.toFixed(2)}
             </span>
             <span className="text-[11px] text-muted-foreground">

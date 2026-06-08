@@ -12,17 +12,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-function StatCard({ label, value, icon: Icon, color }) {
+function StatCard({ label, value, icon: Icon, cardClass, iconClass, color }) {
   return (
     <div
-      className={`rounded-xl border p-5 ${color} flex items-center gap-4`}
+      className={`rounded-xl border ${cardClass} p-5 flex items-center gap-4 shadow-card`}
     >
-      <div className="size-12 rounded-xl bg-white/60 border border-current/20 flex items-center justify-center shrink-0">
-        <Icon className="size-5" />
+      <div className={`size-12 rounded-xl border ${iconClass} flex items-center justify-center shrink-0`}>
+        <Icon className={`size-5 ${color}`} />
       </div>
       <div>
         <div className="text-2xl font-bold font-mono">{value}</div>
-        <div className="text-[11px] font-mono font-bold uppercase tracking-wider opacity-70">
+        <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
           {label}
         </div>
       </div>
@@ -32,10 +32,10 @@ function StatCard({ label, value, icon: Icon, color }) {
 
 function DealScoreBadgeSmall({ score, tier }) {
   const colors = {
-    great: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    good: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    fair: "bg-amber-50 text-amber-700 border-amber-200",
-    poor: "bg-red-50 text-red-700 border-red-200",
+    great: "bg-emerald-500/[0.08] text-emerald-400 border-emerald-500/30",
+    good: "bg-indigo-500/[0.08] text-indigo-400 border-indigo-500/30",
+    fair: "bg-amber-500/[0.08] text-amber-400 border-amber-500/30",
+    poor: "bg-red-500/[0.08] text-red-400 border-red-500/30",
   };
 
   return (
@@ -66,37 +66,45 @@ export default function InsightsDashboard({ insights }) {
       label: "Total Savings",
       value: totalSavingsFormatted,
       icon: Wallet,
-      color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+      cardClass: "bg-card border-white/[0.06]",
+      iconClass: "bg-emerald-500/[0.08] border-emerald-500/20",
+      color: "text-emerald-400",
     },
     {
       label: "Active Alerts",
       value: activeCount,
       icon: Bell,
-      color: "text-indigo-600 bg-indigo-50 border-indigo-200",
+      cardClass: "bg-card border-white/[0.06]",
+      iconClass: "bg-indigo-500/[0.08] border-indigo-500/20",
+      color: "text-indigo-400",
     },
     {
       label: "Triggered",
       value: triggeredCount,
       icon: CheckCircle2,
-      color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+      cardClass: "bg-card border-white/[0.06]",
+      iconClass: "bg-emerald-500/[0.08] border-emerald-500/20",
+      color: "text-emerald-400",
     },
     {
       label: "Products",
       value: productCount,
       icon: Layers,
-      color: "text-accent bg-accent/5 border-accent/20",
+      cardClass: "bg-card border-white/[0.06]",
+      iconClass: "bg-accent/[0.08] border-accent/20",
+      color: "text-accent",
     },
   ];
 
   return (
     <main className="min-h-screen relative overflow-hidden font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
-        <div className="flex items-center justify-between mb-10 pb-6 border-b-2 border-border/40">
+        <div className="flex items-center justify-between mb-10 pb-6 border-b border-white/[0.08]">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <Link
                 href="/"
-                className="size-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="size-8 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
               >
                 <ArrowLeft className="size-4" />
               </Link>
@@ -106,8 +114,7 @@ export default function InsightsDashboard({ insights }) {
               </h1>
             </div>
             <p className="text-sm text-muted-foreground ml-11">
-              Powered by your tracking data — savings, scores, and stats at a
-              glance.
+              Your savings, deal scores, and performance metrics — all powered by real tracking data.
             </p>
           </div>
         </div>
@@ -121,19 +128,19 @@ export default function InsightsDashboard({ insights }) {
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="size-4 text-accent" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-foreground font-mono">
-              Top Deals Right Now
-            </h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground font-mono">
+                Best Deals Now
+              </h2>
             <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
               {topDeals.length}
             </span>
           </div>
 
           {topDeals.length === 0 ? (
-            <div className="text-center py-12 rounded-xl border border-dashed border-border/50 bg-muted/30">
+            <div className="text-center py-12 rounded-xl border border-dashed border-white/[0.08] bg-muted/30">
               <TrendingUp className="size-8 mx-auto text-muted-foreground mb-2" />
               <p className="text-sm text-muted-foreground">
-                Track more products to see deal scores.
+                Start tracking products to unlock deal scores and buying recommendations.
               </p>
             </div>
           ) : (
@@ -142,17 +149,17 @@ export default function InsightsDashboard({ insights }) {
                 <Link
                   key={deal.id}
                   href={`/products/${deal.id}`}
-                  className="group bg-white rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 p-4"
+                  className="group bg-card rounded-xl border border-white/[0.06] shadow-card hover:shadow-elevated transition-all duration-300 p-4 hover:-translate-y-0.5"
                 >
                   {deal.image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={deal.image_url}
                       alt={deal.name}
-                      className="w-full aspect-square rounded-lg object-cover border border-border mb-3"
+                      className="w-full aspect-square rounded-lg object-cover border border-white/[0.08] mb-3"
                     />
                   ) : (
-                    <div className="w-full aspect-square rounded-lg border border-border bg-muted flex items-center justify-center text-xs text-muted-foreground mb-3">
+                    <div className="w-full aspect-square rounded-lg border border-white/[0.08] bg-muted flex items-center justify-center text-xs text-muted-foreground mb-3">
                       NO IMG
                     </div>
                   )}
@@ -188,11 +195,10 @@ export default function InsightsDashboard({ insights }) {
           </div>
 
           {recentSavings.length === 0 ? (
-            <div className="text-center py-12 rounded-xl border border-dashed border-border/50 bg-muted/30">
+            <div className="text-center py-12 rounded-xl border border-dashed border-white/[0.08] bg-muted/30">
               <Wallet className="size-8 mx-auto text-muted-foreground mb-2" />
               <p className="text-sm text-muted-foreground">
-                Set target price alerts to start saving. Hit your targets, see
-                your savings grow.
+                Set your first target price alert to start saving. Hit your targets, watch your savings grow.
               </p>
             </div>
           ) : (
@@ -201,17 +207,17 @@ export default function InsightsDashboard({ insights }) {
                 <Link
                   key={item.id}
                   href={`/products/${item.productId}`}
-                  className="group flex items-center gap-3 bg-white rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 p-3.5"
+                  className="group flex items-center gap-3 bg-card rounded-xl border border-white/[0.06] shadow-card hover:shadow-elevated transition-all duration-300 p-3.5 hover:-translate-y-0.5"
                 >
                   {item.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={item.imageUrl}
                       alt={item.productName}
-                      className="size-10 rounded-lg object-cover border border-border shrink-0"
+                      className="size-10 rounded-lg object-cover border border-white/[0.08] shrink-0"
                     />
                   ) : (
-                    <div className="size-10 rounded-lg border border-border bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
+                    <div className="size-10 rounded-lg border border-white/[0.08] bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
                       N/A
                     </div>
                   )}
@@ -230,7 +236,7 @@ export default function InsightsDashboard({ insights }) {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <div className="text-lg font-bold font-mono text-emerald-600">
+                    <div className="text-lg font-bold font-mono text-emerald-400">
                       +{item.currency} {item.savings.toFixed(2)}
                     </div>
                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground justify-end">

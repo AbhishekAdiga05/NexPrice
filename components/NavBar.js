@@ -20,11 +20,11 @@ export default function NavBar({ user }) {
     : [];
 
   return (
-    <header className="bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b-2 border-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex justify-between items-center">
+    <header className="bg-background/70 backdrop-blur-xl sticky top-0 z-50 border-b border-white/[0.06] shadow-lg">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-3 flex justify-between items-center">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="size-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="size-2.5 rounded-full bg-emerald-500 shadow-glow-green animate-pulse" />
             <span className="text-xl font-bold tracking-tight flex items-center gap-2">
               <span className="text-accent font-bold">NEXPRICE</span>
             </span>
@@ -39,8 +39,8 @@ export default function NavBar({ user }) {
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all duration-200",
                     pathname === href
-                      ? "text-accent bg-accent/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "text-accent bg-accent/10 shadow-glow-accent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                   )}
                 >
                   <Icon className="size-3.5" />

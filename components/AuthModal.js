@@ -27,14 +27,14 @@ export default function AuthModal({ isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-background border-border shadow-lg rounded-2xl">
-        <DialogHeader className="pt-4 border-b border-border/50 pb-4">
+      <DialogContent className="sm:max-w-md bg-popover border-white/10 shadow-elevated rounded-2xl">
+        <DialogHeader className="pt-4 border-b border-white/[0.06] pb-4">
           <DialogTitle className="flex items-center gap-2 font-semibold text-lg">
             <ShieldAlert className="size-5 text-accent" />
-            Sign In Required
+            Sign In to NexPrice
           </DialogTitle>
           <DialogDescription className="text-muted-foreground mt-2">
-            Sign in to track product prices and get alerts on price drops.
+            Track prices, set alerts, and unlock AI-powered buying insights.
           </DialogDescription>
         </DialogHeader>
 
@@ -42,7 +42,7 @@ export default function AuthModal({ isOpen, onClose }) {
           <Button
             onClick={handleGoogleLogin}
             variant="outline"
-            className="w-full gap-3 bg-secondary/50 font-bold"
+            className="w-full gap-3 bg-secondary/50 font-bold hover:bg-accent/[0.06]"
             size="lg"
           >
             <svg className="w-5 h-5 drop-shadow-sm" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@ export default function AuthModal({ isOpen, onClose }) {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Sign In With Google
+            Continue with Google
           </Button>
         </div>
       </DialogContent>

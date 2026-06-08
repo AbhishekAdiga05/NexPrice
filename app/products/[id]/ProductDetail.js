@@ -83,7 +83,7 @@ export default function ProductDetail({
         <div className="flex items-center gap-3 mb-8">
           <Link
             href="/"
-            className="size-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="size-8 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -99,7 +99,7 @@ export default function ProductDetail({
         </div>
 
         {/* Product Hero */}
-        <div className="bg-white rounded-2xl border border-border/50 shadow-sm overflow-hidden mb-8">
+        <div className="bg-card rounded-2xl border border-white/[0.06] shadow-card overflow-hidden mb-8">
           <div className="flex flex-col md:flex-row gap-8 p-6 lg:p-8">
             {/* Image */}
             <div className="shrink-0">
@@ -108,10 +108,10 @@ export default function ProductDetail({
                 <img
                   src={product.image_url}
                   alt={product.name}
-                  className="w-full md:w-52 lg:w-64 rounded-xl border border-border object-cover aspect-square"
+                  className="w-full md:w-52 lg:w-64 rounded-xl border border-white/[0.08] object-cover aspect-square"
                 />
               ) : (
-                <div className="w-full md:w-52 lg:w-64 rounded-xl border border-border bg-muted flex items-center justify-center text-muted-foreground aspect-square">
+                <div className="w-full md:w-52 lg:w-64 rounded-xl border border-white/[0.08] bg-muted flex items-center justify-center text-muted-foreground aspect-square">
                   <ShoppingCart className="size-12" />
                 </div>
               )}
@@ -121,7 +121,7 @@ export default function ProductDetail({
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="size-2 rounded-full bg-green-500 shadow-sm animate-[pulse_2s_ease-in-out_infinite]" />
+                  <div className="size-2 rounded-full bg-emerald-500 shadow-glow-green animate-breathe" />
                   <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">
                     TRACKING
                   </span>
@@ -140,7 +140,7 @@ export default function ProductDetail({
                     {product.currency} {parseFloat(product.current_price).toFixed(2)}
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    current price
+                    Current price
                   </span>
                   <DealScoreBadge
                     productId={product.id}
@@ -154,7 +154,7 @@ export default function ProductDetail({
                       <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/60">
                         Lowest
                       </span>
-                      <span className="text-emerald-600 font-bold">
+                      <span className="text-emerald-400 font-bold">
                         {product.currency}{" "}
                         {Math.min(...priceHistory.map((h) => parseFloat(h.price))).toFixed(2)}
                       </span>
@@ -163,7 +163,7 @@ export default function ProductDetail({
                       <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/60">
                         Highest
                       </span>
-                      <span className="text-red-600 font-bold">
+                      <span className="text-red-400 font-bold">
                         {product.currency}{" "}
                         {Math.max(...priceHistory.map((h) => parseFloat(h.price))).toFixed(2)}
                       </span>
@@ -192,16 +192,16 @@ export default function ProductDetail({
                 )}
               </div>
 
-              <div className="flex items-center gap-3 mt-6 pt-6 border-t border-border/50">
+              <div className="flex items-center gap-3 mt-6 pt-6 border-t border-white/[0.06]">
                 <Button
                   variant="outline"
                   size="sm"
                   asChild
-                  className="gap-2 cursor-pointer"
+                  className="gap-2"
                 >
                   <Link href={product.url} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="size-3.5" />
-                    View on Store
+                    Open in Store
                   </Link>
                 </Button>
                 <Button
@@ -209,7 +209,7 @@ export default function ProductDetail({
                   size="sm"
                   onClick={handleWatchlistToggle}
                   disabled={watchlistLoading}
-                  className={`gap-2 cursor-pointer ${
+                  className={`gap-2 ${
                     onWatchlist
                       ? "bg-emerald-600 hover:bg-emerald-700 text-white"
                       : ""
@@ -229,14 +229,14 @@ export default function ProductDetail({
                   size="sm"
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="gap-2 text-red-500 hover:text-white hover:bg-red-500 cursor-pointer"
+                  className="gap-2 text-red-400 hover:text-white hover:bg-red-500"
                 >
                   {deleting ? (
                     <Loader2 className="size-3.5 animate-spin" />
                   ) : (
                     <Trash2 className="size-3.5" />
                   )}
-                  Stop Tracking
+                  Remove
                 </Button>
               </div>
             </div>
@@ -247,23 +247,23 @@ export default function ProductDetail({
           {/* Left column: Chart + Analysis */}
           <div className="lg:col-span-3 space-y-6">
             {/* Price Chart */}
-            <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6">
-              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-border/50">
+            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
+              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-white/[0.06]">
                 <BarChart3 className="size-4 text-accent" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
-                  Price History
+                  Price History &amp; Analysis
                 </h2>
               </div>
               <PriceChart productId={product.id} />
             </div>
 
             {/* Deal Analysis */}
-            <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6">
+            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
               <DealAnalyzer productId={product.id} />
             </div>
 
             {/* Price Prediction */}
-            <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6">
+            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
               <PricePrediction
                 productId={product.id}
                 currentPrice={product.current_price}
@@ -274,11 +274,11 @@ export default function ProductDetail({
 
           {/* Right column: Alert management */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl border border-border/50 shadow-sm p-6 sticky top-28">
-              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-border/50">
+            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6 sticky top-28">
+              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-white/[0.06]">
                 <Activity className="size-4 text-accent" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
-                  Alert Settings
+                  Alerts &amp; History
                 </h2>
               </div>
               <SetPriceAlert
@@ -290,18 +290,18 @@ export default function ProductDetail({
 
               {/* Price History Summary */}
               {priceHistory.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-border/50">
+                <div className="mt-6 pt-4 border-t border-white/[0.06]">
                   <div className="flex items-center gap-2 mb-3">
                     <Clock className="size-3.5 text-muted-foreground" />
                     <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase font-mono">
-                      Recent History
+                      Recent Prices
                     </span>
                   </div>
                   <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
                     {[...priceHistory].reverse().slice(0, 10).map((entry) => (
                       <div
                         key={entry.id}
-                        className="flex items-center justify-between text-[11px] font-mono py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors"
+                        className="flex items-center justify-between text-[11px] font-mono py-1.5 px-2 rounded-md hover:bg-white/[0.04] transition-colors"
                       >
                         <span className="text-muted-foreground">
                           {new Date(entry.checked_at).toLocaleDateString()}

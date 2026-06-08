@@ -2,27 +2,27 @@
 @import "tw-animate-css";
 
 @theme inline {
-  --color-background: #f8fafc;
-  --color-foreground: #0f172a;
+  --color-background: #08090d;
+  --color-foreground: #e4e6eb;
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
-  --color-ring: #4f46e5;
-  --color-input: #e2e8f0;
-  --color-border: #cbd5e1;
+  --color-ring: #6366f1;
+  --color-input: #252836;
+  --color-border: #1f2230;
   --color-destructive: #ef4444;
   --color-accent-foreground: #ffffff;
   --color-accent: #6366f1;
-  --color-muted-foreground: #64748b;
-  --color-muted: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
-  --color-secondary: #f1f5f9;
+  --color-muted-foreground: #787e8c;
+  --color-muted: #111318;
+  --color-secondary-foreground: #c8cbd0;
+  --color-secondary: #1a1d26;
   --color-primary-foreground: #ffffff;
   --color-primary: #4f46e5;
-  --color-popover-foreground: #0f172a;
-  --color-popover: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-card: #ffffff;
-  
+  --color-popover-foreground: #e4e6eb;
+  --color-popover: #181b24;
+  --color-card-foreground: #e4e6eb;
+  --color-card: #12151b;
+
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -39,3 +39,35 @@
   }
 }
 
+@layer utilities {
+  .shadow-card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .shadow-elevated {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3), 0 0 1px rgba(99,102,241,0.1);
+  }
+  .shadow-glow-accent {
+    box-shadow: 0 0 20px rgba(99,102,241,0.2);
+  }
+  .shadow-glow-green {
+    box-shadow: 0 0 12px rgba(16,185,129,0.2);
+  }
+  .shadow-glow-red {
+    box-shadow: 0 0 12px rgba(239,68,68,0.2);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}

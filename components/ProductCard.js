@@ -43,17 +43,17 @@ export default function ProductCard({ product }) {
       className="group h-full flex flex-col"
     >
       <Card className="h-full flex flex-col justify-between">
-        <CardHeader className="pb-4 border-b border-border/50 flex-1">
+        <CardHeader className="pb-4 border-b border-white/[0.06] flex-1">
           <div className="flex gap-4">
             {product.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={product.image_url}
                 alt={product.name}
-                className="size-20 lg:size-24 object-cover rounded-md border border-border shadow-sm group-hover:scale-105 transition-all duration-300"
+                className="size-20 lg:size-24 object-cover rounded-md border border-white/[0.08] shadow-sm group-hover:scale-105 transition-all duration-500"
               />
             ) : (
-              <div className="size-20 lg:size-24 rounded-md border border-border bg-muted flex items-center justify-center text-xs text-muted-foreground p-2 text-center">
+              <div className="size-20 lg:size-24 rounded-md border border-white/[0.08] bg-muted flex items-center justify-center text-xs text-muted-foreground p-2 text-center">
                 NO_IMG
               </div>
             )}
@@ -61,7 +61,7 @@ export default function ProductCard({ product }) {
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="size-2 rounded-full bg-green-500 shadow-sm animate-[pulse_2s_ease-in-out_infinite]" />
+                  <div className="size-2 rounded-full bg-emerald-500 shadow-glow-green animate-breathe" />
                   <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">
                     ACTIVE
                   </span>
@@ -75,7 +75,7 @@ export default function ProductCard({ product }) {
                 <span className="text-2xl font-bold text-foreground">
                   {product.currency} {product.current_price}
                 </span>
-                <Badge variant="outline" className="gap-1 mt-1 text-[10px]">
+                <Badge variant="outline" className="gap-1 mt-1 text-[10px] border-white/10">
                   <div className="size-1.5 rounded-full bg-accent" />
                   TRACKING
                 </Badge>
@@ -101,13 +101,13 @@ export default function ProductCard({ product }) {
               variant="outline"
               size="sm"
               onClick={() => setShowChart(!showChart)}
-              className="gap-2 w-full text-xs hover:-translate-y-0.5 hover:shadow-sm"
+              className="gap-2 w-full text-xs"
             >
-              <div className={`size-1.5 rounded-full transition-colors ${showChart ? 'bg-accent' : 'bg-muted-foreground'} cursor-pointer`} />
+              <div className={`size-1.5 rounded-full transition-colors ${showChart ? 'bg-accent' : 'bg-muted-foreground'}`} />
               CHART
             </Button>
 
-            <Button variant="outline" size="sm" asChild className="gap-2 w-full text-xs hover:-translate-y-0.5 hover:shadow-sm cursor-pointer">
+            <Button variant="outline" size="sm" asChild className="gap-2 w-full text-xs">
               <Link href={product.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="size-3" />
                 VIEW
@@ -119,7 +119,7 @@ export default function ProductCard({ product }) {
               size="sm"
               onClick={handleDelete}
               disabled={deleting}
-              className="gap-2 w-full text-xs font-bold text-red-500 hover:text-white hover:bg-red-500 hover:-translate-y-0.5 hover:shadow-sm transition-all"
+              className="gap-2 w-full text-xs font-bold text-red-400 hover:text-white hover:bg-red-500 transition-all"
             >
               <Power className="size-3" />
               REMOVE
@@ -136,8 +136,8 @@ export default function ProductCard({ product }) {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <CardFooter className="flex flex-col items-start gap-4 border-t border-border/50 bg-muted/10 p-6">
-                 <div className="font-semibold text-xs uppercase text-muted-foreground w-full border-b border-border/50 pb-2">
+              <CardFooter className="flex flex-col items-start gap-4 border-t border-white/[0.06] bg-muted/30 p-6">
+                 <div className="font-semibold text-xs uppercase text-muted-foreground w-full border-b border-white/[0.06] pb-2">
                    PRICE HISTORY
                  </div>
                  <DealAnalyzer productId={product.id} />

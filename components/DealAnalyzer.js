@@ -20,18 +20,18 @@ function getIcon(label) {
 
 function getTone(label) {
   if (label === "Great time to buy") {
-    return "border-green-200 bg-green-50 text-green-700";
+    return "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-400";
   }
 
   if (label === "Wait for a lower price") {
-    return "border-amber-200 bg-amber-50 text-amber-700";
+    return "border-amber-500/30 bg-amber-500/[0.06] text-amber-400";
   }
 
   if (label === "Price recently increased") {
-    return "border-red-200 bg-red-50 text-red-700";
+    return "border-red-500/30 bg-red-500/[0.06] text-red-400";
   }
 
-  return "border-slate-200 bg-slate-50 text-slate-700";
+  return "border-white/10 bg-white/[0.03] text-muted-foreground";
 }
 
 export default function DealAnalyzer({ productId }) {
@@ -70,20 +70,20 @@ export default function DealAnalyzer({ productId }) {
 
   if (loading && !analysis) {
     return (
-      <div className="flex w-full items-center gap-2 rounded-md border border-border bg-background p-4 text-sm text-muted-foreground">
+      <div className="flex w-full items-center gap-2 rounded-md border border-white/10 bg-background p-4 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin" />
-        Analyzing deal...
+        Analyzing deal data...
       </div>
     );
   }
 
   if (error && !analysis) {
     return (
-      <div className="w-full rounded-md border border-red-200 bg-red-50 p-4">
-        <div className="text-sm font-semibold text-red-700">
+      <div className="w-full rounded-md border border-red-500/20 bg-red-500/[0.06] p-4">
+        <div className="text-sm font-semibold text-red-400">
           AI analysis unavailable
         </div>
-        <p className="mt-1 text-xs text-red-600">{error}</p>
+        <p className="mt-1 text-xs text-red-400/80">{error}</p>
         <Button
           type="button"
           variant="outline"
@@ -110,12 +110,12 @@ export default function DealAnalyzer({ productId }) {
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold">AI Deal Analyzer</h4>
+              <h4 className="text-sm font-bold">AI Deal Analysis</h4>
               <Badge variant="outline" className="text-[10px] uppercase">
                 {analysis.confidence} confidence
               </Badge>
               {source === "fallback" && (
-                <Badge variant="outline" className="text-[10px] uppercase">
+                <Badge variant="outline" className="text-[10px] uppercase bg-white/5">
                   rules
                 </Badge>
               )}

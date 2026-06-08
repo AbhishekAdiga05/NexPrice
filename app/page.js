@@ -24,7 +24,8 @@ import Footer from "@/components/Footer";
 async function LandingHero() {
   return (
     <section className="relative pt-28 pb-20 px-6 lg:px-12 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-accent/[0.03] via-transparent to-background pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent/[0.02] blur-3xl pointer-events-none" />
       <div className="max-w-7xl mx-auto relative">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
@@ -32,9 +33,9 @@ async function LandingHero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.175, 0.885, 0.32, 1.275] }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white shadow-sm rounded-full border border-border/50 mb-8 text-xs font-semibold text-accent">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-card shadow-sm rounded-full border border-white/[0.08] mb-8 text-xs font-semibold text-accent">
               <Activity className="size-3" />
-              Smart Shopping Assistant
+              Intelligent Price Intelligence
             </div>
 
             <h1 className="text-5xl lg:text-7xl font-extrabold text-foreground tracking-tight leading-[1.05] mb-6">
@@ -45,18 +46,18 @@ async function LandingHero() {
             </h1>
 
             <p className="text-lg text-muted-foreground mb-10 max-w-lg leading-relaxed">
-              Track prices from any e-commerce site. Get AI-powered predictions,
-              Deal Scores, and instant alerts when prices drop to your target.
+              AI-powered price tracking that predicts, analyzes, and alerts you
+              when the perfect buying moment arrives. Shop smarter, save more.
             </p>
 
             <div className="flex items-center gap-4 mb-10">
               <LandingCTA variant="primary" />
               <div className="flex items-center gap-6 text-sm font-medium text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <div className="size-2 rounded-full bg-accent" /> Free to use
+                  <div className="size-2 rounded-full bg-accent shadow-glow-accent" /> Free to use
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="size-2 rounded-full bg-accent" /> No CC
+                  <div className="size-2 rounded-full bg-accent shadow-glow-accent" /> No CC
                   required
                 </div>
               </div>
@@ -73,34 +74,38 @@ async function LandingHero() {
               {[
                 {
                   icon: Zap,
-                  label: "Real-time Price Tracking",
-                  desc: "Automated daily price checks",
-                  color: "text-indigo-500 bg-indigo-50 border-indigo-200",
+                  label: "Real-time Tracking",
+                  desc: "Automated daily price monitoring across all major retailers",
+                  bg: "bg-accent/[0.04] border-white/[0.06] text-accent",
+                  iconColor: "text-accent",
                 },
                 {
                   icon: Bell,
-                  label: "Target Price Alerts",
-                  desc: "Email notifications on drops",
-                  color: "text-emerald-500 bg-emerald-50 border-emerald-200",
+                  label: "Smart Alerts",
+                  desc: "Instant email notifications the moment your target hits",
+                  bg: "bg-emerald-500/[0.04] border-white/[0.06] text-emerald-400",
+                  iconColor: "text-emerald-400",
                 },
                 {
                   icon: Sparkles,
                   label: "Deal Score™",
-                  desc: "0-100 buy recommendation",
-                  color: "text-amber-500 bg-amber-50 border-amber-200",
+                  desc: "Proprietary 0-100 buy recommendation engine",
+                  bg: "bg-amber-500/[0.04] border-white/[0.06] text-amber-400",
+                  iconColor: "text-amber-400",
                 },
                 {
                   icon: Brain,
-                  label: "AI Price Prediction",
-                  desc: "Gemini-powered forecasts",
-                  color: "text-purple-500 bg-purple-50 border-purple-200",
+                  label: "AI Predictions",
+                  desc: "Gemini-powered forecasts with confidence analysis",
+                  bg: "bg-purple-500/[0.04] border-white/[0.06] text-purple-400",
+                  iconColor: "text-purple-400",
                 },
               ].map((card, i) => (
                 <div
                   key={card.label}
-                  className={`rounded-xl border p-5 ${card.color} backdrop-blur-sm`}
+                  className={`rounded-xl border ${card.bg} p-5 hover:-translate-y-0.5 transition-all duration-300`}
                 >
-                  <card.icon className="size-5 mb-3" />
+                  <card.icon className={`size-5 mb-3 ${card.iconColor}`} />
                   <h3 className="text-sm font-bold text-foreground mb-1">
                     {card.label}
                   </h3>
@@ -120,28 +125,28 @@ function HowItWorksSection() {
     {
       number: "01",
       icon: Search,
-      title: "Find Your Product",
+      title: "Add Any Product",
       description:
-        "Copy the URL of any product from Amazon, Walmart, or major retailers. Paste it into NexPrice to start tracking.",
+        "Paste any product URL from Amazon, Walmart, or thousands of retailers. NexPrice instantly begins capturing pricing data.",
     },
     {
       number: "02",
       icon: BarChart3,
-      title: "We Track It Daily",
+      title: "We Track Relentlessly",
       description:
-        "Our system checks the price automatically every day. Build a complete price history with charts and trends.",
+        "Our system monitors prices daily, building a comprehensive history with interactive charts. Every fluctuation is recorded.",
     },
     {
       number: "03",
       icon: Bell,
-      title: "Get Smart Alerts",
+      title: "Strike at the Right Moment",
       description:
-        "Set target prices and get instant email alerts when the price drops. Our Deal Score tells you when to buy.",
+        "Set your target price and let our Deal Score algorithm guide you. Get instant alerts when the timing is perfect.",
     },
   ];
 
   return (
-    <section className="py-24 px-6 lg:px-12 bg-muted/50 border-t border-border/50">
+    <section className="py-24 px-6 lg:px-12 bg-muted/50 border-t border-white/[0.06]">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -153,10 +158,10 @@ function HowItWorksSection() {
             How It Works
           </span>
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
-            Three simple steps to start saving
+            Start saving in three simple moves
           </h2>
           <p className="text-muted-foreground mt-3 max-w-lg mx-auto">
-            From URL to savings in minutes. No account setup hassle.
+            From product URL to real savings — no account setup, no credit card, no hassle.
           </p>
         </motion.div>
 
@@ -170,11 +175,11 @@ function HowItWorksSection() {
               transition={{ delay: index * 0.15, duration: 0.4 }}
               className="relative"
             >
-              <div className="bg-white rounded-2xl p-8 shadow-sm border border-border/50 h-full relative">
-                <span className="text-5xl font-black text-accent/10 absolute top-4 right-6 select-none">
+              <div className="bg-card rounded-2xl p-8 shadow-card border border-white/[0.06] h-full relative hover:shadow-elevated hover:-translate-y-0.5 transition-all duration-300">
+                <span className="text-5xl font-black text-accent/[0.06] absolute top-4 right-6 select-none">
                   {step.number}
                 </span>
-                <div className="size-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6">
+                <div className="size-14 rounded-xl bg-accent/[0.08] flex items-center justify-center mb-6">
                   <step.icon className="size-6 text-accent" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-3">
@@ -198,49 +203,49 @@ function FeaturesSection() {
       icon: Zap,
       title: "Price Tracking",
       description:
-        "Track unlimited products from any e-commerce site. Automatic daily price checks with full history.",
+        "Monitor unlimited products across any e-commerce site with automatic daily price snapshots and full historical records.",
     },
     {
       icon: Bell,
       title: "Smart Alerts",
       description:
-        "Set target prices and get instant email notifications when prices drop. Never miss a deal again.",
+        "Set your ideal price and receive instant email notifications the moment it hits. Precision timing, zero effort.",
     },
     {
       icon: Sparkles,
       title: "Deal Score™",
       description:
-        "Proprietary 0-100 algorithm that tells you if it's a good time to buy based on 4 weighted signals.",
+        "Proprietary 0-100 algorithm analyzing four weighted signals to tell you exactly when to pull the trigger.",
     },
     {
       icon: Brain,
       title: "AI Predictions",
       description:
-        "Gemini-powered price forecasts showing likely future prices, confidence levels, and timeframes.",
+        "Gemini-powered forecasts that predict future prices with confidence levels and estimated timeframes.",
     },
     {
       icon: ListChecks,
       title: "Smart Watchlist",
       description:
-        "Prioritized shopping list ranked by urgency, Deal Score, and your own priority settings.",
+        "A prioritized shopping list ranked by buying urgency, Deal Score, and your personal preferences.",
     },
     {
       icon: Wallet,
       title: "Savings Tracking",
       description:
-        "Every triggered alert calculates money saved. See your total savings across all products.",
+        "Every triggered alert automatically calculates your savings. Watch your total grow across all products.",
     },
     {
       icon: TrendingUp,
       title: "Insights Dashboard",
       description:
-        "Central hub showing top deals, savings totals, and recent alert activity at a glance.",
+        "Your command center showing top deals, total savings, and real-time alert activity at a glance.",
     },
     {
       icon: Activity,
       title: "Price History",
       description:
-        "Interactive charts with low/high/average markers. Spot trends and make informed decisions.",
+        "Interactive charts with low, high, and average markers. Spot patterns and make data-driven decisions.",
     },
   ];
 
@@ -257,10 +262,10 @@ function FeaturesSection() {
             Everything You Need
           </span>
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
-            Smart features for smarter shopping
+            A complete arsenal for smarter shopping
           </h2>
           <p className="text-muted-foreground mt-3 max-w-lg mx-auto">
-            Not just a price tracker — a complete shopping assistant.
+            More than a price tracker — your intelligent shopping co-pilot.
           </p>
         </motion.div>
 
@@ -272,9 +277,9 @@ function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05, duration: 0.3 }}
-              className="bg-white rounded-xl border border-border/50 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+              className="bg-card rounded-xl border border-white/[0.06] p-6 hover:shadow-elevated hover:-translate-y-0.5 transition-all duration-300 group"
             >
-              <div className="size-10 rounded-lg bg-accent/10 flex items-center justify-center mb-4 text-accent group-hover:bg-accent group-hover:text-white transition-colors duration-200">
+              <div className="size-10 rounded-lg bg-accent/[0.08] flex items-center justify-center mb-4 text-accent group-hover:bg-accent group-hover:text-white transition-all duration-300">
                 <feature.icon className="size-5" />
               </div>
               <h3 className="text-sm font-bold text-foreground mb-2">
@@ -293,7 +298,7 @@ function FeaturesSection() {
 
 function CTASection() {
   return (
-    <section className="py-24 px-6 lg:px-12 bg-gradient-to-b from-accent/5 to-transparent border-t border-border/50">
+    <section className="py-24 px-6 lg:px-12 bg-gradient-to-b from-accent/[0.03] to-transparent border-t border-white/[0.06]">
       <div className="max-w-7xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -304,24 +309,23 @@ function CTASection() {
             Start Saving Today
           </span>
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight mb-4">
-            Ready to make smarter purchases?
+            Ready to shop with unfair advantage?
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto mb-8">
-            Join NexPrice and never overpay again. Free to start, no credit card
-            required.
+            Join thousands of savvy shoppers who never overpay. Free to start, no credit card required.
           </p>
           <div className="flex items-center justify-center gap-4">
             <LandingCTA variant="secondary" />
             <div className="flex items-center gap-6 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5">
-                <div className="size-1.5 rounded-full bg-green-500" /> Free
+                <div className="size-1.5 rounded-full bg-emerald-500 shadow-glow-green" /> Free
                 forever
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-1.5 rounded-full bg-green-500" /> No CC
+                <div className="size-1.5 rounded-full bg-emerald-500 shadow-glow-green" /> No CC
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-1.5 rounded-full bg-green-500" /> Cancel
+                <div className="size-1.5 rounded-full bg-emerald-500 shadow-glow-green" /> Cancel
                 anytime
               </div>
             </div>
@@ -342,25 +346,33 @@ async function DashboardStats() {
       label: "Products Tracked",
       value: insights.productCount,
       icon: Activity,
-      color: "text-accent bg-accent/5 border-accent/20",
+      cardBg: "bg-card border-white/[0.06]",
+      iconBg: "bg-accent/[0.08] border-accent/20",
+      iconColor: "text-accent",
     },
     {
       label: "Active Alerts",
       value: insights.activeCount,
       icon: Target,
-      color: "text-indigo-600 bg-indigo-50 border-indigo-200",
+      cardBg: "bg-card border-white/[0.06]",
+      iconBg: "bg-indigo-500/[0.08] border-indigo-500/20",
+      iconColor: "text-indigo-400",
     },
     {
       label: "Total Savings",
       value: insights.totalSavingsFormatted,
       icon: Wallet,
-      color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+      cardBg: "bg-card border-white/[0.06]",
+      iconBg: "bg-emerald-500/[0.08] border-emerald-500/20",
+      iconColor: "text-emerald-400",
     },
     {
       label: "Triggered",
       value: insights.triggeredCount,
       icon: Bell,
-      color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+      cardBg: "bg-card border-white/[0.06]",
+      iconBg: "bg-emerald-500/[0.08] border-emerald-500/20",
+      iconColor: "text-emerald-400",
     },
   ];
 
@@ -369,14 +381,14 @@ async function DashboardStats() {
       {stats.map((s) => (
         <div
           key={s.label}
-          className={`rounded-xl border p-5 ${s.color} flex items-center gap-4`}
+          className={`rounded-xl border ${s.cardBg} p-5 flex items-center gap-4 shadow-card`}
         >
-          <div className="size-12 rounded-xl bg-white/60 border border-current/20 flex items-center justify-center shrink-0">
-            <s.icon className="size-5" />
+          <div className={`size-12 rounded-xl border ${s.iconBg} flex items-center justify-center shrink-0`}>
+            <s.icon className={`size-5 ${s.iconColor}`} />
           </div>
           <div>
             <div className="text-2xl font-bold font-mono">{s.value}</div>
-            <div className="text-[11px] font-mono font-bold uppercase tracking-wider opacity-70">
+            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
               {s.label}
             </div>
           </div>
@@ -389,32 +401,32 @@ async function DashboardStats() {
 function QuickActions() {
   const actions = [
     {
-      label: "View Insights",
+      label: "Insights",
       href: "/insights",
       icon: TrendingUp,
       desc: "Deal scores & savings",
-      color: "border-accent/20 text-accent hover:bg-accent/5",
+      styles: "text-accent border-white/[0.08] hover:bg-accent/[0.06] hover:border-accent/30",
     },
     {
       label: "Manage Alerts",
       href: "/alerts",
       icon: Bell,
       desc: "Active & triggered alerts",
-      color: "border-indigo-200 text-indigo-600 hover:bg-indigo-50",
+      styles: "text-indigo-400 border-white/[0.08] hover:bg-indigo-500/[0.06] hover:border-indigo-500/30",
     },
     {
       label: "Watchlist",
       href: "/watchlist",
       icon: ListChecks,
       desc: "Buy priority rankings",
-      color: "border-emerald-200 text-emerald-600 hover:bg-emerald-50",
+      styles: "text-emerald-400 border-white/[0.08] hover:bg-emerald-500/[0.06] hover:border-emerald-500/30",
     },
     {
       label: "Settings",
       href: "/settings",
       icon: Activity,
       desc: "Email preferences",
-      color: "border-slate-200 text-slate-600 hover:bg-slate-50",
+      styles: "text-muted-foreground border-white/[0.08] hover:bg-white/[0.04] hover:border-white/20",
     },
   ];
 
@@ -424,12 +436,12 @@ function QuickActions() {
         <Link
           key={action.href}
           href={action.href}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${action.color} transition-all shrink-0 hover:-translate-y-0.5 hover:shadow-sm`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${action.styles} transition-all duration-200 shrink-0 hover:-translate-y-0.5 shadow-card`}
         >
           <action.icon className="size-4" />
           <div className="text-left">
             <div className="text-xs font-bold">{action.label}</div>
-            <div className="text-[10px] opacity-70">{action.desc}</div>
+            <div className="text-[10px] text-muted-foreground">{action.desc}</div>
           </div>
         </Link>
       ))}
@@ -461,7 +473,7 @@ export default async function Home() {
     <main className="min-h-screen font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
         {/* Welcome */}
-        <div className="mb-10 pb-6 border-b-2 border-border/40">
+        <div className="mb-10 pb-6 border-b border-white/[0.08]">
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
               Welcome back
@@ -471,7 +483,7 @@ export default async function Home() {
             </h1>
           </div>
           <p className="text-sm text-muted-foreground">
-            Here&apos;s what&apos;s happening with your tracked products.
+            Your price tracking command center — here&apos;s everything happening with your products.
           </p>
         </div>
 
@@ -482,17 +494,17 @@ export default async function Home() {
         <QuickActions />
 
         {/* Add Product */}
-        <div className="mb-10 bg-white rounded-2xl border border-border/50 shadow-sm p-6 lg:p-8">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/50">
-            <div className="p-2 bg-accent/10 rounded-lg text-accent">
+        <div className="mb-10 bg-card rounded-2xl border border-white/[0.06] shadow-card p-6 lg:p-8">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/[0.06]">
+            <div className="p-2 bg-accent/[0.08] rounded-lg text-accent">
               <Zap className="size-5" />
             </div>
             <div>
               <h2 className="font-semibold text-lg text-foreground">
-                Add New Product
+                Track a New Product
               </h2>
               <p className="text-xs text-muted-foreground">
-                Paste a product URL to start tracking its price
+                Paste any product URL and let NexPrice monitor it for the best deals
               </p>
             </div>
           </div>
@@ -502,10 +514,10 @@ export default async function Home() {
         {/* Products Grid */}
         {products.length > 0 && (
           <section>
-            <div className="flex items-center gap-4 mb-8 pb-4 border-b-2 border-border/40">
+            <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/[0.08]">
               <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-3">
                 <Activity className="size-5 text-accent" />
-                Your Tracked Products
+                Your Products
               </h2>
               <span className="text-xs font-mono text-muted-foreground bg-muted px-2.5 py-1 rounded-full ml-auto">
                 {products.length} product{products.length !== 1 ? "s" : ""}
@@ -522,16 +534,16 @@ export default async function Home() {
 
         {/* Empty state for dashboard with no products yet */}
         {products.length === 0 && (
-          <div className="text-center py-20 rounded-2xl border border-dashed border-border/50 bg-muted/30">
+          <div className="text-center py-20 rounded-2xl border border-dashed border-white/[0.08] bg-muted/30">
             <div className="size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6">
               <Search className="size-8 text-muted-foreground" />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              No products yet
+              No products tracked yet
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Add your first product URL above to start tracking prices,
-              receiving alerts, and discovering great deals.
+              Paste a product URL above to start monitoring prices, set alerts,
+              and unlock AI-powered deal insights.
             </p>
           </div>
         )}

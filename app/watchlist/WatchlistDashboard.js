@@ -20,9 +20,9 @@ import { toast } from "sonner";
 
 function BuyPriorityBadge({ score }) {
   let color;
-  if (score >= 70) color = "bg-emerald-100 text-emerald-700 border-emerald-200";
-  else if (score >= 45) color = "bg-indigo-100 text-indigo-700 border-indigo-200";
-  else color = "bg-slate-100 text-slate-600 border-slate-200";
+  if (score >= 70) color = "bg-emerald-500/[0.08] text-emerald-400 border-emerald-500/30";
+  else if (score >= 45) color = "bg-indigo-500/[0.08] text-indigo-400 border-indigo-500/30";
+  else color = "bg-white/[0.04] text-muted-foreground border-white/[0.08]";
 
   return (
     <span
@@ -36,11 +36,11 @@ function BuyPriorityBadge({ score }) {
 
 function DealScoreBadgeSmall({ score, tier }) {
   const colors = {
-    great: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    good: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    fair: "bg-amber-50 text-amber-700 border-amber-200",
-    poor: "bg-red-50 text-red-700 border-red-200",
-    none: "bg-slate-50 text-slate-500 border-slate-200",
+    great: "bg-emerald-500/[0.08] text-emerald-400 border-emerald-500/30",
+    good: "bg-indigo-500/[0.08] text-indigo-400 border-indigo-500/30",
+    fair: "bg-amber-500/[0.08] text-amber-400 border-amber-500/30",
+    poor: "bg-red-500/[0.08] text-red-400 border-red-500/30",
+    none: "bg-white/[0.04] text-muted-foreground border-white/[0.08]",
   };
 
   return (
@@ -86,17 +86,17 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
   );
 
   return (
-    <div className="group relative bg-white rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-200 p-4">
+    <div className="group relative bg-card rounded-xl border border-white/[0.06] shadow-card hover:shadow-elevated transition-all duration-300 p-4">
       <div className="flex items-center gap-4">
         {item.product?.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={item.product.image_url}
             alt={item.product.name}
-            className="size-14 rounded-lg object-cover border border-border shrink-0"
+            className="size-14 rounded-lg object-cover border border-white/[0.08] shrink-0"
           />
         ) : (
-          <div className="size-14 rounded-lg border border-border bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
+          <div className="size-14 rounded-lg border border-white/[0.08] bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
             NO IMG
           </div>
         )}
@@ -138,19 +138,19 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
               <div className="relative">
                 <button
                   onClick={() => setPriorityOpen(!priorityOpen)}
-                  className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/[0.08] text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
                 >
                   {item.priority}
                 </button>
                 {priorityOpen && (
-                  <div className="absolute top-full left-0 mt-1 bg-white rounded-lg border border-border shadow-lg z-10 py-1 min-w-[100px]">
+                  <div className="absolute top-full left-0 mt-1 bg-popover rounded-lg border border-white/10 shadow-elevated z-10 py-1 min-w-[100px]">
                     {["high", "medium", "low"].map((p) => (
                       <button
                         key={p}
                         onClick={() => handlePriority(p)}
-                        className={`block w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors ${
+                        className={`block w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-white/[0.04] transition-colors ${
                           item.priority === p
-                            ? "text-accent bg-accent/5"
+                            ? "text-accent bg-accent/[0.08]"
                             : "text-foreground"
                         }`}
                       >
@@ -165,7 +165,7 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
             <button
               onClick={handleRemove}
               disabled={removing}
-              className="size-7 rounded-full flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-colors"
+              className="size-7 rounded-full flex items-center justify-center text-muted-foreground hover:bg-red-500/[0.1] hover:text-red-400 transition-colors"
               title="Remove from watchlist"
             >
               {removing ? (
@@ -202,12 +202,12 @@ export default function WatchlistDashboard({ items: initialItems }) {
     <main className="min-h-screen relative overflow-hidden font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-10 pb-6 border-b-2 border-border/40">
+        <div className="flex items-center justify-between mb-10 pb-6 border-b border-white/[0.08]">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <Link
                 href="/"
-                className="size-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="size-8 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
               >
                 <ArrowLeft className="size-4" />
               </Link>
@@ -217,22 +217,21 @@ export default function WatchlistDashboard({ items: initialItems }) {
               </h1>
             </div>
             <p className="text-sm text-muted-foreground ml-11">
-              Ranked by urgency — items you&apos;ve flagged, ordered by Buy
-              Priority Score.
+              Items you&apos;ve flagged, ranked by buying urgency and deal quality.
             </p>
           </div>
         </div>
 
         {/* Stats bar */}
         <div className="flex items-center gap-4 mb-8">
-          <div className="rounded-xl border border-border/50 bg-white px-5 py-3">
+          <div className="rounded-xl border border-white/[0.06] bg-card px-5 py-3 shadow-card">
             <div className="text-2xl font-bold font-mono">{items.length}</div>
             <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
               Items
             </div>
           </div>
           {items.filter((i) => i.priority === "high").length > 0 && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-emerald-700">
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.06] px-5 py-3 text-emerald-400">
               <div className="text-2xl font-bold font-mono">
                 {items.filter((i) => i.priority === "high").length}
               </div>
@@ -242,7 +241,7 @@ export default function WatchlistDashboard({ items: initialItems }) {
             </div>
           )}
           {items.filter((i) => i.buyPriority >= 70).length > 0 && (
-            <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-5 py-3 text-indigo-700">
+            <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/[0.06] px-5 py-3 text-indigo-400">
               <div className="text-2xl font-bold font-mono">
                 {items.filter((i) => i.buyPriority >= 70).length}
               </div>
@@ -256,15 +255,14 @@ export default function WatchlistDashboard({ items: initialItems }) {
         {/* Empty state */}
         {items.length === 0 ? (
           <div className="text-center py-20">
-            <div className="size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6">
-              <ListChecks className="size-8 text-muted-foreground" />
-            </div>
+          <div className="size-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6 border border-white/[0.06]">
+            <ListChecks className="size-8 text-muted-foreground" />
+          </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              Your watchlist is empty
+              Nothing on your watchlist yet
             </h3>
             <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
-              Add products you&apos;re considering buying. We&apos;ll rank them
-              by urgency and deal quality.
+              Flag products you&apos;re considering and we&apos;ll rank them by buying urgency, deal score, and your priorities.
             </p>
             <Button asChild className="cursor-pointer">
               <Link href="/">

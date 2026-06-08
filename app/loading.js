@@ -12,21 +12,21 @@ export default function RootLoading() {
           {/* Stats skeleton */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="h-24 rounded-xl bg-muted border border-border/50"
-              />
-            ))}
-          </div>
-
-          {/* Content skeleton */}
-          <div className="space-y-4">
-            <div className="h-6 w-48 bg-muted rounded-lg" />
-            <div className="grid gap-6 md:grid-cols-2">
-              {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="h-48 rounded-xl bg-muted border border-border/50"
+                  className="h-24 rounded-xl bg-muted border border-white/[0.06]"
+                />
+              ))}
+            </div>
+
+            {/* Content skeleton */}
+            <div className="space-y-4">
+              <div className="h-6 w-48 bg-muted rounded-lg" />
+              <div className="grid gap-6 md:grid-cols-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="h-48 rounded-xl bg-muted border border-white/[0.06]"
                 />
               ))}
             </div>

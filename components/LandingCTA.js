@@ -10,9 +10,9 @@ export default function LandingCTA({ variant = "primary" }) {
   const base =
     "inline-flex items-center gap-2 rounded-xl font-bold text-sm transition-all cursor-pointer";
   const primary =
-    "h-14 px-8 bg-accent text-white hover:bg-accent/90 shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5";
+    "h-14 px-8 bg-accent text-white hover:bg-accent/90 shadow-lg shadow-glow-accent hover:shadow-xl hover:shadow-glow-accent hover:-translate-y-0.5";
   const secondary =
-    "h-12 px-8 bg-accent text-white hover:bg-accent/90 shadow-lg shadow-accent/25 hover:shadow-xl hover:-translate-y-0.5";
+    "h-12 px-8 bg-accent text-white hover:bg-accent/90 shadow-lg shadow-glow-accent hover:shadow-xl hover:-translate-y-0.5";
 
   return (
     <>
@@ -20,7 +20,7 @@ export default function LandingCTA({ variant = "primary" }) {
         onClick={() => setShowAuth(true)}
         className={`${base} ${variant === "primary" ? primary : secondary}`}
       >
-        Get Started Free
+        Start Saving Free
         <ArrowRight className="size-4" />
       </button>
       <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />

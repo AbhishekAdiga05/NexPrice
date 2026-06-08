@@ -26,7 +26,7 @@ export default function AuthButton({ user }) {
         onClick={() => setShowAuthModal(true)}
         variant="default"
         size="sm"
-        className="bg-muted text-foreground border border-border/50 shadow-sm gap-2 group text-xs font-semibold hover:bg-background"
+        className="bg-muted text-foreground border border-white/10 shadow-sm gap-2 group text-xs font-semibold hover:bg-card"
       >
         <Power className="size-3 text-accent group-hover:scale-110 transition-transform" />
         SIGN IN
