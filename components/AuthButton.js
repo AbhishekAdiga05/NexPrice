@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signOut } from "@/app/actions";
 import AuthModal from "./AuthModal";
 import { Button } from "@/components/ui/button";
-import { Power, LogOut } from "lucide-react";
+import { LogOut, Power } from "lucide-react";
 
 export default function AuthButton({ user }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -12,9 +12,9 @@ export default function AuthButton({ user }) {
   if (user) {
     return (
       <form action={signOut}>
-        <Button variant="ghost" size="sm" type="submit" className="gap-2 group text-muted-foreground hover:text-accent font-mono text-xs">
-          <LogOut className="w-4 h-4" />
-          SIGN OUT
+        <Button variant="ghost" size="sm" type="submit" className="gap-2 text-gray-500 hover:text-orange-600 text-xs">
+          <LogOut className="size-3.5" />
+          Sign Out
         </Button>
       </form>
     );
@@ -26,10 +26,10 @@ export default function AuthButton({ user }) {
         onClick={() => setShowAuthModal(true)}
         variant="default"
         size="sm"
-        className="bg-muted text-foreground border border-white/10 shadow-sm gap-2 group text-xs font-semibold hover:bg-card"
+        className="gap-2 text-xs cursor-pointer"
       >
-        <Power className="size-3 text-accent group-hover:scale-110 transition-transform" />
-        SIGN IN
+        <Power className="size-3" />
+        Sign In
       </Button>
 
       <AuthModal

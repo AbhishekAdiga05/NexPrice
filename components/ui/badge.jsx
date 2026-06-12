@@ -5,18 +5,14 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-sm border px-2.5 py-0.5 text-xs font-mono uppercase tracking-widest font-bold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1.5 [&>svg]:pointer-events-none transition-all shadow-sm",
+  "inline-flex items-center justify-center rounded px-2 py-0.5 text-[10px] font-mono font-semibold w-fit whitespace-nowrap shrink-0 [&>svg]:size-2.5 gap-1 [&>svg]:pointer-events-none",
   {
     variants: {
       variant: {
-        default:
-          "border-white/20 bg-primary text-primary-foreground",
-        secondary:
-          "border-white/10 bg-background text-muted-foreground",
-        destructive:
-          "border-transparent bg-destructive text-white",
-        outline:
-          "text-foreground border-white/10",
+        default: "bg-orange-50 text-orange-700 border border-orange-200",
+        secondary: "bg-gray-100 text-gray-600 border border-gray-200",
+        destructive: "bg-red-50 text-red-700 border border-red-200",
+        outline: "text-gray-500 border border-gray-200",
       },
     },
     defaultVariants: {

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import SetPriceAlert from "@/components/SetPriceAlert";
 import PriceChart from "@/components/PriceChart";
-import DealAnalyzer from "@/components/DealAnalyzer";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import PricePrediction from "@/components/PricePrediction";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import {
   addToWatchlist,
   removeFromWatchlist,
 } from "@/app/actions";
+import Image from "next/image";
 import {
   ArrowLeft,
   ExternalLink,
@@ -33,6 +33,7 @@ export default function ProductDetail({
   product,
   priceHistory,
   watchlistEntry,
+  trend,
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
@@ -104,10 +105,12 @@ export default function ProductDetail({
             {/* Image */}
             <div className="shrink-0">
               {product.image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={product.image_url}
                   alt={product.name}
+                  width={256}
+                  height={256}
+                  unoptimized
                   className="w-full md:w-52 lg:w-64 rounded-xl border border-white/[0.08] object-cover aspect-square"
                 />
               ) : (
@@ -257,17 +260,13 @@ export default function ProductDetail({
               <PriceChart productId={product.id} />
             </div>
 
-            {/* Deal Analysis */}
-            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
-              <DealAnalyzer productId={product.id} />
-            </div>
-
             {/* Price Prediction */}
             <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
               <PricePrediction
-                productId={product.id}
-                currentPrice={product.current_price}
+                trend={trend}
+                currentPrice={parseFloat(product.current_price)}
                 currency={product.currency}
+                priceHistory={priceHistory}
               />
             </div>
           </div>

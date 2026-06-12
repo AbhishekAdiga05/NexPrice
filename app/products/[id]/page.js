@@ -4,6 +4,7 @@ import {
   getPriceHistory,
   isOnWatchlist,
 } from "@/app/actions";
+import { calculateTrendIndicator } from "@/lib/deal-score";
 import ProductDetail from "./ProductDetail";
 import { redirect } from "next/navigation";
 
@@ -37,12 +38,17 @@ export default async function ProductPage({ params }) {
 
   const priceHistory = await getPriceHistory(id);
   const watchlistEntry = await isOnWatchlist(id);
+  const trend = calculateTrendIndicator(
+    parseFloat(product.current_price),
+    priceHistory
+  );
 
   return (
     <ProductDetail
       product={product}
       priceHistory={priceHistory}
       watchlistEntry={watchlistEntry}
+      trend={trend}
     />
   );
 }

@@ -2,157 +2,169 @@
 
 import { useState } from "react";
 import { deleteProduct } from "@/app/actions";
-import DealAnalyzer from "./DealAnalyzer";
 import PriceChart from "./PriceChart";
 import SetPriceAlert from "./SetPriceAlert";
 import DealScoreBadge from "./DealScoreBadge";
-import { Button } from "@/components/ui/button";
-import {
-  ExternalLink,
-  Trash2,
-  ChevronDown,
-  ChevronUp,
-  BarChart3,
-} from "lucide-react";
+import Image from "next/image";
+import { Trash2, BarChart3, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export default function ProductCard({ product }) {
   const [showChart, setShowChart] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm("Stop tracking this product?")) return;
     setDeleting(true);
+    setShowDeleteDialog(false);
     await deleteProduct(product.id);
   };
 
+  const activeAlert = product.price_alerts?.find(
+    (a) => a.status === "active"
+  );
+  const targetPrice = activeAlert
+    ? parseFloat(activeAlert.target_price)
+    : null;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      layout
-      className="group"
-    >
-      <div className="bg-card rounded-xl border border-white/[0.06] shadow-soft hover:shadow-panel transition-all duration-300 overflow-hidden">
-        {/* Main row */}
-        <div className="p-3 md:p-4">
-          <div className="flex gap-3">
-            {/* Product image */}
-            <Link href={`/products/${product.id}`} className="shrink-0">
-              {product.image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  className="size-10 md:size-11 rounded-lg object-cover border border-white/[0.08] group-hover:ring-1 group-hover:ring-accent/30 transition-all"
-                />
-              ) : (
-                <div className="size-10 md:size-11 rounded-lg border border-white/[0.08] bg-muted flex items-center justify-center text-[10px] text-muted-foreground">
-                  N/A
-                </div>
-              )}
-            </Link>
-
-            {/* Info column */}
-            <div className="flex-1 min-w-0">
-              {/* Header row: name + status + delete */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <div className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span className="text-[9px] font-mono font-semibold text-muted-foreground/60 uppercase tracking-wider leading-none">
-                      Active
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground leading-snug line-clamp-1 group-hover:text-accent transition-colors">
-                    <Link href={`/products/${product.id}`}>
-                      {product.name}
-                    </Link>
-                  </h3>
-                </div>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="size-7 rounded-md flex items-center justify-center text-muted-foreground/40 hover:text-red-400 hover:bg-red-500/[0.08] transition-colors shrink-0"
-                  title="Stop tracking"
-                >
-                  <Trash2 className="size-3" />
-                </button>
+    <motion.div layout className="group">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-elevated transition-shadow overflow-hidden">
+        <Link
+          href={`/dashboard/product/${product.id}`}
+          className="flex items-center gap-3 p-3"
+        >
+          <div className="size-10 rounded border border-gray-100 overflow-hidden shrink-0 bg-gray-50">
+            {product.image_url ? (
+              <Image
+                src={product.image_url}
+                alt={product.name}
+                width={40}
+                height={40}
+                unoptimized
+                className="size-full object-cover"
+              />
+            ) : (
+              <div className="size-full flex items-center justify-center text-[10px] text-gray-400">
+                N/A
               </div>
-
-              {/* Price row */}
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5">
-                <span className="text-base md:text-lg font-bold font-mono text-foreground tracking-tight leading-none">
-                  {product.currency} {product.current_price}
-                </span>
-                <DealScoreBadge
-                  productId={product.id}
-                  currentPrice={product.current_price}
-                />
-              </div>
-
-              {/* SetPriceAlert inline */}
-              <div className="mt-2">
-                <SetPriceAlert
-                  productId={product.id}
-                  currentPrice={product.current_price}
-                  currency={product.currency}
-                  alerts={product.price_alerts}
-                />
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-white/[0.04]">
-            <button
-              onClick={() => setShowChart(!showChart)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono font-semibold text-muted-foreground/70 hover:text-accent hover:bg-accent/[0.06] transition-colors border border-transparent hover:border-accent/20"
-            >
-              <BarChart3 className="size-3" />
-              {showChart ? "Hide" : "Chart"}
-            </button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-1 group-hover:text-orange-600 transition-colors">
+                {product.name}
+              </h3>
+              <DealScoreBadge
+                productId={product.id}
+                currentPrice={product.current_price}
+              />
+            </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="h-7 px-2.5 text-[10px] font-mono font-semibold text-muted-foreground/70 hover:text-foreground"
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm font-bold font-mono text-gray-900 tracking-tight">
+                {product.currency} {parseFloat(product.current_price).toFixed(2)}
+              </span>
+              {targetPrice && (
+                <>
+                  <span className="text-gray-200 mx-0.5">·</span>
+                  <span className="text-xs font-mono text-gray-400">
+                    Target: {product.currency} {targetPrice.toFixed(2)}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </Link>
+
+        {/* Action row */}
+        <div className="flex items-center gap-0.5 px-3 pb-2.5">
+          <button
+            onClick={() => setShowChart(!showChart)}
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+          >
+            <BarChart3 className="size-3" />
+            {showChart ? "Hide" : "Chart"}
+          </button>
+
+          <div className="flex-1 min-w-0 px-2">
+            <SetPriceAlert
+              productId={product.id}
+              currentPrice={product.current_price}
+              currency={product.currency}
+              alerts={product.price_alerts}
+            />
+          </div>
+
+          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Link
+              href={product.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="size-7 rounded flex items-center justify-center text-gray-300 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              title="Open in store"
+              onClick={(e) => e.stopPropagation()}
             >
-              <Link href={product.url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="size-3" />
-                View
-              </Link>
-            </Button>
+              <ExternalLink className="size-3" />
+            </Link>
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={deleting}
+              className="size-7 rounded flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+              title="Stop tracking"
+            >
+              <Trash2 className="size-3" />
+            </button>
           </div>
         </div>
 
-        {/* Expandable chart section */}
         <AnimatePresence>
           {showChart && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="overflow-hidden border-t border-white/[0.04] bg-muted/20"
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="overflow-hidden border-t border-gray-100 bg-gray-50/50"
             >
-              <div className="p-4 md:p-5 space-y-4">
-                <div className="flex items-center gap-2 pb-3 border-b border-white/[0.04]">
-                  <BarChart3 className="size-3.5 text-accent" />
-                  <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/70">
-                    Price History & Analysis
-                  </span>
-                </div>
-                <DealAnalyzer productId={product.id} />
+              <div className="p-3">
                 <PriceChart productId={product.id} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>Stop tracking?</DialogTitle>
+            <DialogDescription>
+              Remove <span className="font-medium text-gray-900">{product.name}</span>?
+              All history and alerts will be deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+              {deleting ? "Deleting\u2026" : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

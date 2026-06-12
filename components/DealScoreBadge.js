@@ -6,11 +6,11 @@ import { calculateDealScore } from "@/lib/deal-score";
 import { Loader2, TrendingDown, TrendingUp, Minus } from "lucide-react";
 
 const TIER_STYLES = {
-  great: "bg-emerald-500/[0.08] border-emerald-500/30 text-emerald-400",
-  good: "bg-indigo-500/[0.08] border-indigo-500/30 text-indigo-400",
-  fair: "bg-amber-500/[0.08] border-amber-500/30 text-amber-400",
-  poor: "bg-red-500/[0.08] border-red-500/30 text-red-400",
-  none: "bg-white/[0.04] border-white/[0.08] text-muted-foreground",
+  great: "bg-emerald-50 border-emerald-200 text-emerald-700",
+  good: "bg-indigo-50 border-indigo-200 text-indigo-700",
+  fair: "bg-amber-50 border-amber-200 text-amber-700",
+  poor: "bg-red-50 border-red-200 text-red-700",
+  none: "bg-gray-50 border-gray-200 text-gray-400",
 };
 
 const ICONS = {
@@ -41,7 +41,7 @@ export default function DealScoreBadge({ productId, currentPrice }) {
 
   if (loading) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border border-white/[0.08] bg-white/[0.04] text-muted-foreground">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-semibold border border-gray-200 bg-gray-50 text-gray-400">
         <Loader2 className="size-2.5 animate-spin" />
         Score
       </span>
@@ -57,8 +57,9 @@ export default function DealScoreBadge({ productId, currentPrice }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border ${style}`}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${style}`}
       title={`Deal Score: ${result.score}/100 — ${result.label}`}
+      aria-label={`Deal Score: ${result.score}/100 — ${result.label}`}
     >
       <Icon className="size-2.5" />
       {result.score}

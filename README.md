@@ -8,24 +8,94 @@
   <img src="https://img.shields.io/badge/Firecrawl-000?logo=firecrawl&logoColor=white" alt="Firecrawl" />
 </p>
 
-**NexPrice** is an AI-powered e-commerce price intelligence platform. It automatically monitors product prices across any online retailer, analyzes historical trends, predicts future price movements, and sends instant alerts when your target price is hit.
+**NexPrice** is an AI-powered e-commerce price intelligence platform. It automatically monitors product prices across any online retailer, analyzes historical trends, calculates deal scores, and sends instant alerts when your target price is hit.
 
 ---
 
 ## Table of Contents
 
+- [How It Works — Step by Step](#how-it-works--step-by-step)
 - [Architecture](#architecture)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
+- [Key Algorithms](#key-algorithms)
 - [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Database Schema](#database-schema)
 - [API Routes](#api-routes)
+- [Database Schema](#database-schema)
 - [Automation & Cron Jobs](#automation--cron-jobs)
-- [Deal Score Algorithm](#deal-score-algorithm)
 - [Deployment](#deployment)
-- [Development Notes](#development-notes)
+
+---
+
+## How It Works — Step by Step
+
+### 1. Add a Product
+
+Paste any product URL (Amazon, Walmart, Best Buy, etc.) into the dashboard form. The app uses **Firecrawl** to scrape the product name, image, and current price, then stores it in Supabase.
+
+### 2. Price Tracking
+
+Every 24 hours, a cron job rescrapes all tracked products and records a new row in `price_history`. Products are processed in parallel chunks of 5 using `Promise.allSettled`, so multiple scrapes run concurrently rather than one at a time. This keeps the job well under serverless timeout limits even with hundreds of products. Over time, this builds a historical record of price fluctuations.
+
+### 3. Deal Score Calculation
+
+Each product gets a **Deal Score** — a 0–100 value computed locally in `lib/deal-score.js` using four weighted factors:
+
+| Factor | Weight | What it measures |
+|---|---|---|
+| Distance from all-time low | 40% | How close the current price is to the historical minimum |
+| Discount from average | 30% | How far below the mean price the current price sits |
+| Recent trend | 20% | Whether the price has been dropping recently |
+| Volatility | 10% | How much the price swings (more volatility = more chances to catch a low) |
+
+The score maps to a tier: **Great** (70+), **Good** (50–69), **Fair** (30–49), or **Poor** (< 30).
+
+### 4. Trend Indicator
+
+The prediction panel shows a **Trend Indicator** — a pure JavaScript calculation that answers "how far is the current price from the historical average?":
+
+```
+trend = ((avgPrice - currentPrice) / avgPrice) × 100
+```
+
+- **Positive %** = current price is below average (discount opportunity)
+- **Negative %** = current price is above average (consider waiting)
+
+This replaces the previous Gemini-powered prediction API, making the trend calculation instant, free, and explainable.
+
+### 5. Smart Alerts
+
+Set a target price on any product. The daily cron job checks if the current price is at or below your target. When it hits, the alert status changes to "triggered", savings are calculated, and you receive an email notification via **Resend**.
+
+### 6. Priority Watchlist
+
+Flag products you're considering. Each item is ranked by a **Buy Priority** score (`lib/buy-priority.js`) that combines:
+
+- Your manual priority level (high / medium / low)
+- Time spent on the watchlist (older items get a boost)
+- Deal Score contribution (better deals rank higher)
+
+### 7. Dashboard — Single Page App
+
+All features are consolidated into a **single dashboard** at `/`. After login, you get a tabbed interface:
+
+| Tab | Content |
+|---|---|
+| **Products** | Add new products, view your tracked list with Deal Scores |
+| **Insights** | Total savings, active alerts, best deals grid, recent savings history |
+| **Watchlist** | Flagged items sorted by Buy Priority, priority management |
+| **Alerts** | Active, triggered, and disabled alerts with progress tracking |
+| **Settings** | Account info, weekly digest toggle, digest day picker |
+
+### 8. Product Detail Page
+
+Click any product to see:
+- **Price History Chart** — interactive Recharts visualization
+- **Deal Analysis** — AI-powered buy/sell recommendation via Gemini (separate from predictions)
+- **Trend Indicator** — current price vs historical average
+- **Price Alerts** — set and manage target prices
+- **Mini Stats** — low, high, average prices and tracking duration
 
 ---
 
@@ -45,47 +115,44 @@
                     └──────────────┘     └────────────┘
 ```
 
-- **Frontend**: React 19 with Next.js 16 App Router, server components by default, client components for interactivity.
-- **Data Layer**: Supabase (PostgreSQL) with Row Level Security — users only see their own data.
-- **AI Layer**: Two API routes — Deal Analysis (Gemini-powered buy recommendations) and Price Prediction (future price forecasting).
-- **Scraping**: Firecrawl SDK parses product metadata from e-commerce product URLs.
-- **Email**: Resend sends transactional emails when price alerts trigger.
+### Key Design Decisions
+
+- **Server Components by default** — data fetching happens server-side, reducing client bundle size
+- **Conditional data fetching** — the dashboard only queries data for the active tab, avoiding unnecessary database load
+- **URL-driven tabs** — uses `?tab=` search params instead of client state, enabling direct linking and browser navigation
+- **Local calculations** — Deal Score, Buy Priority, and Trend Indicator are pure JS functions with no API calls
+- **RLS policies** — all database queries are scoped to the authenticated user via Supabase Row Level Security
 
 ---
 
 ## Features
 
 ### Automated Price Tracking
-Paste any product URL — Amazon, Walmart, Best Buy, or thousands of supported retailers. NexPrice immediately scrapes the product data and begins capturing daily price snapshots.
+Paste any product URL — NexPrice immediately scrapes the product data and begins capturing daily price snapshots.
 
 ### Smart Price Alerts
-Set a target price on any tracked product. When the current price drops to or below your target, you receive an instant email notification. Alerts are checked automatically every 24 hours.
+Set a target price on any tracked product. When the price drops to your target, you receive an instant email notification. Alerts are checked automatically every 24 hours.
 
 ### Deal Score™
-A proprietary 0–100 algorithm that evaluates four weighted signals to tell you exactly when to buy:
-1. **Price Position**: Where the current price sits relative to the historical range
-2. **Drop Velocity**: How fast the price is dropping
-3. **Historical Value**: Whether this price is historically low
-4. **Recency**: How recently the price dropped
+A proprietary 0–100 algorithm that evaluates four weighted signals to tell you exactly when to buy. No external API calls — pure client-side math.
+
+### Trend Indicator
+A local calculation that shows how far the current price deviates from the historical average. Positive values signal a discount opportunity.
 
 ### AI Deal Analysis
 Powered by Gemini, each product gets a contextual buy recommendation:
 - *Great time to buy* — price trends and historical data align favorably
 - *Wait for a lower price* — the price is expected to drop further
 - *Price recently increased* — recent uptick detected
-Each analysis includes confidence level, summary, and supporting reasoning.
-
-### Price Prediction
-Machine-learning-informed price forecasts that predict where prices are heading, with confidence levels and estimated timeframes.
 
 ### Insights Dashboard
 A centralized view of total savings, top deals sorted by Deal Score, and a history of every triggered alert with savings amounts.
 
 ### Priority Watchlist
-Flag products you're considering. Each item is ranked by a Buy Priority score that combines your manual priority (high/medium/low), Deal Score, and time on list.
+Flag products you're considering. Each item is ranked by a Buy Priority score that combines your manual priority, Deal Score, and time on list.
 
 ### Savings Tracking
-Every triggered alert automatically calculates savings as the difference between target price and current price at trigger time. Total savings accumulate across all products.
+Every triggered alert automatically calculates savings. Total savings accumulate across all products.
 
 ---
 
@@ -104,7 +171,7 @@ Every triggered alert automatically calculates savings as the difference between
 | Auth | Supabase Auth (Google OAuth) | — |
 | Scraping | Firecrawl JS SDK | 1.29.x |
 | Email | Resend | 6.5.x |
-| AI | Google Gemini (via API routes) | — |
+| AI (Deal Analysis only) | Google Gemini | — |
 | Package Manager | npm / bun | — |
 
 ---
@@ -113,54 +180,95 @@ Every triggered alert automatically calculates savings as the difference between
 
 ```
 app/
-├── page.js                    # Dashboard — landing + authenticated home
+├── page.js                    # SPA Dashboard — landing + tabs
 ├── layout.js                  # Root layout (NavBar, fonts, Toaster)
-├── globals.css                # Tailwind v4 theme, custom utilities
-├── actions.js                 # Server actions (CRUD, alerts, settings)
-├── alerts/
-│   ├── page.js                # Alerts page (server)
-│   └── AlertsDashboard.js     # Alert center (client)
-├── insights/
-│   ├── page.js                # Insights page (server)
-│   └── InsightsDashboard.js   # Insights dashboard (client)
-├── watchlist/
-│   ├── page.js                # Watchlist page (server)
-│   └── WatchlistDashboard.js  # Watchlist (client)
-├── settings/
-│   ├── page.js                # Settings page (server)
-│   └── SettingsForm.js        # Settings form (client)
+├── globals.css                # Tailwind v4 theme
+├── actions.js                 # All server actions
 ├── products/[id]/             # Product detail page
-└── api/
-    ├── cron/check-prices/     # Daily price checker cron route
-    └── products/[productId]/
-        ├── deal-analysis/     # AI deal analysis endpoint
-        └── predict/           # Price prediction endpoint
+│   ├── page.js                # Server component, fetches data
+│   └── ProductDetail.js       # Client component, full layout
+├── api/
+│   ├── cron/check-prices/     # Daily price checker
+│   └── products/[productId]/
+│       └── deal-analysis/     # AI deal analysis (Gemini)
+├── auth/callback/             # OAuth callback
+└── error/                     # Auth error page
 
 components/
-├── ui/                        # shadcn/ui primitives
+├── NavBar.js                  # Top navigation (logo + auth only)
+├── AddProductForm.js          # URL submission
 ├── ProductCard.js             # Dashboard product card
-├── AddProductForm.js          # URL submission form
-├── SetPriceAlert.js           # Inline price alert management
-├── DealScoreBadge.js          # 0-100 score badge
-├── PriceChart.js              # Recharts price history chart
+├── InsightsDashboard.js       # Insights tab panel
+├── WatchlistDashboard.js      # Watchlist tab panel
+├── AlertsDashboard.js         # Alerts tab panel
+├── SettingsForm.js            # Settings tab panel
+├── PriceChart.js              # Recharts chart component
+├── PricePrediction.js         # Trend indicator display
 ├── DealAnalyzer.js            # AI deal analysis display
-├── PricePrediction.js         # Price prediction display
-├── NavBar.js                  # Top navigation
+├── DealScoreBadge.js          # 0-100 score badge
+├── SetPriceAlert.js           # Alert management
 ├── AuthModal.js               # Google OAuth modal
-└── ...
+├── AuthButton.js              # Sign in/out button
+├── LandingCTA.js              # Landing page CTA
+├── Footer.js                  # Site footer
+└── ui/                        # shadcn/ui primitives
 
 lib/
-├── deal-score.js              # Deal Score calculation algorithm
-├── buy-priority.js            # Buy Priority ranking algorithm
+├── deal-score.js              # Deal Score + Trend Indicator
+├── buy-priority.js            # Buy Priority ranking
 ├── firecrawl.js               # Firecrawl scraper wrapper
 ├── email.js                   # Resend email templates
-└── utils.js                   # cn() helper
+└── utils.js                   # cn() utility
 
 utils/supabase/
 ├── client.js                  # Browser Supabase client
 ├── server.js                  # Server Supabase client
-└── middleware.js              # Session refresh middleware
+└── middleware.js              # Session refresh
 ```
+
+---
+
+## Key Algorithms
+
+### Deal Score (`lib/deal-score.js`)
+
+```js
+calculateDealScore(currentPrice, priceHistory)
+```
+
+Returns `{ score, label, tier }` — a 0–100 score computed from:
+
+1. **Proximity to all-time low (40%)**: `((max - current) / range) × 100` — 100 when at the lowest price ever
+2. **Discount from average (30%)**: Scaled distance from the mean — 100 when far below average
+3. **Recent trend (20%)**: Rate of change over the last 3 price points — positive trend (dropping) boosts score
+4. **Volatility (10%)**: Coefficient of variation — more price swings mean more opportunities
+
+### Trend Indicator (`lib/deal-score.js`)
+
+```js
+calculateTrendIndicator(currentPrice, priceHistory)
+```
+
+Returns `number | null` — the percentage difference between the current price and the historical average:
+
+```
+trend = ((avgPrice - currentPrice) / avgPrice) × 100
+```
+
+- **+15%** → current price is 15% below average (good deal)
+- **−8%** → current price is 8% above average (wait for drop)
+- **null** → fewer than 2 data points
+
+### Buy Priority (`lib/buy-priority.js`)
+
+```js
+calculateBuyPriority({ priority, createdAt, dealScore })
+```
+
+Returns a 0–100 score combining:
+- User priority weight (high=40, medium=25, low=10)
+- Age bonus (up to 30 points for older items)
+- Deal Score contribution (scaled by 0.3)
 
 ---
 
@@ -170,35 +278,47 @@ utils/supabase/
 - Node.js 18+ (recommended: 20 LTS)
 - A Supabase project (free tier works)
 - A Firecrawl API key
-- A Resend API key (for email)
+- A Resend API key (for email alerts)
 - A Google Cloud OAuth client (for authentication)
 
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/ABHISHEK-ADIGA/smart-product-price-tracker.git
+git clone <repo-url>
 cd smart-product-price-tracker
 npm install
 ```
 
 ### 2. Configure Environment
 
-```bash
-cp .env.example .env.local
-```
+Create a `.env.local` file with:
 
-See [Environment Variables](#environment-variables) for all required values.
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+
+# Firecrawl
+FIRECRAWL_API_KEY=your_firecrawl_key
+
+# Email (Resend)
+RESEND_API_KEY=your_resend_key
+RESEND_FROM_EMAIL=onboarding@resend.dev
+
+# Cron security
+CRON_SECRET=your_random_secret
+
+# OAuth
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Optional — Gemini (only needed for Deal Analyzer)
+GEMINI_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-2.5-flash
+```
 
 ### 3. Run Database Migrations
 
-Execute the SQL in [Database Schema](#database-schema) inside your Supabase SQL Editor, or run the migration files from `supabase/`:
-
-```bash
-supabase/ migration_phase_b.sql
-supabase/ migration_price_alerts.sql
-supabase/ migration_savings.sql
-supabase/ migration_settings.sql
-```
+Execute the SQL from [Database Schema](#database-schema) in your Supabase SQL Editor.
 
 ### 4. Start Dev Server
 
@@ -210,22 +330,29 @@ The app runs at `http://localhost:3000`.
 
 ---
 
-## Environment Variables
+## API Routes
 
-```env
-# === Supabase ===
-NEXT_PUBLIC_SUPABASE_URL=            # Project URL from Supabase dashboard
-NEXT_PUBLIC_SUPABASE_ANON_KEY=       # Anon/public key from Supabase
+### `POST /api/cron/check-prices`
+Triggered by Supabase `pg_cron` daily at midnight. Iterates all active products, rescrapes current prices, records history, and triggers alerts if target prices are met. Products are processed in parallel chunks of 5 using `Promise.allSettled` — each chunk runs concurrently, and failures are isolated so one product doesn't block the rest.
 
-# === App URL (used for OAuth redirects) ===
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# === Scraping ===
-FIRECRAWL_API_KEY=                   # Firecrawl API key
-
-# === Email (Resend) ===
-RESEND_API_KEY=                      # Resend API key
-RESEND_FROM_EMAIL=alerts@yourdomain.com
+### `GET /api/products/[productId]/deal-analysis`
+Returns an AI-generated deal analysis using Gemini:
+```json
+{
+  "analysis": {
+    "label": "Great time to buy",
+    "confidence": "high",
+    "summary": "Price is at its 90-day low...",
+    "reasons": ["Price dropped 15% in the last week"]
+  },
+  "stats": {
+    "averagePrice": "$24.99",
+    "lowestPrice": "$19.99",
+    "highestPrice": "$34.99",
+    "historyCount": 45
+  },
+  "source": "ai"
+}
 ```
 
 ---
@@ -233,8 +360,6 @@ RESEND_FROM_EMAIL=alerts@yourdomain.com
 ## Database Schema
 
 ### `products`
-Stores tracked product metadata and the latest known price.
-
 ```sql
 CREATE TABLE products (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -248,13 +373,10 @@ CREATE TABLE products (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, url)
 );
-
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ```
 
 ### `price_history`
-Timestamped price snapshots, one row per check.
-
 ```sql
 CREATE TABLE price_history (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -263,13 +385,10 @@ CREATE TABLE price_history (
   currency TEXT DEFAULT '$',
   checked_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 ALTER TABLE price_history ENABLE ROW LEVEL SECURITY;
 ```
 
 ### `price_alerts`
-Target price alerts with status tracking.
-
 ```sql
 CREATE TABLE price_alerts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -282,13 +401,10 @@ CREATE TABLE price_alerts (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   triggered_at TIMESTAMPTZ
 );
-
 ALTER TABLE price_alerts ENABLE ROW LEVEL SECURITY;
 ```
 
 ### `watchlist`
-User-curated shopping list with priority levels.
-
 ```sql
 CREATE TABLE watchlist (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -299,13 +415,10 @@ CREATE TABLE watchlist (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, product_id)
 );
-
 ALTER TABLE watchlist ENABLE ROW LEVEL SECURITY;
 ```
 
 ### `user_settings`
-Notification preferences per user.
-
 ```sql
 CREATE TABLE user_settings (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -315,45 +428,14 @@ CREATE TABLE user_settings (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
 ```
 
 ---
 
-## API Routes
-
-### `POST /api/cron/check-prices`
-Triggered by Supabase `pg_cron` daily at midnight. Iterates all active products, rescrapes current prices, records history, and triggers alerts if target prices are met.
-
-### `GET /api/products/[productId]/deal-analysis`
-Returns an AI-generated deal analysis using Gemini:
-```json
-{
-  "analysis": {
-    "label": "Great time to buy",
-    "confidence": "high",
-    "summary": "Price is at its 90-day low...",
-    "reasons": ["Price dropped 15% in the last week", "..."]
-  },
-  "stats": {
-    "averagePrice": "$24.99",
-    "lowestPrice": "$19.99",
-    "highestPrice": "$34.99",
-    "historyCount": 45
-  },
-  "source": "ai"
-}
-```
-
-### `GET /api/products/[productId]/predict`
-Returns a price prediction with forecast timeline and confidence intervals.
-
----
-
 ## Automation & Cron Jobs
 
-NexPrice uses Supabase `pg_cron` to schedule daily price checks, avoiding external cron services.
+NexPrice uses Supabase `pg_cron` to schedule daily price checks, avoiding external cron services. The cron endpoint processes products in parallel chunks of 5 using `Promise.allSettled` — each chunk's `scrapeProduct()` calls run concurrently, and a single failure never blocks the rest.
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS pg_cron;
@@ -370,28 +452,7 @@ SELECT cron.schedule(
 );
 ```
 
-Replace `YOUR_DOMAIN` with your production URL. For local testing, use a tool like `ngrok` to expose your local server.
-
----
-
-## Deal Score Algorithm
-
-The Deal Score (`lib/deal-score.js`) is a weighted composite of four signals:
-
-| Signal | Weight | Description |
-|---|---|---|
-| Price Position | 35% | Where current price falls in the min-max range (lower = better) |
-| Drop Velocity | 30% | Recent price change rate (dropping fast = higher score) |
-| Historical Value | 25% | How the current price compares to the historical average |
-| Recency | 10% | How recently the last price change occurred |
-
-The final score is mapped to a tier:
-- **Great** (80–100): Strong buy signal
-- **Good** (60–79): Favorable conditions
-- **Fair** (40–59): Neutral
-- **Poor** (0–39): Wait for a better price
-
-Buy Priority (`lib/buy-priority.js`) extends this by factoring in user-set priority level and time spent on the watchlist.
+Replace `YOUR_DOMAIN` with your production URL. For local testing, use `ngrok`.
 
 ---
 
@@ -401,28 +462,15 @@ Buy Priority (`lib/buy-priority.js`) extends this by factoring in user-set prior
 
 1. Push your repository to GitHub.
 2. Create a new project on [Vercel](https://vercel.com) and import your repo.
-3. Add all environment variables from `.env.local` to Vercel's Environment Variables section.
+3. Add all environment variables from `.env.local` to Vercel.
 4. Deploy.
 
 ### Post-Deploy Steps
 
-1. **Supabase Auth**: Go to Supabase → Authentication → URL Configuration. Update Site URL and Redirect URIs to your production domain.
-2. **Google OAuth**: Update the Authorized Redirect URIs in Google Cloud Console to `https://your-domain.com/auth/callback`.
-3. **Cron Job**: Update the `pg_cron` scheduled task URL to point to your production domain.
-4. **Resend**: Verify your sending domain in Resend dashboard.
-
----
-
-## Development Notes
-
-### TODO / Planned Improvements
-
-- [ ] Dark/light theme toggle
-- [ ] Bulk product import (CSV/bookmarklet)
-- [ ] Price drop email templates with inline charts
-- [ ] Mobile app (React Native)
-- [ ] Public deal score leaderboard
-- [ ] Multi-currency wallet support
+1. **Supabase Auth**: Update Site URL and Redirect URIs to your production domain.
+2. **Google OAuth**: Update Authorized Redirect URIs in Google Cloud Console.
+3. **Cron Job**: Update the `pg_cron` URL to your production domain.
+4. **Resend**: Verify your sending domain.
 
 ### Scripts
 

@@ -1,137 +1,79 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, RefreshCw, TrendingDown, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { TrendingDown, TrendingUp, TrendingUpDown } from "lucide-react";
 
-function getConfidenceColor(confidence) {
-  if (confidence === "high") return "bg-emerald-500/[0.08] text-emerald-400 border-emerald-500/30";
-  if (confidence === "medium") return "bg-indigo-500/[0.08] text-indigo-400 border-indigo-500/30";
-  return "bg-amber-500/[0.08] text-amber-400 border-amber-500/30";
-}
-
-export default function PricePrediction({ productId, currentPrice, currency }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  async function loadPrediction() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch(`/api/products/${productId}/predict`);
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to load prediction");
-      }
-
-      setData(result);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadPrediction();
-  }, [productId]);
-
-  if (loading && !data) {
+export default function PricePrediction({ trend, currentPrice, currency, priceHistory }) {
+  if (trend === null || !priceHistory || priceHistory.length < 2) {
     return (
-      <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
-        <Loader2 className="size-3.5 animate-spin" />
-        Generating prediction...
+      <div className="p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <TrendingUpDown className="size-3.5 text-gray-400" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">
+            Trend
+          </span>
+        </div>
+        <p className="text-xs text-gray-500">
+          Track more price points to see the trend.
+        </p>
       </div>
     );
   }
 
-  if (error && !data) {
-    return (
-      <div className="rounded-md border border-red-500/20 bg-red-500/[0.06] p-3">
-        <p className="text-xs text-red-400">{error}</p>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={loadPrediction}
-          className="mt-2 h-7 text-xs"
-        >
-          Retry
-        </Button>
-      </div>
-    );
-  }
+  const prices = priceHistory.map((p) => parseFloat(p.price));
+  const avg = prices.reduce((s, v) => s + v, 0) / prices.length;
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const isBelowAvg = trend > 0;
 
-  if (!data?.prediction) return null;
-
-  const { prediction, source, cached } = data;
+  const absPct = Math.abs(trend).toFixed(1);
 
   return (
-    <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/[0.04] p-4">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="size-3.5 text-accent" />
-          <span className="text-[10px] font-bold uppercase tracking-wider text-foreground font-mono">
-            Price Prediction
-          </span>
-          <Badge
-            variant="outline"
-            className={`text-[9px] uppercase px-1.5 py-0 ${getConfidenceColor(prediction.confidence)}`}
-          >
-            {prediction.confidence}
-          </Badge>
-          {cached && (
-            <Badge variant="outline" className="text-[9px] uppercase bg-white/5">
-              cached
-            </Badge>
-          )}
-          {source === "fallback" && (
-            <Badge variant="outline" className="text-[9px] uppercase bg-white/5">
-              rules
-            </Badge>
-          )}
-        </div>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={loadPrediction}
-          disabled={loading}
-          className="h-6 w-6 p-0 shrink-0"
-        >
-          {loading ? (
-            <Loader2 className="size-2.5 animate-spin" />
-          ) : (
-            <RefreshCw className="size-2.5" />
-          )}
-        </Button>
+    <div className="p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <TrendingUpDown className="size-3.5 text-orange-500" />
+        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-900 font-mono">
+          Trend Indicator
+        </span>
       </div>
 
-      {prediction.predicted_price ? (
-        <div className="space-y-2">
-          <div className="flex items-baseline gap-2">
-            <TrendingDown className="size-4 text-emerald-400" />
-            <span className="text-lg font-bold font-mono text-emerald-400">
-              {currency} {prediction.predicted_price.toFixed(2)}
-            </span>
-            <span className="text-[11px] text-muted-foreground">
-              {prediction.timeframe || "soon"}
-            </span>
-          </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {prediction.reasoning}
-          </p>
+      <div className="space-y-3">
+        <div className="flex items-baseline gap-2">
+          {isBelowAvg ? (
+            <TrendingDown className="size-4 text-emerald-500" />
+          ) : (
+            <TrendingUp className="size-4 text-red-500" />
+          )}
+          <span className={`text-lg font-bold font-mono ${isBelowAvg ? "text-emerald-600" : "text-red-600"}`}>
+            {isBelowAvg ? "\u2212" : "+"}{absPct}%
+          </span>
+          <span className="text-[11px] text-gray-500">
+            {isBelowAvg ? "below average" : "above average"}
+          </span>
         </div>
-      ) : (
-        <p className="text-xs text-muted-foreground">
-          {prediction.reasoning}
+
+        <div className="grid grid-cols-3 gap-2 text-[11px] font-mono">
+          <div className="bg-gray-50 rounded border border-gray-100 p-2 text-center">
+            <div className="text-[10px] text-gray-400 uppercase tracking-wider">Avg</div>
+            <div className="font-semibold text-gray-900">{currency} {avg.toFixed(2)}</div>
+          </div>
+          <div className="bg-gray-50 rounded border border-gray-100 p-2 text-center">
+            <div className="text-[10px] text-gray-400 uppercase tracking-wider">Low</div>
+            <div className="font-semibold text-emerald-600">{currency} {min.toFixed(2)}</div>
+          </div>
+          <div className="bg-gray-50 rounded border border-gray-100 p-2 text-center">
+            <div className="text-[10px] text-gray-400 uppercase tracking-wider">High</div>
+            <div className="font-semibold text-red-600">{currency} {max.toFixed(2)}</div>
+          </div>
+        </div>
+
+        <p className="text-xs text-gray-500 leading-relaxed">
+          {isBelowAvg
+            ? `Current price is ${absPct}% below the historical average. `
+            : `Current price is ${absPct}% above the historical average. `}
+          {priceHistory.length > 5 && isBelowAvg && "The trend suggests a favorable buying opportunity."}
+          {priceHistory.length > 5 && !isBelowAvg && "Consider waiting for a price drop closer to the average."}
         </p>
-      )}
+      </div>
     </div>
   );
 }

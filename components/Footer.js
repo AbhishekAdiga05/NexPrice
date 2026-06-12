@@ -1,93 +1,25 @@
 import Link from "next/link";
-import {
-  Activity,
-  Bell,
-  TrendingUp,
-  Sparkles,
-  ListChecks,
-  Wallet,
-  Settings,
-} from "lucide-react";
-
-const footerFeatures = [
-  { label: "Price Tracking", icon: Activity, href: "/" },
-  { label: "Smart Alerts", icon: Bell, href: "/alerts" },
-  { label: "Deal Score", icon: Sparkles, href: "/insights" },
-  { label: "Price Prediction", icon: TrendingUp, href: "/insights" },
-  { label: "Watchlist", icon: ListChecks, href: "/watchlist" },
-  { label: "Savings Tracker", icon: Wallet, href: "/insights" },
-  { label: "Settings", icon: Settings, href: "/settings" },
-];
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-card mt-24">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div>
-            <Link href="/" className="flex items-center gap-2.5 group mb-4">
-              <div className="size-2.5 rounded-full bg-emerald-500 shadow-glow-green" />
-              <span className="text-xl font-bold tracking-tight">
-                <span className="text-accent">NEXPRICE</span>
-              </span>
-            </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
-              AI-powered price tracking platform that predicts, analyzes, and alerts you to the perfect buying moment. Never overpay again.
-            </p>
+    <footer className="border-t border-gray-200 bg-white mt-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="size-2 rounded-full bg-orange-500" />
+            <span className="text-base font-bold tracking-tight text-gray-900">
+              NEXPRICE
+            </span>
+          </Link>
+          <div className="flex items-center gap-6 text-sm text-gray-400">
+            <Link href="/" className="hover:text-gray-600 transition-colors">Dashboard</Link>
+            <span className="text-gray-200">·</span>
+            <Link href="/?tab=insights" className="hover:text-gray-600 transition-colors">Insights</Link>
+            <span className="text-gray-200">·</span>
+            <Link href="/?tab=alerts" className="hover:text-gray-600 transition-colors">Alerts</Link>
           </div>
-
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              {[
-                { label: "Dashboard", href: "/" },
-                { label: "Insights", href: "/insights" },
-                { label: "Watchlist", href: "/watchlist" },
-                { label: "Alerts", href: "/alerts" },
-                { label: "Settings", href: "/settings" },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-accent transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono mb-4">
-              Features
-            </h3>
-            <ul className="space-y-3">
-              {footerFeatures.map((f) => (
-                <li key={f.label}>
-                  <Link
-                    href={f.href}
-                    className="text-sm text-muted-foreground hover:text-accent transition-colors flex items-center gap-2"
-                  >
-                    <f.icon className="size-3" />
-                    {f.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-gray-400">
             &copy; {new Date().getFullYear()} NexPrice. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Precision price intelligence — powered by AI
           </p>
         </div>
       </div>
