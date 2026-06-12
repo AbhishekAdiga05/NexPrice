@@ -23,6 +23,8 @@ import {
   Target,
   Wallet,
   Search,
+  TrendingUp,
+  DollarSign,
 } from "lucide-react";
 import * as motion from "framer-motion/client";
 
@@ -162,13 +164,13 @@ async function DashboardStats({ insights }) {
       label: "Tracked Products",
       value: insights.productCount,
       icon: Activity,
-      sub: "being monitored",
+      sub: `${insights.productCount} product${insights.productCount !== 1 ? "s" : ""} tracked`,
     },
     {
       label: "Active Alerts",
       value: insights.activeCount,
       icon: Target,
-      sub: `${insights.totalAlerts} total set`,
+      sub: `${insights.totalAlerts} total alerts`,
     },
     {
       label: "Total Savings",
@@ -178,27 +180,33 @@ async function DashboardStats({ insights }) {
     },
   ];
 
+  const iconBg = [
+    "bg-orange-50 text-orange-600",
+    "bg-indigo-50 text-indigo-600",
+    "bg-emerald-50 text-emerald-600",
+  ];
+
   return (
-    <div className="grid grid-cols-3 gap-3 mb-6">
-      {stats.map((s) => (
+    <div className="grid grid-cols-3 gap-4 mb-8">
+      {stats.map((s, i) => (
         <div
           key={s.label}
-          className="bg-white rounded-lg border border-gray-200 p-3"
+          className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4"
         >
-          <div className="flex items-center gap-1.5 mb-1">
-            <s.icon className="size-3.5 text-gray-400" />
-            <span className="text-[11px] font-semibold text-gray-500 leading-none">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">
               {s.label}
             </span>
+            <div className={`size-8 rounded-lg flex items-center justify-center ${iconBg[i]}`}>
+              <s.icon className="size-4" />
+            </div>
           </div>
-          <div className="text-xl font-bold font-mono text-gray-900 tracking-tight leading-none">
+          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">
             {s.value}
           </div>
-          {s.sub && (
-            <div className="text-[11px] text-gray-400 font-mono mt-0.5 leading-none">
-              {s.sub}
-            </div>
-          )}
+          <div className="text-[11px] text-gray-400 font-mono mt-1.5 leading-none">
+            {s.sub}
+          </div>
         </div>
       ))}
     </div>
@@ -219,33 +227,31 @@ function TabSkeleton() {
 
 function ProductsTab({ user, products, recentSavings }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Add product */}
-      <div className="bg-white rounded-lg border border-gray-200 p-3">
+      <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-3">
         <AddProductForm user={user} compact />
       </div>
 
-      {/* Stat cards */}
+      {/* Product list */}
       <div className="min-w-0">
-        <div className="flex items-center gap-2 mb-3">
-          <Activity className="size-3.5 text-gray-400" />
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Tracked Products
-          </h2>
+        <div className="flex items-center gap-2.5 mb-4">
+          <Activity className="size-3.5 text-orange-500" />
+          <h2 className="text-section">Tracked Products</h2>
           <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded leading-none">
             {products.length}
           </span>
         </div>
         {products.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 rounded-lg border border-dashed border-gray-200 bg-gray-50">
-            <div className="size-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-2">
-              <Search className="size-4 text-gray-400" />
+          <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50/50">
+            <div className="size-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-3">
+              <Search className="size-5 text-gray-400" />
             </div>
             <p className="text-sm text-gray-500">Paste a product URL above to start tracking.</p>
           </div>
@@ -253,7 +259,9 @@ function ProductsTab({ user, products, recentSavings }) {
       </div>
 
       {/* Recent Activity */}
-      <RecentActivity recentSavings={recentSavings} recentProducts={products.slice(0, 5)} />
+      {(recentSavings?.length > 0 || products.length > 0) && (
+        <RecentActivity recentSavings={recentSavings} recentProducts={products.slice(0, 5)} />
+      )}
     </div>
   );
 }
@@ -301,8 +309,8 @@ export default async function Home({ searchParams }) {
       <DashboardShell>
         {/* Welcome header — only on products tab */}
         {tab === null && (
-          <div className="mb-6">
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
               Welcome back
               {user?.user_metadata?.full_name
                 ? `, ${user.user_metadata.full_name.split(" ")[0]}`

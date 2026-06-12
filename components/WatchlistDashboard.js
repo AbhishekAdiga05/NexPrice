@@ -73,7 +73,7 @@ function PriorityDropdown({ value, onChange }) {
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg border border-gray-200 shadow-elevated z-20 py-1 min-w-[120px] overflow-hidden">
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg border border-gray-200 shadow-elevated z-20 py-1 min-w-[120px]">
             {["high", "medium", "low"].map((p) => (
               <button
                 key={p}
@@ -132,8 +132,8 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
   );
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden group">
-      <div className="flex items-center gap-3 p-3">
+    <div className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden group">
+      <div className="flex items-center gap-4 p-4">
         <Link href={`/products/${item.productId}`} className="shrink-0">
           {item.product?.image_url ? (
             <Image
@@ -142,10 +142,10 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
               width={48}
               height={48}
               unoptimized
-              className="size-10 rounded border border-gray-100 object-cover"
+              className="size-11 rounded-md border border-gray-100 object-cover"
             />
           ) : (
-            <div className="size-10 rounded border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400">
+            <div className="size-11 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400">
               N/A
             </div>
           )}
@@ -154,37 +154,31 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
         <div className="flex-1 min-w-0">
           <Link
             href={`/products/${item.productId}`}
-            className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors line-clamp-1 leading-snug"
+            className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate leading-snug"
           >
             {item.product?.name || "Unknown Product"}
           </Link>
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1">
             {item.product && (
               <span className="text-sm font-bold font-mono text-gray-900 tracking-tight">
                 {item.product.currency}{" "}
                 {parseFloat(item.product.current_price).toFixed(2)}
               </span>
             )}
-            <DealScoreBadgeSmall
-              score={item.dealScore?.score}
-              tier={item.dealScore?.tier}
-            />
+            <DealScoreBadgeSmall score={item.dealScore?.score} tier={item.dealScore?.tier} />
             <BuyPriorityBadge score={item.buyPriority} />
             <span className="text-[10px] text-gray-400 flex items-center gap-1">
               <Clock className="size-2.5" />
               {daysOnList}d
             </span>
-            <PriorityDropdown
-              value={item.priority}
-              onChange={handlePriority}
-            />
+            <PriorityDropdown value={item.priority} onChange={handlePriority} />
           </div>
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
           <Link
             href={`/products/${item.productId}`}
-            className="size-7 rounded flex items-center justify-center text-gray-300 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+            className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-orange-600 hover:bg-orange-50 transition-colors"
             title="View product"
           >
             <Eye className="size-3.5" />
@@ -192,7 +186,7 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
           <button
             onClick={handleRemove}
             disabled={removing}
-            className="size-7 rounded flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+            className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
             title="Remove from watchlist"
           >
             {removing ? (
@@ -228,50 +222,48 @@ export default function WatchlistDashboard({ items: initialItems }) {
   const buyNowCount = items.filter((i) => i.buyPriority >= 70).length;
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <div className="text-lg font-bold font-mono text-gray-900 tracking-tight leading-none">{items.length}</div>
-          <div className="text-[11px] font-semibold text-gray-500 mt-1 leading-none">Items</div>
+    <div className="space-y-6">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
+          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Items</span>
+          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight mt-2">{items.length}</div>
         </div>
-        <div className={`rounded-lg border p-3 ${
+        <div className={`rounded-lg border p-4 ${
           highCount > 0
-            ? "border-emerald-200 bg-emerald-50"
-            : "border-gray-200 bg-white"
+            ? "border-emerald-200 bg-emerald-50/50 shadow-card"
+            : "border-gray-200/60 bg-white shadow-card"
         }`}>
-          <div className={`text-lg font-bold font-mono tracking-tight leading-none ${
+          <span className={`text-[11px] font-medium uppercase tracking-[0.06em] ${
+            highCount > 0 ? "text-emerald-600" : "text-gray-400"
+          }`}>High Priority</span>
+          <div className={`text-2xl font-bold font-mono tracking-tight mt-2 ${
             highCount > 0 ? "text-emerald-700" : "text-gray-300"
           }`}>{highCount}</div>
-          <div className={`text-[11px] font-semibold mt-1 leading-none ${
-            highCount > 0 ? "text-emerald-600" : "text-gray-400"
-          }`}>High Priority</div>
         </div>
-        <div className={`rounded-lg border p-3 ${
+        <div className={`rounded-lg border p-4 ${
           buyNowCount > 0
-            ? "border-indigo-200 bg-indigo-50"
-            : "border-gray-200 bg-white"
+            ? "border-indigo-200 bg-indigo-50/50 shadow-card"
+            : "border-gray-200/60 bg-white shadow-card"
         }`}>
-          <div className={`text-lg font-bold font-mono tracking-tight leading-none ${
+          <span className={`text-[11px] font-medium uppercase tracking-[0.06em] ${
+            buyNowCount > 0 ? "text-indigo-600" : "text-gray-400"
+          }`}>Buy Now</span>
+          <div className={`text-2xl font-bold font-mono tracking-tight mt-2 ${
             buyNowCount > 0 ? "text-indigo-700" : "text-gray-300"
           }`}>{buyNowCount}</div>
-          <div className={`text-[11px] font-semibold mt-1 leading-none ${
-            buyNowCount > 0 ? "text-indigo-600" : "text-gray-400"
-          }`}>Buy Now</div>
         </div>
       </div>
 
       {items.length > 0 && (
-        <div className="flex items-center gap-2 mb-2">
-          <ListChecks className="size-3.5 text-gray-400" />
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Flagged Items
-          </h2>
-          <span className="text-[10px] text-gray-400">Sorted by buy priority</span>
+        <div className="flex items-center gap-2.5 mb-2">
+          <ListChecks className="size-3.5 text-orange-500" />
+          <h2 className="text-section">Flagged Items</h2>
+          <span className="text-xs text-gray-400 font-medium">Sorted by buy priority</span>
         </div>
       )}
 
       {items.length === 0 ? (
-        <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50">
+        <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50/50">
           <div className="size-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-3">
             <ListChecks className="size-5 text-gray-400" />
           </div>
@@ -280,20 +272,13 @@ export default function WatchlistDashboard({ items: initialItems }) {
             Flag products you&apos;re considering and we&apos;ll rank them by buying urgency and deal score.
           </p>
           <Button asChild className="cursor-pointer">
-            <Link href="/">
-              Browse Products
-            </Link>
+            <Link href="/">Browse Products</Link>
           </Button>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {items.map((item) => (
-            <WatchlistItem
-              key={item.id}
-              item={item}
-              onRemove={handleRemove}
-              onPriorityChange={handlePriorityChange}
-            />
+            <WatchlistItem key={item.id} item={item} onRemove={handleRemove} onPriorityChange={handlePriorityChange} />
           ))}
         </div>
       )}

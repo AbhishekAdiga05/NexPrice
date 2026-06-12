@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   Clock,
   Loader2,
-  X,
   Crosshair,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -81,9 +80,7 @@ function NewAlertDialog({ productId, currentPrice, currency, onClose }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              Target Price
-            </label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Target Price</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-mono text-gray-400 pointer-events-none">
                 {currency}
@@ -157,9 +154,9 @@ function AlertCard({ alert, currency }) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className={`h-0.5 ${isTriggered ? "bg-emerald-400" : "bg-indigo-400"}`} />
-      <div className="flex items-center gap-3 p-3">
+    <div className="p-4">
+      <div className={`h-0.5 rounded-full w-12 mb-3 ${isTriggered ? "bg-emerald-400" : "bg-indigo-400"}`} />
+      <div className="flex items-center gap-3">
         {alert.product?.image_url ? (
           <Image
             src={alert.product.image_url}
@@ -167,10 +164,10 @@ function AlertCard({ alert, currency }) {
             width={40}
             height={40}
             unoptimized
-            className="size-9 rounded border border-gray-100 object-cover shrink-0"
+            className="size-10 rounded-md border border-gray-100 object-cover shrink-0"
           />
         ) : (
-          <div className="size-9 rounded border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400 shrink-0">
+          <div className="size-10 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400 shrink-0">
             N/A
           </div>
         )}
@@ -180,17 +177,17 @@ function AlertCard({ alert, currency }) {
             <div className="min-w-0">
               <Link
                 href={`/products/${alert.product_id}`}
-                className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors line-clamp-1 leading-snug"
+                className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate leading-snug"
               >
                 {alert.product?.name || "Unknown Product"}
               </Link>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
                 <StatusBadge status={alert.status} />
-                <span className="text-[11px] text-gray-400 font-mono tracking-tight">
+                <span className="text-[11px] text-gray-400 font-mono">
                   Target: {currency} {parseFloat(alert.target_price).toFixed(2)}
                 </span>
                 {isTriggered && alert.savings > 0 && (
-                  <span className="text-[11px] font-semibold text-emerald-600 font-mono tracking-tight">
+                  <span className="text-[11px] font-semibold text-emerald-600 font-mono">
                     · Saved {currency} {parseFloat(alert.savings).toFixed(2)}
                   </span>
                 )}
@@ -207,10 +204,10 @@ function AlertCard({ alert, currency }) {
             )}
           </div>
 
-          <div className="flex items-center gap-3 mt-2">
+          <div className="flex items-center gap-3 mt-2.5">
             {!isTriggered && alert.product && (
               <>
-                <div className="flex-1 h-1 rounded-full bg-gray-100 overflow-hidden max-w-[160px]">
+                <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden max-w-[160px]">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       targetReached ? "bg-emerald-500" : "bg-indigo-400/70"
@@ -218,17 +215,15 @@ function AlertCard({ alert, currency }) {
                     style={{ width: `${targetReached ? 100 : progress}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-gray-400 font-mono leading-none">
-                  {!targetReached
-                    ? `${progress.toFixed(0)}% to target`
-                    : "Target reached!"}
+                <span className="text-[10px] text-gray-400 font-mono">
+                  {!targetReached ? `${progress.toFixed(0)}% to target` : "Target reached!"}
                 </span>
               </>
             )}
 
             <div className="ml-auto flex items-center gap-1.5">
               {alert.created_at && (
-                <span className="text-[10px] text-gray-400 flex items-center gap-1 leading-none">
+                <span className="text-[10px] text-gray-400 flex items-center gap-1">
                   <Clock className="size-2.5" />
                   {formatDate(alert.created_at)}
                 </span>
@@ -238,7 +233,6 @@ function AlertCard({ alert, currency }) {
                   onClick={handleRemove}
                   disabled={removing}
                   className="size-6 rounded flex items-center justify-center text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors"
-                  title="Remove alert"
                 >
                   {removing ? (
                     <Loader2 className="size-3 animate-spin" />
@@ -262,36 +256,42 @@ export default function AlertsDashboard({ alerts }) {
   const currency = activeAlerts[0]?.product?.currency || triggeredAlerts[0]?.product?.currency || "$";
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <BellRing className="size-3.5 text-indigo-500" />
-            <span className="text-[11px] font-semibold text-gray-500">Active</span>
+    <div className="space-y-8">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Active</span>
+            <div className="size-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+              <BellRing className="size-4 text-indigo-600" />
+            </div>
           </div>
-          <div className="text-lg font-bold font-mono text-gray-900">{activeAlerts.length}</div>
-          <div className="text-[11px] text-gray-400 font-mono mt-0.5">currently watching</div>
+          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{activeAlerts.length}</div>
+          <div className="text-[11px] text-gray-400 font-mono mt-1.5">currently watching</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <CheckCircle2 className="size-3.5 text-emerald-500" />
-            <span className="text-[11px] font-semibold text-gray-500">Captured</span>
+        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Captured</span>
+            <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <CheckCircle2 className="size-4 text-emerald-600" />
+            </div>
           </div>
-          <div className="text-lg font-bold font-mono text-gray-900">{triggeredAlerts.length}</div>
-          <div className="text-[11px] text-gray-400 font-mono mt-0.5">targets hit</div>
+          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{triggeredAlerts.length}</div>
+          <div className="text-[11px] text-gray-400 font-mono mt-1.5">targets hit</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Bell className="size-3.5 text-orange-500" />
-            <span className="text-[11px] font-semibold text-gray-500">Total</span>
+        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Total</span>
+            <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center">
+              <Bell className="size-4 text-orange-600" />
+            </div>
           </div>
-          <div className="text-lg font-bold font-mono text-gray-900">{alerts.length}</div>
-          <div className="text-[11px] text-gray-400 font-mono mt-0.5">all time</div>
+          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{alerts.length}</div>
+          <div className="text-[11px] text-gray-400 font-mono mt-1.5">all time</div>
         </div>
       </div>
 
       {alerts.length === 0 && (
-        <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50">
+        <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50/50">
           <div className="size-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-3">
             <BellOff className="size-5 text-gray-400" />
           </div>
@@ -300,21 +300,19 @@ export default function AlertsDashboard({ alerts }) {
             Set a target price on any tracked product and we&apos;ll notify you when the price drops.
           </p>
           <Button asChild className="cursor-pointer">
-            <Link href="/">
-              Back to Dashboard
-            </Link>
+            <Link href="/">Back to Dashboard</Link>
           </Button>
         </div>
       )}
 
       {activeAlerts.length > 0 && (
-        <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
+        <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
             <BellRing className="size-3.5 text-indigo-500" />
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Watching</h2>
+            <h2 className="text-section">Watching</h2>
             <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{activeAlerts.length}</span>
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-50">
             {activeAlerts.map((alert) => (
               <AlertCard key={alert.id} alert={alert} currency={alert.product?.currency || currency} />
             ))}
@@ -323,13 +321,13 @@ export default function AlertsDashboard({ alerts }) {
       )}
 
       {triggeredAlerts.length > 0 && (
-        <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
+        <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
             <CheckCircle2 className="size-3.5 text-emerald-500" />
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Captured</h2>
+            <h2 className="text-section">Captured</h2>
             <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{triggeredAlerts.length}</span>
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-50">
             {triggeredAlerts.map((alert) => (
               <AlertCard key={alert.id} alert={alert} currency={alert.product?.currency || currency} />
             ))}
@@ -338,13 +336,13 @@ export default function AlertsDashboard({ alerts }) {
       )}
 
       {disabledAlerts.length > 0 && (
-        <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
+        <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
             <BellOff className="size-3.5 text-gray-400" />
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Disabled</h2>
+            <h2 className="text-section text-gray-400">Disabled</h2>
             <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{disabledAlerts.length}</span>
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-50">
             {disabledAlerts.map((alert) => (
               <AlertCard key={alert.id} alert={alert} currency={alert.product?.currency || currency} />
             ))}

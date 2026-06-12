@@ -36,66 +36,79 @@ export default function ProductCard({ product }) {
   const targetPrice = activeAlert
     ? parseFloat(activeAlert.target_price)
     : null;
+  const triggeredCount = product.price_alerts?.filter(
+    (a) => a.status === "triggered"
+  ).length;
 
   return (
-    <motion.div layout className="group">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-elevated transition-shadow overflow-hidden">
+    <motion.div layout>
+      <div className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
         <Link
           href={`/dashboard/product/${product.id}`}
-          className="flex items-center gap-3 p-3"
+          className="flex items-center gap-4 p-4"
         >
-          <div className="size-10 rounded border border-gray-100 overflow-hidden shrink-0 bg-gray-50">
+          {/* Image */}
+          <div className="size-12 rounded-md border border-gray-100 overflow-hidden shrink-0 bg-gray-50">
             {product.image_url ? (
               <Image
                 src={product.image_url}
                 alt={product.name}
-                width={40}
-                height={40}
+                width={48}
+                height={48}
                 unoptimized
                 className="size-full object-cover"
               />
             ) : (
-              <div className="size-full flex items-center justify-center text-[10px] text-gray-400">
+              <div className="size-full flex items-center justify-center text-[10px] text-gray-300">
                 N/A
               </div>
             )}
           </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-1 group-hover:text-orange-600 transition-colors">
-                {product.name}
-              </h3>
+          {/* Info columns */}
+          <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 items-start">
+            {/* Title row */}
+            <h3 className="text-sm font-semibold text-gray-900 truncate leading-snug group-hover:text-orange-600 transition-colors">
+              {product.name}
+            </h3>
+            <div className="justify-self-end">
               <DealScoreBadge
                 productId={product.id}
                 currentPrice={product.current_price}
               />
             </div>
 
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm font-bold font-mono text-gray-900 tracking-tight">
+            {/* Price row */}
+            <div className="flex items-baseline gap-2">
+              <span className="text-base font-bold font-mono text-gray-900 tracking-tight leading-none">
                 {product.currency} {parseFloat(product.current_price).toFixed(2)}
               </span>
               {targetPrice && (
-                <>
-                  <span className="text-gray-200 mx-0.5">·</span>
-                  <span className="text-xs font-mono text-gray-400">
-                    Target: {product.currency} {targetPrice.toFixed(2)}
-                  </span>
-                </>
+                <span className="text-[11px] font-mono text-gray-400 leading-none">
+                  target {product.currency} {targetPrice.toFixed(2)}
+                </span>
+              )}
+            </div>
+
+            {/* Metadata row */}
+            <div className="flex items-center gap-3 text-[11px] text-gray-400 justify-self-end">
+              {triggeredCount > 0 && (
+                <span className="text-emerald-600 font-medium">
+                  {triggeredCount} captured
+                </span>
               )}
             </div>
           </div>
         </Link>
 
         {/* Action row */}
-        <div className="flex items-center gap-0.5 px-3 pb-2.5">
+        <div className="flex items-center gap-1 px-4 pb-3.5 border-t border-gray-50 pt-2.5">
           <button
             onClick={() => setShowChart(!showChart)}
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
           >
             <BarChart3 className="size-3" />
-            {showChart ? "Hide" : "Chart"}
+            {showChart ? "Hide chart" : "Price chart"}
           </button>
 
           <div className="flex-1 min-w-0 px-2">
@@ -107,12 +120,12 @@ export default function ProductCard({ product }) {
             />
           </div>
 
-          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1">
             <Link
               href={product.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="size-7 rounded flex items-center justify-center text-gray-300 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-colors"
               title="Open in store"
               onClick={(e) => e.stopPropagation()}
             >
@@ -121,7 +134,7 @@ export default function ProductCard({ product }) {
             <button
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleting}
-              className="size-7 rounded flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+              className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
               title="Stop tracking"
             >
               <Trash2 className="size-3" />
@@ -129,6 +142,7 @@ export default function ProductCard({ product }) {
           </div>
         </div>
 
+        {/* Expandable chart */}
         <AnimatePresence>
           {showChart && (
             <motion.div
@@ -136,9 +150,9 @@ export default function ProductCard({ product }) {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="overflow-hidden border-t border-gray-100 bg-gray-50/50"
+              className="overflow-hidden border-t border-gray-100 bg-gray-50/30"
             >
-              <div className="p-3">
+              <div className="p-4">
                 <PriceChart productId={product.id} />
               </div>
             </motion.div>

@@ -1,4 +1,4 @@
-import { Clock, CheckCircle2, PlusCircle, TrendingDown } from "lucide-react";
+import { Clock, CheckCircle2, PlusCircle } from "lucide-react";
 import Link from "next/link";
 
 function formatTimeAgo(dateStr) {
@@ -23,7 +23,7 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
       id: `saving-${s.id}`,
       type: "alert_triggered",
       date: s.triggeredAt,
-      description: `Alert triggered for ${s.productName}`,
+      description: `Price target reached for ${s.productName}`,
       detail: `Saved ${s.currency} ${s.savings.toFixed(2)}`,
       href: `/dashboard/product/${s.productId}`,
     })),
@@ -52,14 +52,12 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
-        <Clock className="size-3.5 text-gray-400" />
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          Recent Activity
-        </h3>
+    <div className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
+        <Clock className="size-3.5 text-orange-500" />
+        <h3 className="text-section">Recent Activity</h3>
       </div>
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-gray-50">
         {events.map((event) => {
           const Icon = typeIcons[event.type] || Clock;
           const style = typeStyles[event.type] || "text-gray-600 bg-gray-50";
@@ -67,13 +65,13 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
             <Link
               key={event.id}
               href={event.href}
-              className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors group"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
             >
-              <div className={`size-7 rounded flex items-center justify-center shrink-0 ${style}`}>
-                <Icon className="size-3.5" />
+              <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${style}`}>
+                <Icon className="size-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-700 group-hover:text-orange-600 transition-colors truncate leading-snug">
+                <p className="text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors truncate leading-snug">
                   {event.description}
                 </p>
                 <p className="text-xs text-gray-400 font-mono mt-0.5">{event.detail}</p>

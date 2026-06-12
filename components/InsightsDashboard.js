@@ -44,48 +44,42 @@ export default function InsightsDashboard({ insights }) {
   } = insights;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Wallet className="size-3.5 text-emerald-500" />
-            <span className="text-[11px] font-semibold text-gray-500">Total Savings</span>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Total Savings</span>
+            <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <Wallet className="size-4 text-emerald-600" />
+            </div>
           </div>
-          <div className="text-lg font-bold font-mono text-gray-900 tracking-tight">
+          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">
             {totalSavingsFormatted}
           </div>
-          <div className="text-[11px] text-gray-400 font-mono mt-0.5">
-            {triggeredCount} alerts triggered
-          </div>
+          <div className="text-[11px] text-gray-400 font-mono mt-1.5 leading-none">{triggeredCount} alerts triggered</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Bell className="size-3.5 text-indigo-500" />
-            <span className="text-[11px] font-semibold text-gray-500">Active Alerts</span>
+        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Active Alerts</span>
+            <div className="size-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+              <Bell className="size-4 text-indigo-600" />
+            </div>
           </div>
-          <div className="text-lg font-bold font-mono text-gray-900 tracking-tight">
-            {activeCount}
-          </div>
-          <div className="text-[11px] text-gray-400 font-mono mt-0.5">
-            {totalAlerts} total set
-          </div>
+          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{activeCount}</div>
+          <div className="text-[11px] text-gray-400 font-mono mt-1.5 leading-none">{totalAlerts} total set</div>
         </div>
       </div>
 
       {/* Best Deals */}
-      <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
+      <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
           <Sparkles className="size-3.5 text-orange-500" />
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Best Deals Now
-          </h2>
-          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-            {topDeals.length}
-          </span>
+          <h2 className="text-section">Best Deals Now</h2>
+          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded leading-none">{topDeals.length}</span>
         </div>
         {topDeals.length === 0 ? (
-          <div className="text-center py-10 px-4">
+          <div className="text-center py-12 px-4">
             <TrendingUp className="size-8 text-gray-300 mx-auto mb-2" />
             <p className="text-sm text-gray-500">Track products to see your best deals here.</p>
           </div>
@@ -97,7 +91,7 @@ export default function InsightsDashboard({ insights }) {
                 href={`/products/${deal.id}`}
                 className="bg-white p-3 hover:bg-gray-50 transition-colors group"
               >
-                <div className="aspect-[4/3] rounded border border-gray-100 overflow-hidden bg-gray-50 mb-2">
+                <div className="aspect-[4/3] rounded border border-gray-100 overflow-hidden bg-gray-50 mb-2.5">
                   {deal.image_url ? (
                     <Image
                       src={deal.image_url}
@@ -116,14 +110,11 @@ export default function InsightsDashboard({ insights }) {
                 <h3 className="text-xs font-semibold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors leading-snug">
                   {deal.name}
                 </h3>
-                <div className="flex items-center justify-between gap-1 mt-1.5">
+                <div className="flex items-center justify-between gap-1 mt-2">
                   <span className="text-sm font-bold font-mono text-gray-900 tracking-tight">
                     {deal.currency} {deal.current_price.toFixed(2)}
                   </span>
-                  <DealScoreBadgeSmall
-                    score={deal.dealScore.score}
-                    tier={deal.dealScore.tier}
-                  />
+                  <DealScoreBadgeSmall score={deal.dealScore.score} tier={deal.dealScore.tier} />
                 </div>
               </Link>
             ))}
@@ -132,28 +123,24 @@ export default function InsightsDashboard({ insights }) {
       </section>
 
       {/* Recent Savings */}
-      <section className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
+      <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
           <Wallet className="size-3.5 text-emerald-500" />
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Recent Savings
-          </h2>
-          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-            {recentSavings.length}
-          </span>
+          <h2 className="text-section">Recent Savings</h2>
+          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded leading-none">{recentSavings.length}</span>
         </div>
         {recentSavings.length === 0 ? (
-          <div className="text-center py-10 px-4">
+          <div className="text-center py-12 px-4">
             <DollarSign className="size-8 text-gray-300 mx-auto mb-2" />
             <p className="text-sm text-gray-500">Set a target price alert to start tracking savings.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-50">
             {recentSavings.map((item) => (
               <Link
                 key={item.id}
                 href={`/products/${item.productId}`}
-                className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors group"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
               >
                 {item.imageUrl ? (
                   <Image
@@ -162,21 +149,21 @@ export default function InsightsDashboard({ insights }) {
                     width={40}
                     height={40}
                     unoptimized
-                    className="size-9 rounded border border-gray-100 object-cover shrink-0"
+                    className="size-10 rounded border border-gray-100 object-cover shrink-0"
                   />
                 ) : (
-                  <div className="size-9 rounded border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0">
+                  <div className="size-10 rounded border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0">
                     <Tag className="size-3.5 text-gray-300" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1 leading-snug">
+                  <div className="text-sm font-semibold text-gray-900 group-hover:text-orange-600 transition-colors truncate leading-snug">
                     {item.productName}
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-gray-400 mt-0.5">
-                    <span className="font-mono">Target: {item.currency} {item.targetPrice.toFixed(2)}</span>
+                  <div className="flex items-center gap-2 text-xs text-gray-400 font-mono mt-0.5">
+                    <span>Target: {item.currency} {item.targetPrice.toFixed(2)}</span>
                     <span className="text-gray-200">·</span>
-                    <span className="font-mono">Paid: {item.currency} {item.currentPrice.toFixed(2)}</span>
+                    <span>Paid: {item.currency} {item.currentPrice.toFixed(2)}</span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
