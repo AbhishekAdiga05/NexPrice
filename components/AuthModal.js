@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ShieldAlert } from "lucide-react";
 
 export default function AuthModal({ isOpen, onClose }) {
   const supabase = createClient();
@@ -29,8 +28,7 @@ export default function AuthModal({ isOpen, onClose }) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ShieldAlert className="size-5 text-orange-500" />
+          <DialogTitle>
             Sign In to NexPrice
           </DialogTitle>
           <DialogDescription>
@@ -38,13 +36,13 @@ export default function AuthModal({ isOpen, onClose }) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 py-4">
+        <div className="flex flex-col gap-4 pt-2">
           <Button
             onClick={handleGoogleLogin}
             variant="outline"
-            className="w-full gap-3 font-semibold"
+            className="w-full gap-3 font-semibold h-12"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

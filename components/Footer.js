@@ -1,25 +1,19 @@
-import Link from "next/link";
-
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-white mt-16">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="size-2 rounded-full bg-orange-500" />
+    <footer className="border-t border-gray-100/80">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-12">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="size-3 rounded-full bg-orange-500 shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />
             <span className="text-base font-bold tracking-tight text-gray-900">
-              NEXPRICE
+              NexPrice
             </span>
-          </Link>
-          <div className="flex items-center gap-6 text-sm text-gray-400">
-            <Link href="/" className="hover:text-gray-600 transition-colors">Dashboard</Link>
-            <span className="text-gray-200">·</span>
-            <Link href="/?tab=insights" className="hover:text-gray-600 transition-colors">Insights</Link>
-            <span className="text-gray-200">·</span>
-            <Link href="/?tab=alerts" className="hover:text-gray-600 transition-colors">Alerts</Link>
           </div>
-          <p className="text-xs text-gray-400">
-            &copy; {new Date().getFullYear()} NexPrice. All rights reserved.
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Track Prices. Buy Smarter.
+          </p>
+          <p className="text-xs text-gray-300">
+            &copy; {new Date().getFullYear()} NexPrice
           </p>
         </div>
       </div>

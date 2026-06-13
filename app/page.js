@@ -25,29 +25,34 @@ import {
   Search,
   TrendingUp,
   DollarSign,
+  Link2,
+  Bell,
+  LineChart,
+  ListChecks,
 } from "lucide-react";
-import * as motion from "framer-motion/client";
-
-// ─── Landing page ────────────────────────────────────────────────────────────
+import ProductAlertPreview from "@/components/ProductAlertPreview";
 
 function LandingHero() {
   return (
-    <section className="pt-24 pb-16 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-50 rounded-full border border-orange-200 mb-6 text-xs font-semibold text-orange-600">
-          <Activity className="size-3" />
-          Smart Price Tracking
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-28 px-5 sm:px-8">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_auto] gap-16 lg:gap-24 items-center">
+        <div className="max-w-xl">
+          <h1 className="text-[2.5rem] sm:text-[3.5rem] lg:text-[4.25rem] font-bold text-gray-900 tracking-tight leading-[1.08]">
+            Track Prices.
+            <br />
+            Buy at the{" "}
+            <span className="text-orange-500">Right Time.</span>
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground mt-8 leading-relaxed max-w-md">
+            Monitor product prices across stores and get notified when they reach your target price.
+          </p>
+          <div className="mt-10">
+            <LandingCTA variant="primary" label="Start Tracking" />
+          </div>
         </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1] mb-4">
-          Never Miss A{" "}
-          <span className="text-orange-500">Price Drop</span>
-        </h1>
-        <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto mb-8 leading-relaxed">
-          Track prices across stores and get notified the moment your target price hits.
-        </p>
-        <div className="flex items-center justify-center gap-4">
-          <LandingCTA variant="primary" />
-          <span className="text-xs text-gray-400">Free · No CC required</span>
+
+        <div className="lg:justify-self-end">
+          <ProductAlertPreview />
         </div>
       </div>
     </section>
@@ -57,41 +62,49 @@ function LandingHero() {
 function HowItWorksSection() {
   const steps = [
     {
-      number: "01",
-      title: "Add Any Product",
-      description: "Paste any product URL. NexPrice captures pricing data automatically.",
+      icon: Link2,
+      title: "Add Product",
+      description: "Paste a product URL to start tracking.",
     },
     {
-      number: "02",
-      title: "We Track Relentlessly",
-      description: "Our system monitors prices daily and records every fluctuation.",
+      icon: Target,
+      title: "Set Target Price",
+      description: "Choose the price you want to pay.",
     },
     {
-      number: "03",
-      title: "Strike at the Right Moment",
-      description: "Set your target price and get instant alerts when the timing is right.",
+      icon: Bell,
+      title: "Get Alert",
+      description: "Receive a notification when the price drops.",
     },
   ];
 
   return (
-    <section className="py-16 px-4 sm:px-6 border-t border-gray-200 bg-gray-50/50">
+    <section id="how-it-works" className="py-24 sm:py-32 px-5 sm:px-8 border-t border-gray-100">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs font-semibold uppercase tracking-wider text-orange-500 mb-2 block">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
             How It Works
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-            Start saving in three simple moves
           </h2>
+          <p className="text-base text-muted-foreground mt-3">Three steps. No complexity.</p>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {steps.map((step, index) => (
-            <div key={step.title} className="bg-white rounded-lg border border-gray-200 p-6">
-              <span className="text-3xl font-black text-orange-100 block mb-3">
-                {step.number}
-              </span>
-              <h3 className="text-base font-bold text-gray-900 mb-2">{step.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+
+        <div className="grid sm:grid-cols-3 gap-8 sm:gap-6">
+          {steps.map((step, i) => (
+            <div key={step.title} className="relative flex flex-col items-center text-center">
+              <div className="relative mb-6">
+                <div className="size-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.25)]">
+                  <step.icon className="size-6 text-white" />
+                </div>
+                <div className="absolute -top-1.5 -right-1.5 size-7 rounded-full bg-white border-2 border-orange-500 flex items-center justify-center">
+                  <span className="text-[11px] font-bold text-orange-500">{i + 1}</span>
+                </div>
+              </div>
+              <h3 className="text-base font-semibold text-gray-900">{step.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1.5 max-w-[200px] leading-relaxed">{step.description}</p>
+
+              {i < steps.length - 1 && (
+                <div className="hidden sm:block absolute top-8 left-[calc(50%+40px)] w-[calc(100%-80px)] h-px bg-gradient-to-r from-orange-200 to-orange-100" />
+              )}
             </div>
           ))}
         </div>
@@ -102,32 +115,44 @@ function HowItWorksSection() {
 
 function FeaturesSection() {
   const features = [
-    { title: "Price Tracking", description: "Monitor unlimited products with automatic daily price snapshots." },
-    { title: "Smart Alerts", description: "Set your ideal price and receive instant email notifications." },
-    { title: "Deal Score", description: "0-100 algorithm that tells you exactly when to buy." },
-    { title: "Trend Analysis", description: "Real-time price trend detection and timing recommendations." },
-    { title: "Watchlist", description: "Ranked shopping list by buying urgency and deal score." },
-    { title: "Savings Tracking", description: "Every triggered alert automatically calculates your savings." },
-    { title: "Insights", description: "Command center showing top deals and alert activity at a glance." },
-    { title: "Price History", description: "Interactive charts with low, high, and average markers." },
+    { icon: Activity, title: "Price Tracking", description: "Monitor prices automatically across supported stores." },
+    { icon: Bell, title: "Smart Alerts", description: "Get notified instantly when prices hit your target." },
+    { icon: LineChart, title: "Price History", description: "View historical price trends before purchasing." },
+    { icon: ListChecks, title: "Watchlist", description: "Track and manage products in one place." },
+  ];
+
+  const iconBg = [
+    "from-orange-400 to-amber-500",
+    "from-blue-400 to-indigo-500",
+    "from-emerald-400 to-teal-500",
+    "from-violet-400 to-purple-500",
   ];
 
   return (
-    <section className="py-16 px-4 sm:px-6">
+    <section className="py-24 sm:py-32 px-5 sm:px-8 border-t border-gray-100">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs font-semibold uppercase tracking-wider text-orange-500 mb-2 block">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
             Everything You Need
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-            A complete toolkit for smarter shopping
           </h2>
+          <p className="text-base text-muted-foreground mt-3">Simple tools for smarter shopping.</p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {features.map((feature) => (
-            <div key={feature.title} className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-elevated transition-shadow">
-              <h3 className="text-sm font-bold text-gray-900 mb-1.5">{feature.title}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{feature.description}</p>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {features.map((feature, i) => (
+            <div
+              key={feature.title}
+              className="group bg-white rounded-2xl border border-gray-100/80 shadow-card hover:shadow-elevated hover:-translate-y-0.5 transition-all duration-300 p-7"
+            >
+              <div className="relative mb-5 flex items-center justify-center">
+                <div className={`size-13 rounded-2xl bg-gradient-to-br ${iconBg[i]} flex items-center justify-center shadow-lg`}>
+                  <feature.icon className="size-6 text-white" />
+                </div>
+              </div>
+              <h3 className="text-base font-semibold text-gray-900 text-center">{feature.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed text-center mt-2">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>
@@ -138,23 +163,21 @@ function FeaturesSection() {
 
 function CTASection() {
   return (
-    <section className="py-16 px-4 sm:px-6 border-t border-gray-200 bg-orange-50/30">
-      <div className="max-w-5xl mx-auto text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-3">
-          Ready to shop smarter?
+    <section className="py-24 sm:py-32 px-5 sm:px-8 border-t border-gray-100">
+      <div className="max-w-3xl mx-auto bg-[#FFF7ED] rounded-3xl px-8 py-16 sm:px-16 sm:py-20 text-center">
+        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight mb-4">
+          Ready to buy smarter?
         </h2>
-        <p className="text-gray-500 max-w-md mx-auto mb-6">
-          Free to start, no credit card required.
+        <p className="text-lg text-muted-foreground mb-10">
+          Start tracking products in under a minute.
         </p>
-        <div className="flex items-center justify-center gap-4">
-          <LandingCTA variant="secondary" />
-        </div>
+        <LandingCTA variant="primary" label="Get Started" />
       </div>
     </section>
   );
 }
 
-// ─── Dashboard sections ──────────────────────────────────────────────────────
+// ─── Redesigned Stat Cards ──────────────────────────────────────────────────
 
 async function DashboardStats({ insights }) {
   if (!insights) return null;
@@ -180,31 +203,31 @@ async function DashboardStats({ insights }) {
     },
   ];
 
-  const iconBg = [
-    "bg-orange-50 text-orange-600",
-    "bg-indigo-50 text-indigo-600",
-    "bg-emerald-50 text-emerald-600",
+  const iconColors = [
+    "text-orange-600 bg-orange-50",
+    "text-indigo-600 bg-indigo-50",
+    "text-emerald-600 bg-emerald-50",
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-8">
       {stats.map((s, i) => (
         <div
           key={s.label}
-          className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4"
+          className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
               {s.label}
             </span>
-            <div className={`size-8 rounded-lg flex items-center justify-center ${iconBg[i]}`}>
-              <s.icon className="size-4" />
+            <div className={`size-10 rounded-xl flex items-center justify-center ${iconColors[i]}`}>
+              <s.icon className="size-[18px]" />
             </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
             {s.value}
           </div>
-          <div className="text-[11px] text-gray-400 font-mono mt-1.5 leading-none">
+          <div className="text-xs text-muted-foreground font-mono mt-2 leading-none">
             {s.sub}
           </div>
         </div>
@@ -215,50 +238,45 @@ async function DashboardStats({ insights }) {
 
 function TabSkeleton() {
   return (
-    <div className="space-y-3 animate-pulse">
-      <div className="h-8 bg-gray-100 rounded w-1/3" />
-      <div className="h-20 bg-gray-100 rounded-lg" />
-      <div className="h-20 bg-gray-100 rounded-lg" />
+    <div className="space-y-4 animate-pulse">
+      <div className="h-8 bg-gray-100 rounded-lg w-1/3" />
+      <div className="h-24 bg-gray-100 rounded-xl" />
+      <div className="h-24 bg-gray-100 rounded-xl" />
     </div>
   );
 }
 
-// ─── Products tab ─────────────────────────────────────────────────────────────
-
 function ProductsTab({ user, products, recentSavings }) {
   return (
-    <div className="space-y-8">
-      {/* Add product */}
-      <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-3">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-4 sm:p-5">
         <AddProductForm user={user} compact />
       </div>
 
-      {/* Product list */}
       <div className="min-w-0">
-        <div className="flex items-center gap-2.5 mb-4">
-          <Activity className="size-3.5 text-orange-500" />
+        <div className="flex items-center gap-2.5 mb-5">
+          <Activity className="size-4 text-orange-500" />
           <h2 className="text-section">Tracked Products</h2>
-          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded leading-none">
+          <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">
             {products.length}
           </span>
         </div>
         {products.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50/50">
-            <div className="size-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-3">
-              <Search className="size-5 text-gray-400" />
+          <div className="text-center py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+            <div className="size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-4">
+              <Search className="size-6 text-gray-400" />
             </div>
-            <p className="text-sm text-gray-500">Paste a product URL above to start tracking.</p>
+            <p className="text-sm text-muted-foreground">Paste a product URL above to start tracking.</p>
           </div>
         )}
       </div>
 
-      {/* Recent Activity */}
       {(recentSavings?.length > 0 || products.length > 0) && (
         <RecentActivity recentSavings={recentSavings} recentProducts={products.slice(0, 5)} />
       )}
@@ -274,12 +292,11 @@ export default async function Home({ searchParams }) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ── Logged-out: show marketing landing page ──
   if (!user) {
     return (
       <>
         <NavBar user={null} />
-        <main className="min-h-screen font-sans">
+        <main className="min-h-screen bg-landing font-sans">
           <LandingHero />
           <HowItWorksSection />
           <FeaturesSection />
@@ -290,7 +307,6 @@ export default async function Home({ searchParams }) {
     );
   }
 
-  // ── Logged-in: resolve active tab ──
   const params = await searchParams;
   const tab = params?.tab ?? null;
 
@@ -307,10 +323,9 @@ export default async function Home({ searchParams }) {
     <>
       <NavBar user={user} />
       <DashboardShell>
-        {/* Welcome header — only on products tab */}
         {tab === null && (
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight leading-tight">
               Welcome back
               {user?.user_metadata?.full_name
                 ? `, ${user.user_metadata.full_name.split(" ")[0]}`
@@ -319,10 +334,8 @@ export default async function Home({ searchParams }) {
           </div>
         )}
 
-        {/* Stats — only on products tab */}
         {tab === null && <DashboardStats insights={insights} />}
 
-        {/* Tab panels */}
         <Suspense fallback={<TabSkeleton />}>
           {tab === null && <ProductsTab user={user} products={products} recentSavings={insights?.recentSavings} />}
         </Suspense>

@@ -26,21 +26,21 @@ const DAYS = [
 
 function Section({ icon: Icon, title, description, children }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="px-4 py-3 border-b border-gray-100">
-        <div className="flex items-center gap-2.5">
-          <div className="size-7 rounded flex items-center justify-center bg-orange-50 text-orange-600 shrink-0">
-            <Icon className="size-3.5" />
+    <div className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+      <div className="px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <div className="size-8 rounded-lg flex items-center justify-center bg-orange-50 text-orange-600 shrink-0">
+            <Icon className="size-4" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
             {description && (
-              <p className="text-xs text-gray-400 mt-0.5">{description}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
             )}
           </div>
         </div>
       </div>
-      <div className="px-4 py-4">{children}</div>
+      <div className="px-5 py-5">{children}</div>
     </div>
   );
 }
@@ -55,15 +55,15 @@ function Toggle({ checked, onChange, label, description }) {
           onChange={(e) => onChange(e.target.checked)}
           className="sr-only peer"
         />
-        <div className="w-9 h-5 rounded-full bg-gray-200 peer-checked:bg-orange-500 transition-colors" />
-        <div className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm peer-checked:translate-x-4 transition-transform" />
+        <div className="w-10 h-6 rounded-full bg-gray-200 peer-checked:bg-orange-500 transition-colors" />
+        <div className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm peer-checked:translate-x-4 transition-transform" />
       </div>
       <div className="flex-1 min-w-0">
         <span className="text-sm font-semibold text-gray-900 group-hover:text-orange-600 transition-colors leading-snug">
           {label}
         </span>
         {description && (
-          <p className="text-xs text-gray-400 mt-1 leading-relaxed">{description}</p>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{description}</p>
         )}
       </div>
     </label>
@@ -94,22 +94,22 @@ export default function SettingsForm({ user, settings }) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <Section icon={User} title="Account" description="Your profile and authentication details">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-bold text-sm font-mono">
+            <div className="size-11 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-bold text-sm">
               {user.email?.charAt(0).toUpperCase() || "?"}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <AtSign className="size-3 text-gray-300" />
+                <AtSign className="size-3.5 text-muted-foreground" />
                 <span className="text-sm font-semibold text-gray-900 truncate leading-snug">
                   {user.email || "Signed in"}
                 </span>
               </div>
-              <div className="flex items-center gap-1 mt-0.5">
+              <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="size-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[11px] text-gray-400 font-mono">Connected via Google</span>
+                <span className="text-xs text-muted-foreground">Connected via Google</span>
               </div>
             </div>
           </div>
@@ -125,26 +125,26 @@ export default function SettingsForm({ user, settings }) {
             />
 
             {weeklyDigest && (
-              <div className="ml-10 pl-4 border-l border-orange-200">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Calendar className="size-3 text-gray-400" />
-                  <span className="text-[11px] font-semibold text-gray-500">Send on</span>
+              <div className="ml-10 pl-4 border-l-2 border-orange-200">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Calendar className="size-3.5 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-muted-foreground">Send on</span>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   {DAYS.map(({ value, label }) => (
                     <button
                       key={value}
                       type="button"
                       onClick={() => setDigestDay(value)}
-                      className={`px-2.5 py-1 rounded text-xs font-semibold font-mono transition-colors border ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
                         digestDay === value
                           ? "bg-orange-500 text-white border-orange-500"
-                          : "bg-white text-gray-500 border-gray-200 hover:border-orange-300 hover:text-orange-600"
+                          : "bg-white text-muted-foreground border-gray-200 hover:border-orange-300 hover:text-orange-600"
                       }`}
                     >
                       {label}
                       {digestDay === value && (
-                        <Check className="size-2.5 inline ml-0.5" />
+                        <Check className="size-3 inline ml-1" />
                       )}
                     </button>
                   ))}
@@ -155,12 +155,12 @@ export default function SettingsForm({ user, settings }) {
         </Section>
 
         <div className="flex items-center justify-between gap-4 pt-2">
-          <p className="text-xs text-gray-400 font-mono">Changes are saved to your account</p>
-          <Button type="submit" disabled={saving} className="h-9 px-4 gap-1.5 text-xs cursor-pointer">
+          <p className="text-xs text-muted-foreground">Changes are saved to your account</p>
+          <Button type="submit" disabled={saving} className="gap-1.5">
             {saving ? (
-              <Loader2 className="size-3.5 animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <Save className="size-3.5" />
+              <Save className="size-4" />
             )}
             {saving ? "Saving..." : "Save Preferences"}
           </Button>

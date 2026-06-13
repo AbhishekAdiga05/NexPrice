@@ -42,14 +42,14 @@ import {
 
 function SummaryStat({ label, value, icon: Icon }) {
   return (
-    <div className="bg-gray-50 rounded border border-gray-100 p-3">
-      <div className="flex items-center gap-1.5 mb-1">
-        <Icon className="size-3 text-gray-400" />
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+    <div className="bg-muted rounded-xl border border-gray-100 p-4">
+      <div className="flex items-center gap-2 mb-1.5">
+        <Icon className="size-3.5 text-muted-foreground" />
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
       </div>
-      <span className="text-sm md:text-base font-bold font-mono text-gray-900">
+      <span className="text-base md:text-lg font-bold font-mono text-foreground">
         {value}
       </span>
     </div>
@@ -57,16 +57,16 @@ function SummaryStat({ label, value, icon: Icon }) {
 }
 
 function TimelineIcon({ type }) {
-  if (type === "alert_created") return <Bell className="size-3.5 text-indigo-500" />;
+  if (type === "alert_created") return <Bell className="size-4 text-indigo-500" />;
   if (type === "alert_triggered")
-    return <CheckCircle2 className="size-3.5 text-emerald-500" />;
+    return <CheckCircle2 className="size-4 text-emerald-500" />;
   if (type === "new_low")
-    return <TrendingDown className="size-3.5 text-emerald-500" />;
+    return <TrendingDown className="size-4 text-emerald-500" />;
   if (type === "price_drop")
-    return <TrendingDown className="size-3.5 text-emerald-500" />;
+    return <TrendingDown className="size-4 text-emerald-500" />;
   if (type === "price_increase")
-    return <TrendingUp className="size-3.5 text-red-500" />;
-  return <Activity className="size-3.5 text-gray-400" />;
+    return <TrendingUp className="size-4 text-red-500" />;
+  return <Activity className="size-4 text-muted-foreground" />;
 }
 
 function generateTimelineEvents(product, priceHistory, alerts) {
@@ -165,14 +165,14 @@ export default async function ProductDetailPage({ params }) {
       <DashboardShell>
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-5"
         >
-          <ArrowLeft className="size-3" />
+          <ArrowLeft className="size-4" />
           Back to Dashboard
         </Link>
 
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
-          <div className="flex flex-col md:flex-row gap-4 p-4">
+        <div className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden mb-6">
+          <div className="flex flex-col md:flex-row gap-5 p-5 sm:p-6">
             <div className="shrink-0">
               {product.image_url ? (
                 <Image
@@ -181,38 +181,38 @@ export default async function ProductDetailPage({ params }) {
                   width={140}
                   height={140}
                   unoptimized
-                  className="w-full md:w-36 rounded border border-gray-100 object-cover aspect-square"
+                  className="w-full md:w-36 rounded-xl border border-gray-100 object-cover aspect-square"
                 />
               ) : (
-                <div className="w-full md:w-36 rounded border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-400 aspect-square">
+                <div className="w-full md:w-36 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center text-muted-foreground aspect-square">
                   <ShoppingCart className="size-8" />
                 </div>
               )}
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-semibold text-gray-400 tracking-wider uppercase">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
                   TRACKING
                 </span>
                 {priceHistory.length >= 2 && (
-                  <Badge variant="outline" className="text-[10px]">
-                    <Activity className="size-2.5 mr-1" />
+                  <Badge variant="outline" className="text-[11px]">
+                    <Activity className="size-3 mr-1" />
                     {priceHistory.length} records
                   </Badge>
                 )}
                 {watchlistEntry && (
-                  <Badge className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200">
+                  <Badge className="text-[11px] bg-indigo-50 text-indigo-700 border-indigo-200/60">
                     Watchlist
                   </Badge>
                 )}
               </div>
 
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-2">
+              <h1 className="text-xl md:text-2xl font-bold text-foreground leading-tight mb-3">
                 {product.name}
               </h1>
 
-              <div className="flex items-center gap-2 mt-3">
+              <div className="flex items-center gap-3 mt-3">
                 <DealScoreBadge
                   productId={product.id}
                   currentPrice={product.current_price}
@@ -221,16 +221,16 @@ export default async function ProductDetailPage({ params }) {
                   variant="outline"
                   size="sm"
                   asChild
-                  className="h-7 text-[10px] gap-1"
+                  className="h-8 text-xs gap-1.5"
                 >
                   <Link href={product.url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="size-2.5" />
+                    <ExternalLink className="size-3.5" />
                     Open in Store
                   </Link>
                 </Button>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
                 <SummaryStat
                   label="Current Price"
                   value={`${product.currency} ${currentPrice.toFixed(2)}`}
@@ -260,8 +260,8 @@ export default async function ProductDetailPage({ params }) {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 space-y-5">
             <Card>
               <CardHeader>
                 <CardTitle>Price History</CardTitle>
@@ -275,7 +275,7 @@ export default async function ProductDetailPage({ params }) {
             </Card>
 
             <Card>
-              <CardContent className="pt-4">
+              <CardContent className="pt-5">
                 <PricePrediction
                   trend={trend}
                   currentPrice={currentPrice}
@@ -294,7 +294,7 @@ export default async function ProductDetailPage({ params }) {
               </CardHeader>
               <CardContent>
                 {timelineEvents.length === 0 ? (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     No events recorded yet. Activity will appear as prices change.
                   </p>
                 ) : (
@@ -302,7 +302,7 @@ export default async function ProductDetailPage({ params }) {
                     {timelineEvents.map((event) => (
                       <div
                         key={event.id}
-                        className={`flex items-start gap-3 py-2 px-3 rounded transition-colors ${
+                        className={`flex items-start gap-3 py-2.5 px-3 rounded-lg transition-colors ${
                           event.highlight
                             ? "bg-emerald-50 border border-emerald-100"
                             : "hover:bg-gray-50"
@@ -315,7 +315,7 @@ export default async function ProductDetailPage({ params }) {
                           <p className="text-sm text-gray-700 leading-snug">
                             {event.description}
                           </p>
-                          <p className="text-[11px] font-mono text-gray-400 mt-0.5">
+                          <p className="text-xs font-mono text-muted-foreground mt-0.5">
                             {new Date(event.date).toLocaleString()}
                           </p>
                         </div>
@@ -327,7 +327,7 @@ export default async function ProductDetailPage({ params }) {
             </Card>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
@@ -344,10 +344,10 @@ export default async function ProductDetailPage({ params }) {
                   currentPrice={product.current_price}
                 />
                 {priceHistory.length >= 2 && (
-                  <div className="mt-3 space-y-1.5 text-sm text-gray-500">
+                  <div className="mt-4 space-y-2 text-sm text-muted-foreground leading-relaxed">
                     <p>
                       Current price is{" "}
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-foreground">
                         {product.currency} {currentPrice.toFixed(2)}
                       </span>.
                     </p>
@@ -378,7 +378,7 @@ export default async function ProductDetailPage({ params }) {
                   Price alert settings
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-4">
                 <SetPriceAlert
                   productId={product.id}
                   currentPrice={product.current_price}
@@ -387,12 +387,12 @@ export default async function ProductDetailPage({ params }) {
                 />
 
                 {activeAlert && (
-                  <div className="bg-indigo-50 border border-indigo-200 rounded p-2.5">
-                    <div className="flex items-center gap-1.5 text-xs text-indigo-700">
-                      <Bell className="size-3" />
+                  <div className="bg-indigo-50 border border-indigo-200/60 rounded-xl p-3.5">
+                    <div className="flex items-center gap-1.5 text-sm text-indigo-700">
+                      <Bell className="size-3.5" />
                       <span className="font-semibold">Alert Active</span>
                     </div>
-                    <p className="text-xs text-indigo-600/80 mt-0.5">
+                    <p className="text-xs text-indigo-600/80 mt-1 leading-relaxed">
                       Notified when price drops to{" "}
                       <span className="font-mono font-semibold text-indigo-700">
                         {product.currency} {activeAlert.target_price}
@@ -402,12 +402,12 @@ export default async function ProductDetailPage({ params }) {
                 )}
 
                 {triggeredAlerts.length > 0 && (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded p-2.5">
-                    <div className="flex items-center gap-1.5 text-xs text-emerald-700">
-                      <CheckCircle2 className="size-3" />
+                  <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3.5">
+                    <div className="flex items-center gap-1.5 text-sm text-emerald-700">
+                      <CheckCircle2 className="size-3.5" />
                       <span className="font-semibold">Triggered Alerts</span>
                     </div>
-                    <p className="text-xs text-emerald-600/80 mt-0.5">
+                    <p className="text-xs text-emerald-600/80 mt-1 leading-relaxed">
                       {triggeredAlerts.length} alert
                       {triggeredAlerts.length > 1 ? "s" : ""} have been triggered
                     </p>

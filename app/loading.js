@@ -1,32 +1,29 @@
 export default function RootLoading() {
   return (
-    <main className="min-h-screen font-sans">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+    <main className="min-h-screen bg-background font-sans">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
         <div className="animate-pulse space-y-8">
-          {/* Title skeleton */}
           <div className="space-y-3">
-            <div className="h-8 w-64 bg-muted rounded-lg" />
-            <div className="h-4 w-96 bg-muted rounded-lg" />
+            <div className="h-8 w-64 bg-gray-100 rounded-xl" />
+            <div className="h-4 w-96 bg-gray-100 rounded-lg" />
           </div>
 
-          {/* Stats skeleton */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="h-24 rounded-xl bg-muted border border-white/[0.06]"
+                  className="h-28 rounded-xl bg-gray-100 border border-gray-100"
                 />
               ))}
             </div>
 
-            {/* Content skeleton */}
             <div className="space-y-4">
-              <div className="h-6 w-48 bg-muted rounded-lg" />
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="h-6 w-48 bg-gray-100 rounded-lg" />
+              <div className="grid gap-4 md:grid-cols-2">
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="h-48 rounded-xl bg-muted border border-white/[0.06]"
+                    className="h-48 rounded-xl bg-gray-100 border border-gray-100"
                 />
               ))}
             </div>

@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trash2, Loader2, Clock } from "lucide-react";
+import { Trash2, Loader2, RefreshCw } from "lucide-react";
 
 export default function ProductActions({ productId, productName }) {
   const router = useRouter();
@@ -35,27 +35,27 @@ export default function ProductActions({ productId, productName }) {
 
   return (
     <>
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Button
           variant="outline"
           size="sm"
-          className="w-full justify-start gap-2 h-9 text-xs font-medium"
+          className="w-full justify-start gap-2 h-10 text-sm font-medium"
           onClick={() => router.refresh()}
         >
-          <Clock className="size-3.5" />
+          <RefreshCw className="size-4" />
           Refresh Data
         </Button>
         <Button
           variant="destructive"
           size="sm"
-          className="w-full justify-start gap-2 h-9 text-xs font-medium"
+          className="w-full justify-start gap-2 h-10 text-sm font-medium"
           onClick={() => setShowDeleteDialog(true)}
           disabled={deleting}
         >
           {deleting ? (
-            <Loader2 className="size-3.5 animate-spin" />
+            <Loader2 className="size-4 animate-spin" />
           ) : (
-            <Trash2 className="size-3.5" />
+            <Trash2 className="size-4" />
           )}
           Remove Product
         </Button>

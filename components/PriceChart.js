@@ -35,7 +35,7 @@ export default function PriceChart({ productId }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-6 text-gray-400 w-full">
+      <div className="flex items-center justify-center py-8 text-muted-foreground w-full">
         <Loader2 className="w-4 h-4 animate-spin mr-2" />
         Loading chart...
       </div>
@@ -44,7 +44,7 @@ export default function PriceChart({ productId }) {
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-6 text-gray-400 w-full text-sm">
+      <div className="text-center py-8 text-muted-foreground w-full text-sm leading-relaxed">
         Not enough data yet. Price history will populate after the first daily check.
       </div>
     );
@@ -52,18 +52,19 @@ export default function PriceChart({ productId }) {
 
   return (
     <div className="w-full">
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#6b7280' }} stroke="#e5e7eb" />
-          <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9ca3af' }} stroke="#e5e7eb" tickLine={false} />
+          <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} stroke="#e5e7eb" tickLine={false} />
           <Tooltip
             contentStyle={{
               backgroundColor: "#ffffff",
               border: "1px solid #e5e7eb",
-              borderRadius: "8px",
+              borderRadius: "12px",
               color: "#111827",
               fontSize: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
             }}
           />
           <Line
@@ -71,8 +72,8 @@ export default function PriceChart({ productId }) {
             dataKey="price"
             stroke="#f97316"
             strokeWidth={2}
-            dot={{ fill: "#f97316", r: 3, stroke: "#f97316", strokeWidth: 1 }}
-            activeDot={{ r: 5, fill: "#f97316", stroke: "#ffffff", strokeWidth: 2 }}
+            dot={{ fill: "#f97316", r: 3, stroke: "#ffffff", strokeWidth: 2 }}
+            activeDot={{ r: 6, fill: "#f97316", stroke: "#ffffff", strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>

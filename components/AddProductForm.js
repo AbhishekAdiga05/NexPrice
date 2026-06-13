@@ -5,7 +5,7 @@ import { addProduct } from "@/app/actions";
 import AuthModal from "./AuthModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AddProductForm({ user, compact }) {
@@ -42,14 +42,17 @@ export default function AddProductForm({ user, compact }) {
     return (
       <>
         <form onSubmit={handleSubmit} className="w-full">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <div className="relative flex-1">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                <Link2 className="size-4" />
+              </div>
               <Input
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="Paste a product URL to track..."
-                className="h-9 text-sm font-mono"
+                className="h-11 text-sm pl-10"
                 required
                 disabled={loading}
               />
@@ -57,11 +60,10 @@ export default function AddProductForm({ user, compact }) {
             <Button
               type="submit"
               disabled={loading || !url}
-              size="sm"
-              className="h-9 px-4 shrink-0 cursor-pointer"
+              className="h-11 px-5 shrink-0"
             >
               {loading ? (
-                <Loader2 className="size-3.5 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
               ) : (
                 "Track"
               )}
@@ -76,7 +78,7 @@ export default function AddProductForm({ user, compact }) {
   return (
     <>
       <form onSubmit={handleSubmit} className="w-full">
-        <label className="flex text-xs font-semibold text-gray-500 mb-2 items-center justify-between">
+        <label className="flex text-xs font-semibold text-muted-foreground mb-2.5 items-center justify-between">
           <span>Target URL</span>
         </label>
         
@@ -86,7 +88,7 @@ export default function AddProductForm({ user, compact }) {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Paste any product URL to start tracking..."
-            className="flex-1 font-mono text-sm h-12"
+            className="flex-1 text-sm h-12"
             required
             disabled={loading}
           />
@@ -94,7 +96,7 @@ export default function AddProductForm({ user, compact }) {
           <Button
             type="submit"
             disabled={loading}
-            className="h-12 px-6 min-w-[140px] w-full sm:w-auto cursor-pointer"
+            className="h-12 px-7 min-w-[140px] w-full sm:w-auto"
           >
             {loading ? (
               <>

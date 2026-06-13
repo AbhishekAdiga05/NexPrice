@@ -13,7 +13,7 @@
   --color-accent-foreground: #ffffff;
   --color-accent: #f97316;
   --color-muted-foreground: #6b7280;
-  --color-muted: #f3f4f6;
+  --color-muted: #f9fafb;
   --color-secondary-foreground: #374151;
   --color-secondary: #e5e7eb;
   --color-primary-foreground: #ffffff;
@@ -35,19 +35,23 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+    line-height: 1.6;
   }
 }
 
 @layer utilities {
   .shadow-card {
-    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
   }
   .shadow-elevated {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.02);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 0 1px rgba(0,0,0,0.04);
   }
   .shadow-soft {
-    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .shadow-hero-card {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 0 1px rgba(0,0,0,0.03);
   }
 
   .section-divider {
@@ -60,10 +64,28 @@
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgba(0,0,0,0.06) transparent;
+    scrollbar-color: rgba(0,0,0,0.08) transparent;
   }
 
   .text-section {
-    @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400;
+    @apply text-xs font-semibold uppercase tracking-[0.06em] text-gray-400;
+  }
+
+  .bg-landing {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF9F5 100%);
+  }
+
+  .step-connector {
+    position: relative;
+  }
+  .step-connector::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, #fdba74, #fed7aa);
+    border-radius: 1px;
   }
 }

@@ -9,7 +9,7 @@ function Card({
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-lg border border-gray-200 shadow-sm",
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border border-gray-200/80 shadow-card",
         className
       )}
       {...props} 
@@ -27,7 +27,7 @@ function CardHeader({
     <div
       data-slot="card-header"
       className={cn(
-        "grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 p-5 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-5",
+        "grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 pt-6 pb-0 has-data-[slot=card-action]:grid-cols-[1fr_auto]",
         className
       )}
       {...props} />
@@ -41,7 +41,7 @@ function CardTitle({
   return (
     <div
       data-slot="card-title"
-      className={cn("leading-none font-semibold text-gray-900", className)}
+      className={cn("text-base font-semibold text-gray-900 leading-snug", className)}
       {...props} />
   );
 }
@@ -53,7 +53,7 @@ function CardDescription({
   return (
     <div
       data-slot="card-description"
-      className={cn("text-gray-500 text-xs", className)}
+      className={cn("text-sm text-muted-foreground leading-relaxed", className)}
       {...props} />
   );
 }
@@ -77,7 +77,7 @@ function CardContent({
   className,
   ...props
 }) {
-  return (<div data-slot="card-content" className={cn("px-5 pb-5", className)} {...props} />);
+  return (<div data-slot="card-content" className={cn("px-6 pb-6", className)} {...props} />);
 }
 
 function CardFooter({
@@ -87,7 +87,7 @@ function CardFooter({
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center px-5 [.border-t]:pt-5", className)}
+      className={cn("flex items-center px-6 pb-6", className)}
       {...props} />
   );
 }

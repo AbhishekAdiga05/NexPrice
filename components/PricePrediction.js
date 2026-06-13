@@ -5,14 +5,14 @@ import { TrendingDown, TrendingUp, TrendingUpDown } from "lucide-react";
 export default function PricePrediction({ trend, currentPrice, currency, priceHistory }) {
   if (trend === null || !priceHistory || priceHistory.length < 2) {
     return (
-      <div className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <TrendingUpDown className="size-3.5 text-gray-400" />
-          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 font-mono">
+      <div className="p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUpDown className="size-4 text-muted-foreground" />
+          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Trend
           </span>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           Track more price points to see the trend.
         </p>
       </div>
@@ -28,45 +28,45 @@ export default function PricePrediction({ trend, currentPrice, currency, priceHi
   const absPct = Math.abs(trend).toFixed(1);
 
   return (
-    <div className="p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUpDown className="size-3.5 text-orange-500" />
-        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-900 font-mono">
+    <div className="p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <TrendingUpDown className="size-4 text-orange-500" />
+        <span className="text-xs font-bold uppercase tracking-wider text-foreground">
           Trend Indicator
         </span>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-baseline gap-2">
+      <div className="space-y-4">
+        <div className="flex items-baseline gap-2.5">
           {isBelowAvg ? (
-            <TrendingDown className="size-4 text-emerald-500" />
+            <TrendingDown className="size-5 text-emerald-500" />
           ) : (
-            <TrendingUp className="size-4 text-red-500" />
+            <TrendingUp className="size-5 text-red-500" />
           )}
-          <span className={`text-lg font-bold font-mono ${isBelowAvg ? "text-emerald-600" : "text-red-600"}`}>
+          <span className={`text-xl font-bold font-mono ${isBelowAvg ? "text-emerald-600" : "text-red-600"}`}>
             {isBelowAvg ? "\u2212" : "+"}{absPct}%
           </span>
-          <span className="text-[11px] text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {isBelowAvg ? "below average" : "above average"}
           </span>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-[11px] font-mono">
-          <div className="bg-gray-50 rounded border border-gray-100 p-2 text-center">
-            <div className="text-[10px] text-gray-400 uppercase tracking-wider">Avg</div>
-            <div className="font-semibold text-gray-900">{currency} {avg.toFixed(2)}</div>
+        <div className="grid grid-cols-3 gap-3 text-xs font-mono">
+          <div className="bg-muted rounded-xl border border-gray-100 p-3 text-center">
+            <div className="text-[11px] text-muted-foreground uppercase tracking-wider">Avg</div>
+            <div className="font-semibold text-foreground mt-1">{currency} {avg.toFixed(2)}</div>
           </div>
-          <div className="bg-gray-50 rounded border border-gray-100 p-2 text-center">
-            <div className="text-[10px] text-gray-400 uppercase tracking-wider">Low</div>
-            <div className="font-semibold text-emerald-600">{currency} {min.toFixed(2)}</div>
+          <div className="bg-muted rounded-xl border border-gray-100 p-3 text-center">
+            <div className="text-[11px] text-muted-foreground uppercase tracking-wider">Low</div>
+            <div className="font-semibold text-emerald-600 mt-1">{currency} {min.toFixed(2)}</div>
           </div>
-          <div className="bg-gray-50 rounded border border-gray-100 p-2 text-center">
-            <div className="text-[10px] text-gray-400 uppercase tracking-wider">High</div>
-            <div className="font-semibold text-red-600">{currency} {max.toFixed(2)}</div>
+          <div className="bg-muted rounded-xl border border-gray-100 p-3 text-center">
+            <div className="text-[11px] text-muted-foreground uppercase tracking-wider">High</div>
+            <div className="font-semibold text-red-600 mt-1">{currency} {max.toFixed(2)}</div>
           </div>
         </div>
 
-        <p className="text-xs text-gray-500 leading-relaxed">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           {isBelowAvg
             ? `Current price is ${absPct}% below the historical average. `
             : `Current price is ${absPct}% above the historical average. `}

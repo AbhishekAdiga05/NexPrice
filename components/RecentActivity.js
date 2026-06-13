@@ -1,4 +1,4 @@
-import { Clock, CheckCircle2, PlusCircle } from "lucide-react";
+import { Clock, CheckCircle2, PlusCircle, TrendingDown } from "lucide-react";
 import Link from "next/link";
 
 function formatTimeAgo(dateStr) {
@@ -42,8 +42,8 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
   if (events.length === 0) return null;
 
   const typeStyles = {
-    alert_triggered: "text-emerald-600 bg-emerald-50",
-    product_added: "text-orange-600 bg-orange-50",
+    alert_triggered: "text-emerald-600 bg-emerald-50 border-emerald-200/60",
+    product_added: "text-orange-600 bg-orange-50 border-orange-200/60",
   };
 
   const typeIcons = {
@@ -52,31 +52,37 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
-      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-        <Clock className="size-3.5 text-orange-500" />
+    <div className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+        <Clock className="size-4 text-orange-500" />
         <h3 className="text-section">Recent Activity</h3>
       </div>
       <div className="divide-y divide-gray-50">
-        {events.map((event) => {
+        {events.map((event, idx) => {
           const Icon = typeIcons[event.type] || Clock;
           const style = typeStyles[event.type] || "text-gray-600 bg-gray-50";
           return (
             <Link
               key={event.id}
               href={event.href}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
+              className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/80 transition-colors group"
             >
-              <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${style}`}>
-                <Icon className="size-4" />
+              {/* Timeline indicator */}
+              <div className="flex flex-col items-center gap-1 shrink-0">
+                <div className={`size-9 rounded-xl border flex items-center justify-center ${style}`}>
+                  <Icon className="size-4" />
+                </div>
+                {idx < events.length - 1 && (
+                  <div className="w-px h-full min-h-[8px] bg-gray-100" />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors truncate leading-snug">
                   {event.description}
                 </p>
-                <p className="text-xs text-gray-400 font-mono mt-0.5">{event.detail}</p>
+                <p className="text-xs text-muted-foreground font-mono mt-0.5">{event.detail}</p>
               </div>
-              <span className="text-[11px] text-gray-400 shrink-0">{formatTimeAgo(event.date)}</span>
+              <span className="text-xs text-muted-foreground shrink-0 tabular-nums">{formatTimeAgo(event.date)}</span>
             </Link>
           );
         })}

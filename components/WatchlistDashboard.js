@@ -21,21 +21,21 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const DEAL_SCORE_COLORS = {
-  great: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  good: "bg-indigo-50 text-indigo-700 border-indigo-200",
-  fair: "bg-amber-50 text-amber-700 border-amber-200",
-  poor: "bg-red-50 text-red-700 border-red-200",
-  none: "bg-gray-50 text-gray-400 border-gray-200",
+  great: "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  good: "bg-indigo-50 text-indigo-700 border-indigo-200/60",
+  fair: "bg-amber-50 text-amber-700 border-amber-200/60",
+  poor: "bg-red-50 text-red-700 border-red-200/60",
+  none: "bg-gray-50 text-muted-foreground border-gray-200/60",
 };
 
 function BuyPriorityBadge({ score }) {
   let color;
-  if (score >= 70) color = "bg-emerald-50 text-emerald-700 border-emerald-200";
-  else if (score >= 45) color = "bg-indigo-50 text-indigo-700 border-indigo-200";
-  else color = "bg-gray-50 text-gray-400 border-gray-200";
+  if (score >= 70) color = "bg-emerald-50 text-emerald-700 border-emerald-200/60";
+  else if (score >= 45) color = "bg-indigo-50 text-indigo-700 border-indigo-200/60";
+  else color = "bg-gray-50 text-muted-foreground border-gray-200/60";
 
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border ${color}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold border ${color}`}>
       <Flag className="size-2.5" />
       {score}
     </span>
@@ -44,7 +44,7 @@ function BuyPriorityBadge({ score }) {
 
 function DealScoreBadgeSmall({ score, tier }) {
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border ${DEAL_SCORE_COLORS[tier] || DEAL_SCORE_COLORS.none}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold border ${DEAL_SCORE_COLORS[tier] || DEAL_SCORE_COLORS.none}`}>
       <Sparkles className="size-2.5" />
       {score !== null ? score : "\u2014"}
     </span>
@@ -56,24 +56,24 @@ function PriorityDropdown({ value, onChange }) {
 
   const labels = { high: "High", medium: "Medium", low: "Low" };
   const styles = {
-    high: "text-emerald-700 border-emerald-200 bg-emerald-50",
-    medium: "text-orange-600 border-orange-200 bg-orange-50",
-    low: "text-gray-400 border-gray-200 bg-gray-50",
+    high: "text-emerald-700 border-emerald-200/60 bg-emerald-50",
+    medium: "text-orange-600 border-orange-200/60 bg-orange-50",
+    low: "text-muted-foreground border-gray-200/60 bg-gray-50",
   };
 
   return (
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-semibold border transition-colors ${styles[value]}`}
+        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-colors ${styles[value]}`}
       >
         {labels[value]}
-        <ChevronDown className="size-2.5" />
+        <ChevronDown className="size-3" />
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg border border-gray-200 shadow-elevated z-20 py-1 min-w-[120px]">
+          <div className="absolute top-full left-0 mt-1.5 bg-white rounded-xl border border-gray-200/80 shadow-elevated z-20 py-1.5 min-w-[130px]">
             {["high", "medium", "low"].map((p) => (
               <button
                 key={p}
@@ -81,7 +81,7 @@ function PriorityDropdown({ value, onChange }) {
                   onChange(p);
                   setOpen(false);
                 }}
-                className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`flex items-center gap-2 w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
                   value === p
                     ? "text-orange-600 bg-orange-50"
                     : "text-gray-700 hover:bg-gray-50"
@@ -132,8 +132,8 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
   );
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden group">
-      <div className="flex items-center gap-4 p-4">
+    <div className="bg-white rounded-xl border border-gray-200/80 shadow-card hover:shadow-elevated transition-shadow duration-300 overflow-hidden group">
+      <div className="flex items-center gap-4 p-4 sm:p-5">
         <Link href={`/products/${item.productId}`} className="shrink-0">
           {item.product?.image_url ? (
             <Image
@@ -142,10 +142,10 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
               width={48}
               height={48}
               unoptimized
-              className="size-11 rounded-md border border-gray-100 object-cover"
+              className="size-12 rounded-xl border border-gray-100 object-cover"
             />
           ) : (
-            <div className="size-11 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400">
+            <div className="size-12 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-muted-foreground">
               N/A
             </div>
           )}
@@ -154,45 +154,45 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
         <div className="flex-1 min-w-0">
           <Link
             href={`/products/${item.productId}`}
-            className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate leading-snug"
+            className="text-base font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate leading-snug"
           >
             {item.product?.name || "Unknown Product"}
           </Link>
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-1.5">
             {item.product && (
-              <span className="text-sm font-bold font-mono text-gray-900 tracking-tight">
+              <span className="text-base font-bold font-mono text-foreground tracking-tight">
                 {item.product.currency}{" "}
                 {parseFloat(item.product.current_price).toFixed(2)}
               </span>
             )}
             <DealScoreBadgeSmall score={item.dealScore?.score} tier={item.dealScore?.tier} />
             <BuyPriorityBadge score={item.buyPriority} />
-            <span className="text-[10px] text-gray-400 flex items-center gap-1">
-              <Clock className="size-2.5" />
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <Clock className="size-3" />
               {daysOnList}d
             </span>
             <PriorityDropdown value={item.priority} onChange={handlePriority} />
           </div>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           <Link
             href={`/products/${item.productId}`}
-            className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+            className="size-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-orange-600 hover:bg-orange-50 transition-colors"
             title="View product"
           >
-            <Eye className="size-3.5" />
+            <Eye className="size-4" />
           </Link>
           <button
             onClick={handleRemove}
             disabled={removing}
-            className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+            className="size-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
             title="Remove from watchlist"
           >
             {removing ? (
-              <Loader2 className="size-3.5 animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <Trash2 className="size-3.5" />
+              <Trash2 className="size-4" />
             )}
           </button>
         </div>
@@ -222,33 +222,33 @@ export default function WatchlistDashboard({ items: initialItems }) {
   const buyNowCount = items.filter((i) => i.buyPriority >= 70).length;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
-          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Items</span>
-          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight mt-2">{items.length}</div>
+    <div className="space-y-6 sm:space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5">
+          <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Items</span>
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight mt-2">{items.length}</div>
         </div>
-        <div className={`rounded-lg border p-4 ${
+        <div className={`rounded-xl border p-5 ${
           highCount > 0
-            ? "border-emerald-200 bg-emerald-50/50 shadow-card"
-            : "border-gray-200/60 bg-white shadow-card"
+            ? "border-emerald-200/60 bg-emerald-50/50 shadow-card"
+            : "border-gray-200/80 bg-white shadow-card"
         }`}>
-          <span className={`text-[11px] font-medium uppercase tracking-[0.06em] ${
-            highCount > 0 ? "text-emerald-600" : "text-gray-400"
+          <span className={`text-xs font-semibold uppercase tracking-[0.06em] ${
+            highCount > 0 ? "text-emerald-600" : "text-muted-foreground"
           }`}>High Priority</span>
-          <div className={`text-2xl font-bold font-mono tracking-tight mt-2 ${
+          <div className={`text-3xl font-bold font-mono tracking-tight mt-2 ${
             highCount > 0 ? "text-emerald-700" : "text-gray-300"
           }`}>{highCount}</div>
         </div>
-        <div className={`rounded-lg border p-4 ${
+        <div className={`rounded-xl border p-5 ${
           buyNowCount > 0
-            ? "border-indigo-200 bg-indigo-50/50 shadow-card"
-            : "border-gray-200/60 bg-white shadow-card"
+            ? "border-indigo-200/60 bg-indigo-50/50 shadow-card"
+            : "border-gray-200/80 bg-white shadow-card"
         }`}>
-          <span className={`text-[11px] font-medium uppercase tracking-[0.06em] ${
-            buyNowCount > 0 ? "text-indigo-600" : "text-gray-400"
+          <span className={`text-xs font-semibold uppercase tracking-[0.06em] ${
+            buyNowCount > 0 ? "text-indigo-600" : "text-muted-foreground"
           }`}>Buy Now</span>
-          <div className={`text-2xl font-bold font-mono tracking-tight mt-2 ${
+          <div className={`text-3xl font-bold font-mono tracking-tight mt-2 ${
             buyNowCount > 0 ? "text-indigo-700" : "text-gray-300"
           }`}>{buyNowCount}</div>
         </div>
@@ -256,27 +256,27 @@ export default function WatchlistDashboard({ items: initialItems }) {
 
       {items.length > 0 && (
         <div className="flex items-center gap-2.5 mb-2">
-          <ListChecks className="size-3.5 text-orange-500" />
+          <ListChecks className="size-4 text-orange-500" />
           <h2 className="text-section">Flagged Items</h2>
-          <span className="text-xs text-gray-400 font-medium">Sorted by buy priority</span>
+          <span className="text-xs text-muted-foreground font-medium">Sorted by buy priority</span>
         </div>
       )}
 
       {items.length === 0 ? (
-        <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50/50">
-          <div className="size-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-3">
-            <ListChecks className="size-5 text-gray-400" />
+        <div className="text-center py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+          <div className="size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-4">
+            <ListChecks className="size-6 text-gray-400" />
           </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Nothing on your watchlist yet</h3>
-          <p className="text-sm text-gray-500 max-w-md mx-auto mb-4 px-4">
+          <h3 className="text-base font-semibold text-gray-900 mb-1">Nothing on your watchlist yet</h3>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-5 px-4">
             Flag products you&apos;re considering and we&apos;ll rank them by buying urgency and deal score.
           </p>
-          <Button asChild className="cursor-pointer">
+          <Button asChild>
             <Link href="/">Browse Products</Link>
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 sm:space-y-4">
           {items.map((item) => (
             <WatchlistItem key={item.id} item={item} onRemove={handleRemove} onPriorityChange={handlePriorityChange} />
           ))}

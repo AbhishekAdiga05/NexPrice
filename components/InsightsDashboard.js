@@ -15,16 +15,16 @@ import Link from "next/link";
 
 function DealScoreBadgeSmall({ score, tier }) {
   const styles = {
-    great: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    good: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    fair: "bg-amber-50 text-amber-700 border-amber-200",
-    poor: "bg-red-50 text-red-700 border-red-200",
-    none: "bg-gray-50 text-gray-400 border-gray-200",
+    great: "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+    good: "bg-indigo-50 text-indigo-700 border-indigo-200/60",
+    fair: "bg-amber-50 text-amber-700 border-amber-200/60",
+    poor: "bg-red-50 text-red-700 border-red-200/60",
+    none: "bg-gray-50 text-muted-foreground border-gray-200/60",
   };
   const color = styles[tier] || styles.none;
 
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border ${color}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold border ${color}`}>
       <Sparkles className="size-2.5" />
       {score}
     </span>
@@ -44,44 +44,42 @@ export default function InsightsDashboard({ insights }) {
   } = insights;
 
   return (
-    <div className="space-y-8">
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Total Savings</span>
-            <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <Wallet className="size-4 text-emerald-600" />
+    <div className="space-y-6 sm:space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+        <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Total Savings</span>
+            <div className="size-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <Wallet className="size-[18px] text-emerald-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
             {totalSavingsFormatted}
           </div>
-          <div className="text-[11px] text-gray-400 font-mono mt-1.5 leading-none">{triggeredCount} alerts triggered</div>
+          <div className="text-xs text-muted-foreground font-mono mt-2 leading-none">{triggeredCount} alerts triggered</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Active Alerts</span>
-            <div className="size-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <Bell className="size-4 text-indigo-600" />
+        <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Active Alerts</span>
+            <div className="size-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <Bell className="size-[18px] text-indigo-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{activeCount}</div>
-          <div className="text-[11px] text-gray-400 font-mono mt-1.5 leading-none">{totalAlerts} total set</div>
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">{activeCount}</div>
+          <div className="text-xs text-muted-foreground font-mono mt-2 leading-none">{totalAlerts} total set</div>
         </div>
       </div>
 
-      {/* Best Deals */}
-      <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
-        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-          <Sparkles className="size-3.5 text-orange-500" />
+      <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+          <Sparkles className="size-4 text-orange-500" />
           <h2 className="text-section">Best Deals Now</h2>
-          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded leading-none">{topDeals.length}</span>
+          <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">{topDeals.length}</span>
         </div>
         {topDeals.length === 0 ? (
-          <div className="text-center py-12 px-4">
-            <TrendingUp className="size-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">Track products to see your best deals here.</p>
+          <div className="text-center py-12 px-5">
+            <TrendingUp className="size-10 text-gray-300 mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">Track products to see your best deals here.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-px bg-gray-100">
@@ -89,9 +87,9 @@ export default function InsightsDashboard({ insights }) {
               <Link
                 key={deal.id}
                 href={`/products/${deal.id}`}
-                className="bg-white p-3 hover:bg-gray-50 transition-colors group"
+                className="bg-white p-4 hover:bg-gray-50 transition-colors group"
               >
-                <div className="aspect-[4/3] rounded border border-gray-100 overflow-hidden bg-gray-50 mb-2.5">
+                <div className="aspect-[4/3] rounded-lg border border-gray-100 overflow-hidden bg-gray-50 mb-3">
                   {deal.image_url ? (
                     <Image
                       src={deal.image_url}
@@ -103,15 +101,15 @@ export default function InsightsDashboard({ insights }) {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Tag className="size-5 text-gray-300" />
+                      <Tag className="size-6 text-gray-300" />
                     </div>
                   )}
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors leading-snug">
+                <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors leading-snug">
                   {deal.name}
                 </h3>
-                <div className="flex items-center justify-between gap-1 mt-2">
-                  <span className="text-sm font-bold font-mono text-gray-900 tracking-tight">
+                <div className="flex items-center justify-between gap-1 mt-2.5">
+                  <span className="text-base font-bold font-mono text-foreground tracking-tight">
                     {deal.currency} {deal.current_price.toFixed(2)}
                   </span>
                   <DealScoreBadgeSmall score={deal.dealScore.score} tier={deal.dealScore.tier} />
@@ -122,17 +120,16 @@ export default function InsightsDashboard({ insights }) {
         )}
       </section>
 
-      {/* Recent Savings */}
-      <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
-        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-          <Wallet className="size-3.5 text-emerald-500" />
+      <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+          <Wallet className="size-4 text-emerald-500" />
           <h2 className="text-section">Recent Savings</h2>
-          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded leading-none">{recentSavings.length}</span>
+          <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">{recentSavings.length}</span>
         </div>
         {recentSavings.length === 0 ? (
-          <div className="text-center py-12 px-4">
-            <DollarSign className="size-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">Set a target price alert to start tracking savings.</p>
+          <div className="text-center py-12 px-5">
+            <DollarSign className="size-10 text-gray-300 mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">Set a target price alert to start tracking savings.</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
@@ -140,7 +137,7 @@ export default function InsightsDashboard({ insights }) {
               <Link
                 key={item.id}
                 href={`/products/${item.productId}`}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
+                className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/80 transition-colors group"
               >
                 {item.imageUrl ? (
                   <Image
@@ -149,29 +146,29 @@ export default function InsightsDashboard({ insights }) {
                     width={40}
                     height={40}
                     unoptimized
-                    className="size-10 rounded border border-gray-100 object-cover shrink-0"
+                    className="size-12 rounded-xl border border-gray-100 object-cover shrink-0"
                   />
                 ) : (
-                  <div className="size-10 rounded border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0">
-                    <Tag className="size-3.5 text-gray-300" />
+                  <div className="size-12 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0">
+                    <Tag className="size-4 text-gray-300" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold text-gray-900 group-hover:text-orange-600 transition-colors truncate leading-snug">
                     {item.productName}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-400 font-mono mt-0.5">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono mt-0.5">
                     <span>Target: {item.currency} {item.targetPrice.toFixed(2)}</span>
                     <span className="text-gray-200">·</span>
                     <span>Paid: {item.currency} {item.currentPrice.toFixed(2)}</span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-base font-bold font-mono text-emerald-600 tracking-tight leading-none">
+                  <div className="text-lg font-bold font-mono text-emerald-600 tracking-tight leading-none">
                     +{item.currency} {item.savings.toFixed(2)}
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] text-gray-400 justify-end mt-0.5 leading-none">
-                    <Clock className="size-2.5" />
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground justify-end mt-1 leading-none">
+                    <Clock className="size-3" />
                     {new Date(item.triggeredAt).toLocaleDateString()}
                   </div>
                 </div>

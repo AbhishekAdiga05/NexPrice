@@ -6,7 +6,7 @@ import PriceChart from "./PriceChart";
 import SetPriceAlert from "./SetPriceAlert";
 import DealScoreBadge from "./DealScoreBadge";
 import Image from "next/image";
-import { Trash2, BarChart3, ExternalLink } from "lucide-react";
+import { Trash2, BarChart3, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -39,79 +39,70 @@ export default function ProductCard({ product }) {
   const triggeredCount = product.price_alerts?.filter(
     (a) => a.status === "triggered"
   ).length;
+  const targetReached = activeAlert && parseFloat(product.current_price) <= parseFloat(activeAlert.target_price);
 
   return (
     <motion.div layout>
-      <div className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
-        <Link
-          href={`/dashboard/product/${product.id}`}
-          className="flex items-center gap-4 p-4"
-        >
-          {/* Image */}
-          <div className="size-12 rounded-md border border-gray-100 overflow-hidden shrink-0 bg-gray-50">
-            {product.image_url ? (
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                width={48}
-                height={48}
-                unoptimized
-                className="size-full object-cover"
-              />
-            ) : (
-              <div className="size-full flex items-center justify-center text-[10px] text-gray-300">
-                N/A
-              </div>
-            )}
-          </div>
+      <div className="bg-white rounded-xl border border-gray-200/80 shadow-card hover:shadow-elevated transition-shadow duration-300 overflow-hidden">
+        {/* Top row: Image, Name, Price, Status Badge */}
+        <div className="flex items-center gap-4 p-4 sm:p-5">
+          <Link
+            href={`/dashboard/product/${product.id}`}
+            className="shrink-0"
+          >
+            <div className="size-14 rounded-xl border border-gray-100 overflow-hidden bg-gray-50">
+              {product.image_url ? (
+                <Image
+                  src={product.image_url}
+                  alt={product.name}
+                  width={56}
+                  height={56}
+                  unoptimized
+                  className="size-full object-cover"
+                />
+              ) : (
+                <div className="size-full flex items-center justify-center text-xs text-gray-300">
+                  N/A
+                </div>
+              )}
+            </div>
+          </Link>
 
-          {/* Info columns */}
-          <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 items-start">
-            {/* Title row */}
-            <h3 className="text-sm font-semibold text-gray-900 truncate leading-snug group-hover:text-orange-600 transition-colors">
+          <Link
+            href={`/dashboard/product/${product.id}`}
+            className="flex-1 min-w-0"
+          >
+            <h3 className="text-base font-semibold text-gray-900 truncate leading-snug group-hover:text-orange-600 transition-colors">
               {product.name}
             </h3>
-            <div className="justify-self-end">
-              <DealScoreBadge
-                productId={product.id}
-                currentPrice={product.current_price}
-              />
-            </div>
-
-            {/* Price row */}
-            <div className="flex items-baseline gap-2">
-              <span className="text-base font-bold font-mono text-gray-900 tracking-tight leading-none">
+            <div className="flex items-center gap-3 mt-1">
+              <span className="text-lg font-bold font-mono text-gray-900 tracking-tight">
                 {product.currency} {parseFloat(product.current_price).toFixed(2)}
               </span>
               {targetPrice && (
-                <span className="text-[11px] font-mono text-gray-400 leading-none">
+                <span className="text-xs text-muted-foreground font-mono">
                   target {product.currency} {targetPrice.toFixed(2)}
                 </span>
               )}
             </div>
+          </Link>
 
-            {/* Metadata row */}
-            <div className="flex items-center gap-3 text-[11px] text-gray-400 justify-self-end">
-              {triggeredCount > 0 && (
-                <span className="text-emerald-600 font-medium">
-                  {triggeredCount} captured
-                </span>
-              )}
-            </div>
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <DealScoreBadge
+              productId={product.id}
+              currentPrice={product.current_price}
+            />
+            {targetReached && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                Target Reached
+              </span>
+            )}
           </div>
-        </Link>
+        </div>
 
-        {/* Action row */}
-        <div className="flex items-center gap-1 px-4 pb-3.5 border-t border-gray-50 pt-2.5">
-          <button
-            onClick={() => setShowChart(!showChart)}
-            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
-          >
-            <BarChart3 className="size-3" />
-            {showChart ? "Hide chart" : "Price chart"}
-          </button>
-
-          <div className="flex-1 min-w-0 px-2">
+        {/* Second row: Target price, Alert status, Quick actions */}
+        <div className="flex items-center gap-2 px-4 sm:px-5 pb-4 sm:pb-5">
+          <div className="flex-1 min-w-0">
             <SetPriceAlert
               productId={product.id}
               currentPrice={product.current_price}
@@ -120,24 +111,36 @@ export default function ProductCard({ product }) {
             />
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5 shrink-0">
+            {triggeredCount > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                {triggeredCount} captured
+              </span>
+            )}
+            <button
+              onClick={() => setShowChart(!showChart)}
+              className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium text-muted-foreground hover:text-orange-600 hover:bg-orange-50 transition-colors"
+            >
+              <BarChart3 className="size-3.5" />
+              {showChart ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+            </button>
             <Link
               href={product.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-colors"
+              className="size-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-colors"
               title="Open in store"
               onClick={(e) => e.stopPropagation()}
             >
-              <ExternalLink className="size-3" />
+              <ExternalLink className="size-3.5" />
             </Link>
             <button
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleting}
-              className="size-7 rounded-md flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+              className="size-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
               title="Stop tracking"
             >
-              <Trash2 className="size-3" />
+              <Trash2 className="size-3.5" />
             </button>
           </div>
         </div>
@@ -150,9 +153,9 @@ export default function ProductCard({ product }) {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="overflow-hidden border-t border-gray-100 bg-gray-50/30"
+              className="overflow-hidden border-t border-gray-100 bg-gray-50/50"
             >
-              <div className="p-4">
+              <div className="p-4 sm:p-5">
                 <PriceChart productId={product.id} />
               </div>
             </motion.div>
@@ -165,7 +168,7 @@ export default function ProductCard({ product }) {
           <DialogHeader>
             <DialogTitle>Stop tracking?</DialogTitle>
             <DialogDescription>
-              Remove <span className="font-medium text-gray-900">{product.name}</span>?
+              Remove <span className="font-medium text-foreground">{product.name}</span>?
               All history and alerts will be deleted.
             </DialogDescription>
           </DialogHeader>

@@ -30,7 +30,7 @@ import {
 function StatusBadge({ status }) {
   if (status === "active") {
     return (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/60">
         <span className="size-1.5 rounded-full bg-indigo-500" />
         Watching
       </span>
@@ -38,14 +38,14 @@ function StatusBadge({ status }) {
   }
   if (status === "triggered") {
     return (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-        <CheckCircle2 className="size-2.5" />
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+        <CheckCircle2 className="size-3" />
         Captured
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-gray-50 text-gray-400 border border-gray-200">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-gray-50 text-muted-foreground border border-gray-200/60">
       Disabled
     </span>
   );
@@ -80,9 +80,9 @@ function NewAlertDialog({ productId, currentPrice, currency, onClose }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Target Price</label>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Target Price</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-mono text-gray-400 pointer-events-none">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-mono text-muted-foreground pointer-events-none">
                 {currency}
               </span>
               <Input
@@ -93,25 +93,25 @@ function NewAlertDialog({ productId, currentPrice, currency, onClose }) {
                 placeholder="0.00"
                 value={targetPrice}
                 onChange={(e) => setTargetPrice(e.target.value)}
-                className="pl-7 h-10 text-base font-mono"
+                className="pl-8 h-12 text-base font-mono"
                 required
                 autoFocus
               />
             </div>
-            <p className="mt-1 text-xs text-gray-400 font-mono">
+            <p className="mt-1.5 text-xs text-muted-foreground font-mono">
               Current price: {currency} {parseFloat(currentPrice).toFixed(2)}
             </p>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} className="h-9 text-xs">
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting || !targetPrice} className="h-9 gap-1.5 text-xs cursor-pointer">
+            <Button type="submit" disabled={submitting || !targetPrice} className="gap-1.5">
               {submitting ? (
-                <Loader2 className="size-3.5 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
               ) : (
-                <Bell className="size-3.5" />
+                <Bell className="size-4" />
               )}
               Set Alert
             </Button>
@@ -154,9 +154,9 @@ function AlertCard({ alert, currency }) {
   };
 
   return (
-    <div className="p-4">
-      <div className={`h-0.5 rounded-full w-12 mb-3 ${isTriggered ? "bg-emerald-400" : "bg-indigo-400"}`} />
-      <div className="flex items-center gap-3">
+    <div className="p-4 sm:p-5">
+      <div className={`h-0.5 rounded-full w-12 mb-4 ${isTriggered ? "bg-emerald-400" : "bg-indigo-400"}`} />
+      <div className="flex items-center gap-4">
         {alert.product?.image_url ? (
           <Image
             src={alert.product.image_url}
@@ -164,10 +164,10 @@ function AlertCard({ alert, currency }) {
             width={40}
             height={40}
             unoptimized
-            className="size-10 rounded-md border border-gray-100 object-cover shrink-0"
+            className="size-11 rounded-xl border border-gray-100 object-cover shrink-0"
           />
         ) : (
-          <div className="size-10 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400 shrink-0">
+          <div className="size-11 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-muted-foreground shrink-0">
             N/A
           </div>
         )}
@@ -181,13 +181,13 @@ function AlertCard({ alert, currency }) {
               >
                 {alert.product?.name || "Unknown Product"}
               </Link>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5">
                 <StatusBadge status={alert.status} />
-                <span className="text-[11px] text-gray-400 font-mono">
+                <span className="text-xs text-muted-foreground font-mono">
                   Target: {currency} {parseFloat(alert.target_price).toFixed(2)}
                 </span>
                 {isTriggered && alert.savings > 0 && (
-                  <span className="text-[11px] font-semibold text-emerald-600 font-mono">
+                  <span className="text-xs font-semibold text-emerald-600 font-mono">
                     · Saved {currency} {parseFloat(alert.savings).toFixed(2)}
                   </span>
                 )}
@@ -196,15 +196,15 @@ function AlertCard({ alert, currency }) {
 
             {alert.product && (
               <div className="text-right shrink-0">
-                <div className="text-[10px] text-gray-400 font-mono leading-none">Current</div>
-                <div className="text-sm font-bold text-gray-900 font-mono tracking-tight leading-none">
+                <div className="text-[11px] text-muted-foreground font-mono leading-none">Current</div>
+                <div className="text-base font-bold text-foreground font-mono tracking-tight leading-none mt-0.5">
                   {currency} {parseFloat(alert.product.current_price).toFixed(2)}
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-3 mt-2.5">
+          <div className="flex items-center gap-3 mt-3">
             {!isTriggered && alert.product && (
               <>
                 <div className="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden max-w-[160px]">
@@ -215,16 +215,16 @@ function AlertCard({ alert, currency }) {
                     style={{ width: `${targetReached ? 100 : progress}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-gray-400 font-mono">
+                <span className="text-[11px] text-muted-foreground font-mono">
                   {!targetReached ? `${progress.toFixed(0)}% to target` : "Target reached!"}
                 </span>
               </>
             )}
 
-            <div className="ml-auto flex items-center gap-1.5">
+            <div className="ml-auto flex items-center gap-2">
               {alert.created_at && (
-                <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                  <Clock className="size-2.5" />
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="size-3" />
                   {formatDate(alert.created_at)}
                 </span>
               )}
@@ -232,12 +232,12 @@ function AlertCard({ alert, currency }) {
                 <button
                   onClick={handleRemove}
                   disabled={removing}
-                  className="size-6 rounded flex items-center justify-center text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors"
+                  className="size-7 rounded-lg flex items-center justify-center text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors"
                 >
                   {removing ? (
-                    <Loader2 className="size-3 animate-spin" />
+                    <Loader2 className="size-3.5 animate-spin" />
                   ) : (
-                    <BellOff className="size-3" />
+                    <BellOff className="size-3.5" />
                   )}
                 </button>
               )}
@@ -256,61 +256,61 @@ export default function AlertsDashboard({ alerts }) {
   const currency = activeAlerts[0]?.product?.currency || triggeredAlerts[0]?.product?.currency || "$";
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Active</span>
-            <div className="size-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <BellRing className="size-4 text-indigo-600" />
+    <div className="space-y-6 sm:space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Active</span>
+            <div className="size-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <BellRing className="size-[18px] text-indigo-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{activeAlerts.length}</div>
-          <div className="text-[11px] text-gray-400 font-mono mt-1.5">currently watching</div>
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">{activeAlerts.length}</div>
+          <div className="text-xs text-muted-foreground font-mono mt-2">currently watching</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Captured</span>
-            <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <CheckCircle2 className="size-4 text-emerald-600" />
+        <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Captured</span>
+            <div className="size-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <CheckCircle2 className="size-[18px] text-emerald-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{triggeredAlerts.length}</div>
-          <div className="text-[11px] text-gray-400 font-mono mt-1.5">targets hit</div>
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">{triggeredAlerts.length}</div>
+          <div className="text-xs text-muted-foreground font-mono mt-2">targets hit</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200/60 shadow-card p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.06em]">Total</span>
-            <div className="size-8 rounded-lg bg-orange-50 flex items-center justify-center">
-              <Bell className="size-4 text-orange-600" />
+        <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Total</span>
+            <div className="size-10 rounded-xl bg-orange-50 flex items-center justify-center">
+              <Bell className="size-[18px] text-orange-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-gray-900 tracking-tight leading-none">{alerts.length}</div>
-          <div className="text-[11px] text-gray-400 font-mono mt-1.5">all time</div>
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">{alerts.length}</div>
+          <div className="text-xs text-muted-foreground font-mono mt-2">all time</div>
         </div>
       </div>
 
       {alerts.length === 0 && (
-        <div className="text-center py-16 rounded-lg border border-dashed border-gray-200 bg-gray-50/50">
-          <div className="size-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-3">
-            <BellOff className="size-5 text-gray-400" />
+        <div className="text-center py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+          <div className="size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-4">
+            <BellOff className="size-6 text-gray-400" />
           </div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">No alerts set yet</h3>
-          <p className="text-sm text-gray-500 max-w-md mx-auto mb-4 px-4">
+          <h3 className="text-base font-semibold text-gray-900 mb-1">No alerts set yet</h3>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-5 px-4">
             Set a target price on any tracked product and we&apos;ll notify you when the price drops.
           </p>
-          <Button asChild className="cursor-pointer">
+          <Button asChild>
             <Link href="/">Back to Dashboard</Link>
           </Button>
         </div>
       )}
 
       {activeAlerts.length > 0 && (
-        <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
-          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-            <BellRing className="size-3.5 text-indigo-500" />
+        <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+            <BellRing className="size-4 text-indigo-500" />
             <h2 className="text-section">Watching</h2>
-            <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{activeAlerts.length}</span>
+            <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg">{activeAlerts.length}</span>
           </div>
           <div className="divide-y divide-gray-50">
             {activeAlerts.map((alert) => (
@@ -321,11 +321,11 @@ export default function AlertsDashboard({ alerts }) {
       )}
 
       {triggeredAlerts.length > 0 && (
-        <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
-          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-            <CheckCircle2 className="size-3.5 text-emerald-500" />
+        <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+            <CheckCircle2 className="size-4 text-emerald-500" />
             <h2 className="text-section">Captured</h2>
-            <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{triggeredAlerts.length}</span>
+            <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg">{triggeredAlerts.length}</span>
           </div>
           <div className="divide-y divide-gray-50">
             {triggeredAlerts.map((alert) => (
@@ -336,11 +336,11 @@ export default function AlertsDashboard({ alerts }) {
       )}
 
       {disabledAlerts.length > 0 && (
-        <section className="bg-white rounded-lg border border-gray-200/60 shadow-card overflow-hidden">
-          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-            <BellOff className="size-3.5 text-gray-400" />
-            <h2 className="text-section text-gray-400">Disabled</h2>
-            <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{disabledAlerts.length}</span>
+        <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+            <BellOff className="size-4 text-muted-foreground" />
+            <h2 className="text-section text-muted-foreground">Disabled</h2>
+            <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg">{disabledAlerts.length}</span>
           </div>
           <div className="divide-y divide-gray-50">
             {disabledAlerts.map((alert) => (

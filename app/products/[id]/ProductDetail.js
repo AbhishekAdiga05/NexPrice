@@ -78,13 +78,12 @@ export default function ProductDetail({
   };
 
   return (
-    <main className="min-h-screen relative overflow-hidden font-sans">
-      <div className="max-w-5xl mx-auto px-6 lg:px-12 py-12">
-        {/* Breadcrumb */}
+    <main className="min-h-screen bg-background font-sans">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
         <div className="flex items-center gap-3 mb-8">
           <Link
             href="/"
-            className="size-8 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
+            className="size-9 rounded-xl border border-gray-200/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-gray-50 transition-colors"
           >
             <ArrowLeft className="size-4" />
           </Link>
@@ -99,10 +98,8 @@ export default function ProductDetail({
           </div>
         </div>
 
-        {/* Product Hero */}
-        <div className="bg-card rounded-2xl border border-white/[0.06] shadow-card overflow-hidden mb-8">
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-card overflow-hidden mb-8">
           <div className="flex flex-col md:flex-row gap-8 p-6 lg:p-8">
-            {/* Image */}
             <div className="shrink-0">
               {product.image_url ? (
                 <Image
@@ -111,25 +108,24 @@ export default function ProductDetail({
                   width={256}
                   height={256}
                   unoptimized
-                  className="w-full md:w-52 lg:w-64 rounded-xl border border-white/[0.08] object-cover aspect-square"
+                  className="w-full md:w-52 lg:w-64 rounded-xl border border-gray-100 object-cover aspect-square"
                 />
               ) : (
-                <div className="w-full md:w-52 lg:w-64 rounded-xl border border-white/[0.08] bg-muted flex items-center justify-center text-muted-foreground aspect-square">
+                <div className="w-full md:w-52 lg:w-64 rounded-xl border border-gray-100 bg-muted flex items-center justify-center text-muted-foreground aspect-square">
                   <ShoppingCart className="size-12" />
                 </div>
               )}
             </div>
 
-            {/* Info */}
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="size-2 rounded-full bg-emerald-500 shadow-glow-green animate-breathe" />
-                  <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">
+                  <div className="size-2 rounded-full bg-emerald-500" />
+                  <span className="text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
                     TRACKING
                   </span>
-                  <Badge variant="outline" className="text-[10px]">
-                    <Activity className="size-2.5 mr-1" />
+                  <Badge variant="outline" className="text-[11px]">
+                    <Activity className="size-3 mr-1" />
                     {priceHistory.length} records
                   </Badge>
                 </div>
@@ -154,25 +150,25 @@ export default function ProductDetail({
                 {priceHistory.length >= 2 && (
                   <div className="flex items-center gap-6 text-xs text-muted-foreground font-mono">
                     <div>
-                      <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                      <span className="block text-[11px] uppercase tracking-wider text-muted-foreground/60">
                         Lowest
                       </span>
-                      <span className="text-emerald-400 font-bold">
+                      <span className="text-emerald-600 font-bold">
                         {product.currency}{" "}
                         {Math.min(...priceHistory.map((h) => parseFloat(h.price))).toFixed(2)}
                       </span>
                     </div>
                     <div>
-                      <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                      <span className="block text-[11px] uppercase tracking-wider text-muted-foreground/60">
                         Highest
                       </span>
-                      <span className="text-red-400 font-bold">
+                      <span className="text-red-600 font-bold">
                         {product.currency}{" "}
                         {Math.max(...priceHistory.map((h) => parseFloat(h.price))).toFixed(2)}
                       </span>
                     </div>
                     <div>
-                      <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                      <span className="block text-[11px] uppercase tracking-wider text-muted-foreground/60">
                         Average
                       </span>
                       <span>
@@ -184,7 +180,7 @@ export default function ProductDetail({
                       </span>
                     </div>
                     <div>
-                      <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                      <span className="block text-[11px] uppercase tracking-wider text-muted-foreground/60">
                         Tracking since
                       </span>
                       <span>
@@ -195,7 +191,7 @@ export default function ProductDetail({
                 )}
               </div>
 
-              <div className="flex items-center gap-3 mt-6 pt-6 border-t border-white/[0.06]">
+              <div className="flex items-center gap-3 mt-6 pt-6 border-t border-gray-100">
                 <Button
                   variant="outline"
                   size="sm"
@@ -247,21 +243,18 @@ export default function ProductDetail({
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">
-          {/* Left column: Chart + Analysis */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Price Chart */}
-            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
-              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-white/[0.06]">
-                <BarChart3 className="size-4 text-accent" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
+            <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-6">
+              <div className="flex items-center gap-2 mb-5 pb-4 border-b border-gray-100">
+                <BarChart3 className="size-4 text-orange-500" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Price History &amp; Analysis
                 </h2>
               </div>
               <PriceChart productId={product.id} />
             </div>
 
-            {/* Price Prediction */}
-            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6">
+            <div className="bg-white rounded-xl border border-gray-200/80 shadow-card">
               <PricePrediction
                 trend={trend}
                 currentPrice={parseFloat(product.current_price)}
@@ -271,12 +264,11 @@ export default function ProductDetail({
             </div>
           </div>
 
-          {/* Right column: Alert management */}
           <div className="lg:col-span-2">
-            <div className="bg-card rounded-xl border border-white/[0.06] shadow-card p-6 sticky top-28">
-              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-white/[0.06]">
-                <Activity className="size-4 text-accent" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
+            <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-6 sticky top-28">
+              <div className="flex items-center gap-2 mb-5 pb-4 border-b border-gray-100">
+                <Activity className="size-4 text-orange-500" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Alerts &amp; History
                 </h2>
               </div>
@@ -287,20 +279,19 @@ export default function ProductDetail({
                 alerts={product.price_alerts}
               />
 
-              {/* Price History Summary */}
               {priceHistory.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-white/[0.06]">
+                <div className="mt-6 pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 mb-3">
                     <Clock className="size-3.5 text-muted-foreground" />
-                    <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase font-mono">
+                    <span className="text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
                       Recent Prices
                     </span>
                   </div>
-                  <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                  <div className="space-y-1.5 max-h-[200px] overflow-y-auto scrollbar-thin">
                     {[...priceHistory].reverse().slice(0, 10).map((entry) => (
                       <div
                         key={entry.id}
-                        className="flex items-center justify-between text-[11px] font-mono py-1.5 px-2 rounded-md hover:bg-white/[0.04] transition-colors"
+                        className="flex items-center justify-between text-xs font-mono py-1.5 px-3 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <span className="text-muted-foreground">
                           {new Date(entry.checked_at).toLocaleDateString()}
