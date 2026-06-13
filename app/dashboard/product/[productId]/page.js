@@ -312,7 +312,7 @@ export default async function ProductDetailPage({ params }) {
                           <TimelineIcon type={event.type} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-gray-700 leading-snug">
+                          <p className="text-sm text-secondary-foreground leading-snug">
                             {event.description}
                           </p>
                           <p className="text-xs font-mono text-muted-foreground mt-0.5">

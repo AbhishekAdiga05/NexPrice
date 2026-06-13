@@ -78,7 +78,7 @@ export default function InsightsDashboard({ insights }) {
         </div>
         {topDeals.length === 0 ? (
           <div className="text-center py-12 px-5">
-            <TrendingUp className="size-10 text-gray-300 mx-auto mb-3" />
+            <TrendingUp className="size-10 text-muted-foreground/50 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">Track products to see your best deals here.</p>
           </div>
         ) : (
@@ -101,11 +101,11 @@ export default function InsightsDashboard({ insights }) {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Tag className="size-6 text-gray-300" />
+                      <Tag className="size-6 text-muted-foreground/50" />
                     </div>
                   )}
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors leading-snug">
+                <h3 className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-orange-600 transition-colors leading-snug">
                   {deal.name}
                 </h3>
                 <div className="flex items-center justify-between gap-1 mt-2.5">
@@ -128,7 +128,7 @@ export default function InsightsDashboard({ insights }) {
         </div>
         {recentSavings.length === 0 ? (
           <div className="text-center py-12 px-5">
-            <DollarSign className="size-10 text-gray-300 mx-auto mb-3" />
+            <DollarSign className="size-10 text-muted-foreground/50 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">Set a target price alert to start tracking savings.</p>
           </div>
         ) : (
@@ -150,16 +150,16 @@ export default function InsightsDashboard({ insights }) {
                   />
                 ) : (
                   <div className="size-12 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0">
-                    <Tag className="size-4 text-gray-300" />
+                    <Tag className="size-4 text-muted-foreground/50" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-gray-900 group-hover:text-orange-600 transition-colors truncate leading-snug">
+                  <div className="text-sm font-semibold text-foreground group-hover:text-orange-600 transition-colors truncate leading-snug">
                     {item.productName}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono mt-0.5">
                     <span>Target: {item.currency} {item.targetPrice.toFixed(2)}</span>
-                    <span className="text-gray-200">·</span>
+                    <span className="text-muted-foreground/30">·</span>
                     <span>Paid: {item.currency} {item.currentPrice.toFixed(2)}</span>
                   </div>
                 </div>

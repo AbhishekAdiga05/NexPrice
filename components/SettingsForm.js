@@ -33,7 +33,7 @@ function Section({ icon: Icon, title, description, children }) {
             <Icon className="size-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+            <h2 className="text-sm font-semibold text-foreground">{title}</h2>
             {description && (
               <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
             )}
@@ -59,7 +59,7 @@ function Toggle({ checked, onChange, label, description }) {
         <div className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm peer-checked:translate-x-4 transition-transform" />
       </div>
       <div className="flex-1 min-w-0">
-        <span className="text-sm font-semibold text-gray-900 group-hover:text-orange-600 transition-colors leading-snug">
+        <span className="text-sm font-semibold text-foreground group-hover:text-orange-600 transition-colors leading-snug">
           {label}
         </span>
         {description && (
@@ -103,7 +103,7 @@ export default function SettingsForm({ user, settings }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <AtSign className="size-3.5 text-muted-foreground" />
-                <span className="text-sm font-semibold text-gray-900 truncate leading-snug">
+                <span className="text-sm font-semibold text-foreground truncate leading-snug">
                   {user.email || "Signed in"}
                 </span>
               </div>
@@ -136,7 +136,7 @@ export default function SettingsForm({ user, settings }) {
                       key={value}
                       type="button"
                       onClick={() => setDigestDay(value)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                         digestDay === value
                           ? "bg-orange-500 text-white border-orange-500"
                           : "bg-white text-muted-foreground border-gray-200 hover:border-orange-300 hover:text-orange-600"

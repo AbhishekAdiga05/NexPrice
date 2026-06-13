@@ -98,7 +98,7 @@ export default function SetPriceAlert({ productId, currentPrice, currency, alert
       )}
       <button
         onClick={() => handleRemove(activeAlert.id)}
-        className="ml-auto size-6 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+        className="ml-auto size-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         title="Remove alert"
       >
         <BellOff className="size-3" />

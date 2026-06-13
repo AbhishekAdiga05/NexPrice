@@ -65,7 +65,7 @@ function PriorityDropdown({ value, onChange }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-colors ${styles[value]}`}
+        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${styles[value]}`}
       >
         {labels[value]}
         <ChevronDown className="size-3" />
@@ -81,10 +81,10 @@ function PriorityDropdown({ value, onChange }) {
                   onChange(p);
                   setOpen(false);
                 }}
-                className={`flex items-center gap-2 w-full text-left px-3 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 w-full text-left px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                   value === p
                     ? "text-orange-600 bg-orange-50"
-                    : "text-gray-700 hover:bg-gray-50"
+                    : "text-secondary-foreground hover:bg-gray-50"
                 }`}
               >
                 <span className={`size-1.5 rounded-full ${
@@ -154,7 +154,7 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
         <div className="flex-1 min-w-0">
           <Link
             href={`/products/${item.productId}`}
-            className="text-base font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate leading-snug"
+            className="text-sm sm:text-base font-semibold text-foreground hover:text-orange-600 transition-colors truncate leading-snug"
           >
             {item.product?.name || "Unknown Product"}
           </Link>
@@ -178,7 +178,7 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
         <div className="flex items-center gap-1.5 shrink-0">
           <Link
             href={`/products/${item.productId}`}
-            className="size-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+            className="size-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-orange-600 hover:bg-orange-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             title="View product"
           >
             <Eye className="size-4" />
@@ -186,7 +186,7 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
           <button
             onClick={handleRemove}
             disabled={removing}
-            className="size-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+            className="size-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             title="Remove from watchlist"
           >
             {removing ? (
@@ -237,7 +237,7 @@ export default function WatchlistDashboard({ items: initialItems }) {
             highCount > 0 ? "text-emerald-600" : "text-muted-foreground"
           }`}>High Priority</span>
           <div className={`text-3xl font-bold font-mono tracking-tight mt-2 ${
-            highCount > 0 ? "text-emerald-700" : "text-gray-300"
+            highCount > 0 ? "text-emerald-700" : "text-muted-foreground/50"
           }`}>{highCount}</div>
         </div>
         <div className={`rounded-xl border p-5 ${
@@ -249,7 +249,7 @@ export default function WatchlistDashboard({ items: initialItems }) {
             buyNowCount > 0 ? "text-indigo-600" : "text-muted-foreground"
           }`}>Buy Now</span>
           <div className={`text-3xl font-bold font-mono tracking-tight mt-2 ${
-            buyNowCount > 0 ? "text-indigo-700" : "text-gray-300"
+            buyNowCount > 0 ? "text-indigo-700" : "text-muted-foreground/50"
           }`}>{buyNowCount}</div>
         </div>
       </div>
@@ -265,9 +265,9 @@ export default function WatchlistDashboard({ items: initialItems }) {
       {items.length === 0 ? (
         <div className="text-center py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
           <div className="size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-4">
-            <ListChecks className="size-6 text-gray-400" />
+            <ListChecks className="size-6 text-muted-foreground/70" />
           </div>
-          <h3 className="text-base font-semibold text-gray-900 mb-1">Nothing on your watchlist yet</h3>
+          <h3 className="text-base font-semibold text-foreground mb-1">Nothing on your watchlist yet</h3>
           <p className="text-sm text-muted-foreground max-w-md mx-auto mb-5 px-4">
             Flag products you&apos;re considering and we&apos;ll rank them by buying urgency and deal score.
           </p>

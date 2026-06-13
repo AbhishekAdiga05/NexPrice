@@ -1,21 +1,6 @@
-import { Clock, CheckCircle2, PlusCircle, TrendingDown } from "lucide-react";
+import { Clock, CheckCircle2, PlusCircle } from "lucide-react";
 import Link from "next/link";
-
-function formatTimeAgo(dateStr) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now - d;
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffMinutes < 1) return "Just now";
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
+import { formatTimeAgo } from "@/lib/dates";
 
 export default function RecentActivity({ recentSavings = [], recentProducts = [] }) {
   const events = [
@@ -39,7 +24,14 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 10);
 
-  if (events.length === 0) return null;
+  if (events.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-8 text-center">
+        <Clock className="size-8 text-muted-foreground/50 mx-auto mb-3" />
+        <p className="text-sm text-muted-foreground">No activity yet. Start tracking products to see updates here.</p>
+      </div>
+    );
+  }
 
   const typeStyles = {
     alert_triggered: "text-emerald-600 bg-emerald-50 border-emerald-200/60",
@@ -60,14 +52,13 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
       <div className="divide-y divide-gray-50">
         {events.map((event, idx) => {
           const Icon = typeIcons[event.type] || Clock;
-          const style = typeStyles[event.type] || "text-gray-600 bg-gray-50";
+          const style = typeStyles[event.type] || "text-muted-foreground bg-gray-50";
           return (
             <Link
               key={event.id}
               href={event.href}
               className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/80 transition-colors group"
             >
-              {/* Timeline indicator */}
               <div className="flex flex-col items-center gap-1 shrink-0">
                 <div className={`size-9 rounded-xl border flex items-center justify-center ${style}`}>
                   <Icon className="size-4" />
@@ -77,7 +68,7 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors truncate leading-snug">
+                <p className="text-sm font-medium text-secondary-foreground group-hover:text-orange-600 transition-colors truncate leading-snug">
                   {event.description}
                 </p>
                 <p className="text-xs text-muted-foreground font-mono mt-0.5">{event.detail}</p>

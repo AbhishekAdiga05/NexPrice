@@ -5,7 +5,7 @@ export default function DashboardShell({ children }) {
     <div className="min-h-screen bg-background">
       <Sidebar />
       <main className="lg:pl-60 pt-14 lg:pt-0">
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8 lg:py-10">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-5 sm:py-8 lg:py-10">
           {children}
         </div>
       </main>

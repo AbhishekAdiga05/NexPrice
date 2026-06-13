@@ -3,10 +3,8 @@
 import { useState } from "react";
 import {
   removePriceAlert,
-  setPriceAlert,
 } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import {
   Bell,
@@ -15,17 +13,10 @@ import {
   CheckCircle2,
   Clock,
   Loader2,
-  Crosshair,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { formatTimeAgo } from "@/lib/dates";
 
 function StatusBadge({ status }) {
   if (status === "active") {
@@ -51,77 +42,6 @@ function StatusBadge({ status }) {
   );
 }
 
-function NewAlertDialog({ productId, currentPrice, currency, onClose }) {
-  const [targetPrice, setTargetPrice] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    const result = await setPriceAlert(productId, targetPrice);
-    if (result.error) {
-      toast.error(result.error);
-    } else {
-      toast.success(result.message);
-      onClose();
-    }
-    setSubmitting(false);
-  };
-
-  return (
-    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent showCloseButton={false} className="sm:max-w-md">
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <Crosshair className="size-4 text-orange-500" />
-            <DialogTitle>New Target Price Alert</DialogTitle>
-          </div>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Target Price</label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-mono text-muted-foreground pointer-events-none">
-                {currency}
-              </span>
-              <Input
-                type="number"
-                step="0.01"
-                min="0.01"
-                max={currentPrice}
-                placeholder="0.00"
-                value={targetPrice}
-                onChange={(e) => setTargetPrice(e.target.value)}
-                className="pl-8 h-12 text-base font-mono"
-                required
-                autoFocus
-              />
-            </div>
-            <p className="mt-1.5 text-xs text-muted-foreground font-mono">
-              Current price: {currency} {parseFloat(currentPrice).toFixed(2)}
-            </p>
-          </div>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={submitting || !targetPrice} className="gap-1.5">
-              {submitting ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Bell className="size-4" />
-              )}
-              Set Alert
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 function AlertCard({ alert, currency }) {
   const [removing, setRemoving] = useState(false);
 
@@ -141,17 +61,6 @@ function AlertCard({ alert, currency }) {
     ? Math.min(100, ((parseFloat(alert.product.current_price) - parseFloat(alert.target_price)) / parseFloat(alert.product.current_price)) * 100)
     : 0;
   const targetReached = alert.product && parseFloat(alert.product.current_price) <= parseFloat(alert.target_price);
-
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now - d;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  };
 
   return (
     <div className="p-4 sm:p-5">
@@ -177,7 +86,7 @@ function AlertCard({ alert, currency }) {
             <div className="min-w-0">
               <Link
                 href={`/products/${alert.product_id}`}
-                className="text-sm font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate leading-snug"
+                className="text-sm font-semibold text-foreground hover:text-orange-600 transition-colors truncate leading-snug"
               >
                 {alert.product?.name || "Unknown Product"}
               </Link>
@@ -225,14 +134,14 @@ function AlertCard({ alert, currency }) {
               {alert.created_at && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <Clock className="size-3" />
-                  {formatDate(alert.created_at)}
+                  {formatTimeAgo(alert.created_at)}
                 </span>
               )}
               {alert.status === "active" && (
                 <button
                   onClick={handleRemove}
                   disabled={removing}
-                  className="size-7 rounded-lg flex items-center justify-center text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors"
+                  className="size-7 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   {removing ? (
                     <Loader2 className="size-3.5 animate-spin" />
@@ -293,9 +202,9 @@ export default function AlertsDashboard({ alerts }) {
       {alerts.length === 0 && (
         <div className="text-center py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
           <div className="size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-4">
-            <BellOff className="size-6 text-gray-400" />
+            <BellOff className="size-6 text-muted-foreground/70" />
           </div>
-          <h3 className="text-base font-semibold text-gray-900 mb-1">No alerts set yet</h3>
+          <h3 className="text-base font-semibold text-foreground mb-1">No alerts set yet</h3>
           <p className="text-sm text-muted-foreground max-w-md mx-auto mb-5 px-4">
             Set a target price on any tracked product and we&apos;ll notify you when the price drops.
           </p>

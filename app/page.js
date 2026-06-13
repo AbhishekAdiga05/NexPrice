@@ -18,41 +18,41 @@ import DashboardShell from "@/components/DashboardShell";
 import RecentActivity from "@/components/RecentActivity";
 import LandingCTA from "@/components/LandingCTA";
 import Footer from "@/components/Footer";
+import SectionFade from "@/components/SectionFade";
+import PriceHistoryPreview from "@/components/PriceHistoryPreview";
 import {
   Activity,
   Target,
   Wallet,
   Search,
-  TrendingUp,
-  DollarSign,
   Link2,
   Bell,
   LineChart,
   ListChecks,
 } from "lucide-react";
-import ProductAlertPreview from "@/components/ProductAlertPreview";
+import HeroVisual from "@/components/HeroVisual";
 
 function LandingHero() {
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-28 px-5 sm:px-8">
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_auto] gap-16 lg:gap-24 items-center">
-        <div className="max-w-xl">
-          <h1 className="text-[2.5rem] sm:text-[3.5rem] lg:text-[4.25rem] font-bold text-gray-900 tracking-tight leading-[1.08]">
+    <section className="pt-24 sm:pt-32 pb-20 sm:pb-28 px-5 sm:px-8 bg-white overflow-hidden">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-12 items-center">
+        <div className="max-w-lg">
+          <h1 className="text-[2.8rem] sm:text-[4.2rem] lg:text-[5.2rem] font-bold text-foreground tracking-tight leading-[1.05]">
             Track Prices.
             <br />
             Buy at the{" "}
             <span className="text-orange-500">Right Time.</span>
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground mt-8 leading-relaxed max-w-md">
-            Monitor product prices across stores and get notified when they reach your target price.
+          <p className="text-base sm:text-lg text-secondary-foreground mt-6 leading-relaxed max-w-md">
+            Monitor product prices and get notified when they hit your target.
           </p>
-          <div className="mt-10">
-            <LandingCTA variant="primary" label="Start Tracking" />
+          <div className="mt-8 sm:mt-10">
+            <LandingCTA label="Start Tracking" />
           </div>
         </div>
 
-        <div className="lg:justify-self-end">
-          <ProductAlertPreview />
+        <div className="flex items-center justify-center">
+          <HeroVisual />
         </div>
       </div>
     </section>
@@ -64,47 +64,46 @@ function HowItWorksSection() {
     {
       icon: Link2,
       title: "Add Product",
-      description: "Paste a product URL to start tracking.",
+      desc: "Paste any product URL.",
     },
     {
       icon: Target,
       title: "Set Target Price",
-      description: "Choose the price you want to pay.",
+      desc: "Pick the price you want.",
     },
     {
       icon: Bell,
       title: "Get Alert",
-      description: "Receive a notification when the price drops.",
+      desc: "We notify you when it drops.",
     },
   ];
 
   return (
-    <section id="how-it-works" className="py-24 sm:py-32 px-5 sm:px-8 border-t border-gray-100">
+    <section id="how-it-works" className="py-20 sm:py-28 px-5 sm:px-8 bg-orange-50/40">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-20">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
+        <div className="text-center mb-14">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
             How It Works
           </h2>
-          <p className="text-base text-muted-foreground mt-3">Three steps. No complexity.</p>
+          <p className="text-sm sm:text-base text-secondary-foreground mt-3">Three simple steps.</p>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-8 sm:gap-6">
+        <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
           {steps.map((step, i) => (
-            <div key={step.title} className="relative flex flex-col items-center text-center">
-              <div className="relative mb-6">
-                <div className="size-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.25)]">
-                  <step.icon className="size-6 text-white" />
-                </div>
-                <div className="absolute -top-1.5 -right-1.5 size-7 rounded-full bg-white border-2 border-orange-500 flex items-center justify-center">
-                  <span className="text-[11px] font-bold text-orange-500">{i + 1}</span>
+            <div
+              key={step.title}
+              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm p-8 sm:p-10 text-center group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            >
+              <div className="flex items-center justify-center mb-6">
+                <div className="relative size-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.25)]">
+                  <step.icon className="size-7 text-white" />
+                  <span className="absolute -top-1 -right-1 size-6 rounded-full bg-white border-2 border-orange-500 flex items-center justify-center text-[11px] font-bold text-orange-500 shadow-sm">
+                    {i + 1}
+                  </span>
                 </div>
               </div>
-              <h3 className="text-base font-semibold text-gray-900">{step.title}</h3>
-              <p className="text-sm text-muted-foreground mt-1.5 max-w-[200px] leading-relaxed">{step.description}</p>
-
-              {i < steps.length - 1 && (
-                <div className="hidden sm:block absolute top-8 left-[calc(50%+40px)] w-[calc(100%-80px)] h-px bg-gradient-to-r from-orange-200 to-orange-100" />
-              )}
+              <h3 className="text-base sm:text-lg font-semibold text-foreground">{step.title}</h3>
+              <p className="text-sm text-secondary-foreground mt-2 leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -115,13 +114,13 @@ function HowItWorksSection() {
 
 function FeaturesSection() {
   const features = [
-    { icon: Activity, title: "Price Tracking", description: "Monitor prices automatically across supported stores." },
-    { icon: Bell, title: "Smart Alerts", description: "Get notified instantly when prices hit your target." },
-    { icon: LineChart, title: "Price History", description: "View historical price trends before purchasing." },
-    { icon: ListChecks, title: "Watchlist", description: "Track and manage products in one place." },
+    { icon: Activity, title: "Price Tracking", desc: "Auto-track prices across stores." },
+    { icon: Bell, title: "Smart Alerts", desc: "Instant notifications at your target price." },
+    { icon: LineChart, title: "Price History", desc: "View trends before you buy." },
+    { icon: ListChecks, title: "Watchlist", desc: "Manage all tracked products in one place." },
   ];
 
-  const iconBg = [
+  const iconColors = [
     "from-orange-400 to-amber-500",
     "from-blue-400 to-indigo-500",
     "from-emerald-400 to-teal-500",
@@ -129,30 +128,30 @@ function FeaturesSection() {
   ];
 
   return (
-    <section className="py-24 sm:py-32 px-5 sm:px-8 border-t border-gray-100">
+    <section id="features" className="py-20 sm:py-28 px-5 sm:px-8 bg-white">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Everything You Need
+        <div className="text-center mb-14">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
+            Key Features
           </h2>
-          <p className="text-base text-muted-foreground mt-3">Simple tools for smarter shopping.</p>
+          <p className="text-sm sm:text-base text-secondary-foreground mt-3">
+            Simple tools for smarter shopping.
+          </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((feature, i) => (
             <div
               key={feature.title}
-              className="group bg-white rounded-2xl border border-gray-100/80 shadow-card hover:shadow-elevated hover:-translate-y-0.5 transition-all duration-300 p-7"
+              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 p-8 text-center"
             >
-              <div className="relative mb-5 flex items-center justify-center">
-                <div className={`size-13 rounded-2xl bg-gradient-to-br ${iconBg[i]} flex items-center justify-center shadow-lg`}>
-                  <feature.icon className="size-6 text-white" />
+              <div className="flex items-center justify-center mb-5">
+                <div className={`size-14 rounded-2xl bg-gradient-to-br ${iconColors[i]} flex items-center justify-center shadow-md`}>
+                  <feature.icon className="size-7 text-white" />
                 </div>
               </div>
-              <h3 className="text-base font-semibold text-gray-900 text-center">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed text-center mt-2">
-                {feature.description}
-              </p>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground">{feature.title}</h3>
+              <p className="text-sm text-secondary-foreground mt-2 leading-relaxed">{feature.desc}</p>
             </div>
           ))}
         </div>
@@ -161,23 +160,26 @@ function FeaturesSection() {
   );
 }
 
-function CTASection() {
+function PriceHistorySection() {
   return (
-    <section className="py-24 sm:py-32 px-5 sm:px-8 border-t border-gray-100">
-      <div className="max-w-3xl mx-auto bg-[#FFF7ED] rounded-3xl px-8 py-16 sm:px-16 sm:py-20 text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight mb-4">
-          Ready to buy smarter?
-        </h2>
-        <p className="text-lg text-muted-foreground mb-10">
-          Start tracking products in under a minute.
-        </p>
-        <LandingCTA variant="primary" label="Get Started" />
+    <section id="price-trend" className="py-20 sm:py-28 px-5 sm:px-8 bg-orange-50/40">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-14">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
+            Price Trend Analysis
+          </h2>
+          <p className="text-sm sm:text-base text-secondary-foreground mt-3">
+            30-day price history for iPhone 15.
+          </p>
+        </div>
+
+        <PriceHistoryPreview />
       </div>
     </section>
   );
 }
 
-// ─── Redesigned Stat Cards ──────────────────────────────────────────────────
+// ─── Dashboard stat cards ───────────────────────────────────────────────────
 
 async function DashboardStats({ insights }) {
   if (!insights) return null;
@@ -270,7 +272,7 @@ function ProductsTab({ user, products, recentSavings }) {
         ) : (
           <div className="text-center py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
             <div className="size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-4">
-              <Search className="size-6 text-gray-400" />
+              <Search className="size-6 text-muted-foreground/70" />
             </div>
             <p className="text-sm text-muted-foreground">Paste a product URL above to start tracking.</p>
           </div>
@@ -296,11 +298,19 @@ export default async function Home({ searchParams }) {
     return (
       <>
         <NavBar user={null} />
-        <main className="min-h-screen bg-landing font-sans">
-          <LandingHero />
-          <HowItWorksSection />
-          <FeaturesSection />
-          <CTASection />
+        <main className="font-sans">
+          <SectionFade delay={0}>
+            <LandingHero />
+          </SectionFade>
+          <SectionFade delay={100}>
+            <HowItWorksSection />
+          </SectionFade>
+          <SectionFade delay={200}>
+            <FeaturesSection />
+          </SectionFade>
+          <SectionFade delay={300}>
+            <PriceHistorySection />
+          </SectionFade>
           <Footer />
         </main>
       </>
@@ -325,7 +335,7 @@ export default async function Home({ searchParams }) {
       <DashboardShell>
         {tab === null && (
           <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground tracking-tight leading-tight">
               Welcome back
               {user?.user_metadata?.full_name
                 ? `, ${user.user_metadata.full_name.split(" ")[0]}`
