@@ -6,6 +6,7 @@ import SetPriceAlert from "@/components/SetPriceAlert";
 import PriceChart from "@/components/PriceChart";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import PricePrediction from "@/components/PricePrediction";
+import StoreComparison from "@/components/StoreComparison";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -34,6 +35,7 @@ export default function ProductDetail({
   priceHistory,
   watchlistEntry,
   trend,
+  storePrices,
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
@@ -240,6 +242,13 @@ export default function ProductDetail({
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <StoreComparison
+            prices={storePrices}
+            currency={product.currency}
+          />
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">

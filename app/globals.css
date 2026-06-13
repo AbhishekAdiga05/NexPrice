@@ -59,7 +59,7 @@
 .dark .bg-muted { background-color: #18181b; }
 
 .dark body,
-.dark .bg-background.bg-background { background-color: #0a0a0b; }
+.dark .bg-background.bg-background { background-color: #0a0a0b; color: #f3f4f6; }
 
 .dark .text-foreground,
 .dark .text-card-foreground,
@@ -153,6 +153,9 @@
 .dark .bg-indigo-400 { background-color: #818cf8; }
 .dark .bg-indigo-400\/60 { background-color: rgba(129, 140, 248, 0.6); }
 .dark .bg-indigo-400\/70 { background-color: rgba(129, 140, 248, 0.7); }
+
+::selection { background-color: rgba(249, 115, 22, 0.2); }
+.dark ::selection { background-color: rgba(249, 115, 22, 0.35); }
 
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(24px); }

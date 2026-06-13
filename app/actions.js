@@ -675,3 +675,55 @@ export async function signOut() {
   revalidatePath("/");
   redirect("/");
 }
+
+export async function getStorePrices(productId) {
+  try {
+    const supabase = await createClient();
+    const { data: prices, error } = await supabase
+      .from("store_prices")
+      .select("*")
+      .eq("product_id", productId)
+      .order("price", { ascending: true });
+
+    if (error) throw error;
+    return prices || [];
+  } catch (error) {
+    console.error("Get store prices error:", error);
+    return [];
+  }
+}
+
+export async function upsertStorePrice(productId, storeName, productUrl, price, currency = "INR") {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("store_prices").upsert(
+      {
+        product_id: productId,
+        store_name: storeName,
+        product_url: productUrl,
+        price,
+        currency,
+        last_updated: new Date().toISOString(),
+      },
+      { onConflict: "product_id,store_name" }
+    );
+
+    if (error) throw error;
+    revalidatePath(`/products/${productId}`);
+    return { success: true };
+  } catch (error) {
+    return { error: error.message || "Failed to save store price" };
+  }
+}
+
+export async function deleteStorePrice(priceId) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("store_prices").delete().eq("id", priceId);
+    if (error) throw error;
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    return { error: error.message };
+  }
+}

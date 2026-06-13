@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,7 +10,6 @@ import {
   Bell,
   Settings,
   X,
-  Menu,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -21,17 +20,22 @@ const NAV_ITEMS = [
   { label: "Settings", href: "/?tab=settings", icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ open, onClose }) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") onClose();
     };
-    if (open) document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [open]);
+    if (open) {
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
 
   const isActive = (href) => {
     if (href === "/") return pathname === "/" && !pathname.includes("?tab=");
@@ -41,7 +45,7 @@ export default function Sidebar() {
   const sidebar = (
     <nav className="flex flex-col h-full py-6">
       <div className="px-6 pb-5 mb-4 border-b border-gray-100">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" onClick={onClose} className="flex items-center gap-3">
           <div className="size-3 rounded-full bg-orange-500 shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />
           <span className="text-lg font-bold tracking-tight text-foreground">
             NexPrice
@@ -56,7 +60,7 @@ export default function Sidebar() {
             <Link
               key={label}
               href={href}
-              onClick={() => setOpen(false)}
+              onClick={onClose}
               className={`group flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 active
                   ? "bg-orange-50 text-orange-600 shadow-sm"
@@ -79,14 +83,6 @@ export default function Sidebar() {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="lg:hidden fixed top-3 left-3 z-40 size-9 rounded-xl bg-white border border-gray-200 shadow-soft flex items-center justify-center text-muted-foreground hover:text-secondary-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        aria-label="Open menu"
-      >
-        <Menu className="size-[18px]" />
-      </button>
-
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-100 bg-white shadow-[1px_0_0_0_rgba(0,0,0,0.02)]">
         {sidebar}
       </aside>
@@ -95,11 +91,11 @@ export default function Sidebar() {
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
             className="fixed inset-0 bg-black/20 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
+            onClick={onClose}
           />
           <div className="fixed inset-y-0 left-0 w-72 bg-white border-r border-gray-100 shadow-elevated animate-in slide-in-from-left duration-300">
             <button
-              onClick={() => setOpen(false)}
+              onClick={onClose}
               className="absolute top-4 right-4 size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-secondary-foreground hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label="Close menu"
             >

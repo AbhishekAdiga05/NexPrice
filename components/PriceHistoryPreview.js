@@ -53,7 +53,7 @@ export default function PriceHistoryPreview() {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200/80 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-      <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
+      <div className="grid grid-cols-3 divide-x divide-border border-b border-border">
         <div className="px-5 py-4">
           <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Current</span>
           <div className="text-lg font-bold font-mono text-foreground tracking-tight mt-0.5">$659</div>
@@ -80,7 +80,7 @@ export default function PriceHistoryPreview() {
                   <stop offset="100%" stopColor="#f97316" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="day"
                 tick={{ fontSize: 11, fill: "#9ca3af" }}
@@ -97,11 +97,12 @@ export default function PriceHistoryPreview() {
               />
               <Tooltip
                 contentStyle={{
-                  background: "#fff",
-                  border: "1px solid #e5e7eb",
+                  background: "var(--color-card)",
+                  border: "1px solid var(--color-border)",
                   borderRadius: "12px",
                   boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
                   fontSize: "13px",
+                  color: "var(--color-card-foreground)",
                 }}
                 formatter={(value) => [`$${value}`, "Price"]}
                 labelStyle={{ fontWeight: 600, marginBottom: 2 }}
@@ -119,7 +120,7 @@ export default function PriceHistoryPreview() {
           </ResponsiveContainer>
         </div>
 
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
           <div className="flex items-center gap-5">
             <div>
               <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Low</span>

@@ -2,21 +2,31 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Menu } from "lucide-react";
 import AuthModal from "./AuthModal";
 import AuthButton from "./AuthButton";
 import ThemeToggle from "./ThemeToggle";
 
-export default function NavBar({ user }) {
+export default function NavBar({ user, onMenuToggle }) {
   const [showAuth, setShowAuth] = useState(false);
 
   if (user) {
     return (
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-gray-100/80">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 shrink-0">
-            <div className="size-3 rounded-full bg-orange-500 shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />
-            <span className="text-xl font-bold tracking-tight text-foreground">NexPrice</span>
-          </Link>
+      <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#0a0a0b]/80 backdrop-blur-lg border-b border-gray-100/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onMenuToggle}
+              className="lg:hidden size-9 rounded-xl border border-gray-200/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label="Open menu"
+            >
+              <Menu className="size-[18px]" />
+            </button>
+            <Link href="/" className="flex items-center gap-3 shrink-0">
+              <div className="size-3 rounded-full bg-orange-500 shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />
+              <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">NexPrice</span>
+            </Link>
+          </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <AuthButton user={user} />
@@ -28,10 +38,10 @@ export default function NavBar({ user }) {
 
   return (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-gray-100/80">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 shrink-0">
           <div className="size-3 rounded-full bg-orange-500 shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />
-          <span className="text-xl font-bold tracking-tight text-foreground">NexPrice</span>
+          <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">NexPrice</span>
         </Link>
 
         <div className="flex items-center gap-2">

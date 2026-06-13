@@ -3,8 +3,10 @@ import {
   getProductById,
   getPriceHistory,
   isOnWatchlist,
+  getStorePrices,
 } from "@/app/actions";
 import { calculateTrendIndicator } from "@/lib/deal-score";
+import { generateMockStorePrices } from "@/lib/mock-stores";
 import ProductDetail from "./ProductDetail";
 import { redirect } from "next/navigation";
 
@@ -43,12 +45,19 @@ export default async function ProductPage({ params }) {
     priceHistory
   );
 
+  let storePrices = await getStorePrices(id);
+
+  if (!storePrices || storePrices.length === 0) {
+    storePrices = generateMockStorePrices(id, product.current_price);
+  }
+
   return (
     <ProductDetail
       product={product}
       priceHistory={priceHistory}
       watchlistEntry={watchlistEntry}
       trend={trend}
+      storePrices={storePrices}
     />
   );
 }

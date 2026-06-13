@@ -34,19 +34,19 @@ import HeroVisual from "@/components/HeroVisual";
 
 function LandingHero() {
   return (
-    <section className="pt-24 sm:pt-32 pb-20 sm:pb-28 px-5 sm:px-8 bg-white overflow-hidden">
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-12 items-center">
-        <div className="max-w-lg">
-          <h1 className="text-[2.8rem] sm:text-[4.2rem] lg:text-[5.2rem] font-bold text-foreground tracking-tight leading-[1.05]">
+    <section className="pt-20 sm:pt-32 pb-16 sm:pb-28 px-4 sm:px-8 bg-white overflow-hidden">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] gap-8 lg:gap-12 items-center">
+        <div className="max-w-lg mx-auto lg:mx-0 text-center lg:text-left">
+          <h1 className="text-[2.2rem] sm:text-[4.2rem] lg:text-[5.2rem] font-bold text-foreground tracking-tight leading-[1.05]">
             Track Prices.
             <br />
             Buy at the{" "}
             <span className="text-orange-500">Right Time.</span>
           </h1>
-          <p className="text-base sm:text-lg text-secondary-foreground mt-6 leading-relaxed max-w-md">
+          <p className="text-sm sm:text-lg text-secondary-foreground mt-4 sm:mt-6 leading-relaxed max-w-md mx-auto lg:mx-0">
             Monitor product prices and get notified when they hit your target.
           </p>
-          <div className="mt-8 sm:mt-10">
+          <div className="mt-6 sm:mt-10">
             <LandingCTA label="Start Tracking" />
           </div>
         </div>
@@ -79,31 +79,31 @@ function HowItWorksSection() {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 sm:py-28 px-5 sm:px-8 bg-orange-50/40">
+    <section id="how-it-works" className="py-16 sm:py-28 px-4 sm:px-8 bg-orange-50/40">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-14">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
             How It Works
           </h2>
-          <p className="text-sm sm:text-base text-secondary-foreground mt-3">Three simple steps.</p>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3">Three simple steps.</p>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
+        <div className="flex flex-col sm:grid sm:grid-cols-3 gap-4 sm:gap-8">
           {steps.map((step, i) => (
             <div
               key={step.title}
-              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm p-8 sm:p-10 text-center group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm p-6 sm:p-10 text-center group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
-              <div className="flex items-center justify-center mb-6">
-                <div className="relative size-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.25)]">
-                  <step.icon className="size-7 text-white" />
-                  <span className="absolute -top-1 -right-1 size-6 rounded-full bg-white border-2 border-orange-500 flex items-center justify-center text-[11px] font-bold text-orange-500 shadow-sm">
+              <div className="flex items-center justify-center mb-5 sm:mb-6">
+                <div className="relative size-14 sm:size-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.25)]">
+                  <step.icon className="size-6 sm:size-7 text-white" />
+                  <span className="absolute -top-1 -right-1 size-5 sm:size-6 rounded-full bg-white border-2 border-orange-500 flex items-center justify-center text-[10px] sm:text-[11px] font-bold text-orange-500 shadow-sm">
                     {i + 1}
                   </span>
                 </div>
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">{step.title}</h3>
-              <p className="text-sm text-secondary-foreground mt-2 leading-relaxed">{step.desc}</p>
+              <h3 className="text-sm sm:text-lg font-semibold text-foreground">{step.title}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 sm:mt-2 leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -128,30 +128,30 @@ function FeaturesSection() {
   ];
 
   return (
-    <section id="features" className="py-20 sm:py-28 px-5 sm:px-8 bg-white">
+    <section id="features" className="py-16 sm:py-28 px-4 sm:px-8 bg-white">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-14">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
             Key Features
           </h2>
-          <p className="text-sm sm:text-base text-secondary-foreground mt-3">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3">
             Simple tools for smarter shopping.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
           {features.map((feature, i) => (
             <div
               key={feature.title}
-              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 p-8 text-center"
+              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 p-5 sm:p-8 text-center"
             >
-              <div className="flex items-center justify-center mb-5">
-                <div className={`size-14 rounded-2xl bg-gradient-to-br ${iconColors[i]} flex items-center justify-center shadow-md`}>
-                  <feature.icon className="size-7 text-white" />
+              <div className="flex items-center justify-center mb-3 sm:mb-5">
+                <div className={`size-10 sm:size-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${iconColors[i]} flex items-center justify-center shadow-sm sm:shadow-md`}>
+                  <feature.icon className="size-5 sm:size-7 text-white" />
                 </div>
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">{feature.title}</h3>
-              <p className="text-sm text-secondary-foreground mt-2 leading-relaxed">{feature.desc}</p>
+              <h3 className="text-xs sm:text-lg font-semibold text-foreground">{feature.title}</h3>
+              <p className="text-[11px] sm:text-sm text-muted-foreground mt-1 sm:mt-2 leading-relaxed">{feature.desc}</p>
             </div>
           ))}
         </div>
@@ -162,13 +162,13 @@ function FeaturesSection() {
 
 function PriceHistorySection() {
   return (
-    <section id="price-trend" className="py-20 sm:py-28 px-5 sm:px-8 bg-orange-50/40">
+    <section id="price-trend" className="py-16 sm:py-28 px-4 sm:px-8 bg-orange-50/40">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-14">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
             Price Trend Analysis
           </h2>
-          <p className="text-sm sm:text-base text-secondary-foreground mt-3">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3">
             30-day price history for iPhone 15.
           </p>
         </div>
@@ -212,24 +212,24 @@ async function DashboardStats({ insights }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 mb-6 sm:mb-8">
       {stats.map((s, i) => (
         <div
           key={s.label}
-          className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5"
+          className="bg-white rounded-xl border border-gray-200/80 shadow-card p-4 sm:p-5"
         >
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
               {s.label}
             </span>
-            <div className={`size-10 rounded-xl flex items-center justify-center ${iconColors[i]}`}>
-              <s.icon className="size-[18px]" />
+            <div className={`size-9 sm:size-10 rounded-xl flex items-center justify-center ${iconColors[i]}`}>
+              <s.icon className="size-4 sm:size-[18px]" />
             </div>
           </div>
-          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
+          <div className="text-2xl sm:text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
             {s.value}
           </div>
-          <div className="text-xs text-muted-foreground font-mono mt-2 leading-none">
+          <div className="text-[11px] sm:text-xs text-muted-foreground font-mono mt-1.5 sm:mt-2 leading-none">
             {s.sub}
           </div>
         </div>
@@ -250,13 +250,13 @@ function TabSkeleton() {
 
 function ProductsTab({ user, products, recentSavings }) {
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-4 sm:p-5">
         <AddProductForm user={user} compact />
       </div>
 
       <div className="min-w-0">
-        <div className="flex items-center gap-2.5 mb-5">
+        <div className="flex items-center gap-2.5 mb-4 sm:mb-5">
           <Activity className="size-4 text-orange-500" />
           <h2 className="text-section">Tracked Products</h2>
           <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">
@@ -270,11 +270,11 @@ function ProductsTab({ user, products, recentSavings }) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
-            <div className="size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-4">
-              <Search className="size-6 text-muted-foreground/70" />
+          <div className="text-center py-12 sm:py-16 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+            <div className="size-12 sm:size-14 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-3 sm:mb-4">
+              <Search className="size-5 sm:size-6 text-muted-foreground/70" />
             </div>
-            <p className="text-sm text-muted-foreground">Paste a product URL above to start tracking.</p>
+            <p className="text-sm text-muted-foreground px-4">Paste a product URL above to start tracking.</p>
           </div>
         )}
       </div>
@@ -331,11 +331,10 @@ export default async function Home({ searchParams }) {
 
   return (
     <>
-      <NavBar user={user} />
-      <DashboardShell>
+      <DashboardShell user={user}>
         {tab === null && (
-          <div className="mb-8">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground tracking-tight leading-tight">
+          <div className="mb-5 sm:mb-8">
+            <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-foreground tracking-tight leading-tight">
               Welcome back
               {user?.user_metadata?.full_name
                 ? `, ${user.user_metadata.full_name.split(" ")[0]}`
