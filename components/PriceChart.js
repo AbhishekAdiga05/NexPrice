@@ -54,15 +54,15 @@ export default function PriceChart({ productId }) {
     <div className="w-full">
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9ca3af' }} stroke="#e5e7eb" tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} stroke="#e5e7eb" tickLine={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9ca3af' }} stroke="var(--color-border)" tickLine={false} />
+          <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} stroke="var(--color-border)" tickLine={false} />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#ffffff",
-              border: "1px solid #e5e7eb",
+              backgroundColor: "var(--color-card)",
+              border: "1px solid var(--color-border)",
               borderRadius: "12px",
-              color: "#111827",
+              color: "var(--color-card-foreground)",
               fontSize: "12px",
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
             }}

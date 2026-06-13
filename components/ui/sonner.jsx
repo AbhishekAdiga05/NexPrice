@@ -25,9 +25,9 @@ const Toaster = ({
       }}
       style={
         {
-          "--normal-bg": "#ffffff",
-          "--normal-text": "#111827",
-          "--normal-border": "#e5e7eb",
+          "--normal-bg": "var(--color-card)",
+          "--normal-text": "var(--color-card-foreground)",
+          "--normal-border": "var(--color-border)",
           "--border-radius": "8px"
         }
       }
