@@ -1,488 +1,435 @@
-# NexPrice — Smart Product Price Tracker
+# NexPrice
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Active-success" alt="Status" />
   <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Tailwind_v4-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" alt="React" />
+  <img src="https://img.shields.io/badge/Tailwind_v4-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white" alt="Supabase" />
-  <img src="https://img.shields.io/badge/Firecrawl-000?logo=firecrawl&logoColor=white" alt="Firecrawl" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Telegram_Bot-26A5E4?logo=telegram&logoColor=white" alt="Telegram Bot API" />
 </p>
 
-**NexPrice** is an AI-powered e-commerce price intelligence platform. It automatically monitors product prices across any online retailer, analyzes historical trends, calculates deal scores, and sends instant alerts when your target price is hit.
+**NexPrice** is a full-stack product price tracking application that monitors e-commerce prices across multiple stores, analyzes historical trends, and sends real-time alerts via Telegram and email when products reach target prices.
 
 ---
 
-## Table of Contents
-
-- [How It Works — Step by Step](#how-it-works--step-by-step)
-- [Architecture](#architecture)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Key Algorithms](#key-algorithms)
-- [Getting Started](#getting-started)
-- [API Routes](#api-routes)
-- [Database Schema](#database-schema)
-- [Automation & Cron Jobs](#automation--cron-jobs)
-- [Deployment](#deployment)
-
----
-
-## How It Works — Step by Step
-
-### 1. Add a Product
-
-Paste any product URL (Amazon, Walmart, Best Buy, etc.) into the dashboard form. The app uses **Firecrawl** to scrape the product name, image, and current price, then stores it in Supabase.
-
-### 2. Price Tracking
-
-Every 24 hours, a cron job rescrapes all tracked products and records a new row in `price_history`. Products are processed in parallel chunks of 5 using `Promise.allSettled`, so multiple scrapes run concurrently rather than one at a time. This keeps the job well under serverless timeout limits even with hundreds of products. Over time, this builds a historical record of price fluctuations.
-
-### 3. Deal Score Calculation
-
-Each product gets a **Deal Score** — a 0–100 value computed locally in `lib/deal-score.js` using four weighted factors:
-
-| Factor | Weight | What it measures |
-|---|---|---|
-| Distance from all-time low | 40% | How close the current price is to the historical minimum |
-| Discount from average | 30% | How far below the mean price the current price sits |
-| Recent trend | 20% | Whether the price has been dropping recently |
-| Volatility | 10% | How much the price swings (more volatility = more chances to catch a low) |
-
-The score maps to a tier: **Great** (70+), **Good** (50–69), **Fair** (30–49), or **Poor** (< 30).
-
-### 4. Trend Indicator
-
-The prediction panel shows a **Trend Indicator** — a pure JavaScript calculation that answers "how far is the current price from the historical average?":
+## Screenshots
 
 ```
-trend = ((avgPrice - currentPrice) / avgPrice) × 100
+Screenshot placeholders — add these after deployment:
+
+[Landing Page]     → public/screenshots/landing.png
+[Dashboard]        → public/screenshots/dashboard.png
+[Product Tracking] → public/screenshots/product-tracking.png
+[Price Comparison] → public/screenshots/price-comparison.png
+[Price Analytics]  → public/screenshots/price-analytics.png
+[Telegram Alert]   → public/screenshots/telegram-alert.png
 ```
-
-- **Positive %** = current price is below average (discount opportunity)
-- **Negative %** = current price is above average (consider waiting)
-
-This replaces the previous Gemini-powered prediction API, making the trend calculation instant, free, and explainable.
-
-### 5. Smart Alerts
-
-Set a target price on any product. The daily cron job checks if the current price is at or below your target. When it hits, the alert status changes to "triggered", savings are calculated, and you receive an email notification via **Resend**.
-
-### 6. Priority Watchlist
-
-Flag products you're considering. Each item is ranked by a **Buy Priority** score (`lib/buy-priority.js`) that combines:
-
-- Your manual priority level (high / medium / low)
-- Time spent on the watchlist (older items get a boost)
-- Deal Score contribution (better deals rank higher)
-
-### 7. Dashboard — Single Page App
-
-All features are consolidated into a **single dashboard** at `/`. After login, you get a tabbed interface:
-
-| Tab | Content |
-|---|---|
-| **Products** | Add new products, view your tracked list with Deal Scores |
-| **Insights** | Total savings, active alerts, best deals grid, recent savings history |
-| **Watchlist** | Flagged items sorted by Buy Priority, priority management |
-| **Alerts** | Active, triggered, and disabled alerts with progress tracking |
-| **Settings** | Account info, weekly digest toggle, digest day picker |
-
-### 8. Product Detail Page
-
-Click any product to see:
-- **Price History Chart** — interactive Recharts visualization
-- **Deal Analysis** — AI-powered buy/sell recommendation via Gemini (separate from predictions)
-- **Trend Indicator** — current price vs historical average
-- **Price Alerts** — set and manage target prices
-- **Mini Stats** — low, high, average prices and tracking duration
-
----
-
-## Architecture
-
-```
-┌─────────────┐     ┌──────────────┐     ┌────────────┐
-│   Browser   │────▶│  Next.js 16  │────▶│  Supabase  │
-│  (React 19) │◀────│  App Router  │◀────│ (Postgres) │
-└─────────────┘     │  Server Acts │     └────────────┘
-                    │  API Routes  │
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐     ┌────────────┐
-                    │  Firecrawl   │     │   Resend   │
-                    │ (Scraping)   │     │  (Email)   │
-                    └──────────────┘     └────────────┘
-```
-
-### Key Design Decisions
-
-- **Server Components by default** — data fetching happens server-side, reducing client bundle size
-- **Conditional data fetching** — the dashboard only queries data for the active tab, avoiding unnecessary database load
-- **URL-driven tabs** — uses `?tab=` search params instead of client state, enabling direct linking and browser navigation
-- **Local calculations** — Deal Score, Buy Priority, and Trend Indicator are pure JS functions with no API calls
-- **RLS policies** — all database queries are scoped to the authenticated user via Supabase Row Level Security
 
 ---
 
 ## Features
 
-### Automated Price Tracking
-Paste any product URL — NexPrice immediately scrapes the product data and begins capturing daily price snapshots.
+- **Product Price Tracking** — Add any product URL; the app scrapes the page and records the price. A cron job rescrapes all tracked products daily to build a historical record.
+- **Target Price Alerts** — Set a target price per product. When the price drops to or below the target, you receive an immediate notification.
+- **Telegram Notifications** — Connect your Telegram account to receive instant price alerts. Supports both price-drop and target-reached notifications.
+- **Multi-Store Price Comparison** — View the same product priced across multiple retailers (Amazon, Flipkart, Croma, Reliance Digital, Tata CLiQ, Vijay Sales) side by side. The cheapest store is highlighted.
+- **Historical Price Trends** — Interactive Recharts line chart showing price changes over time with min/max/average annotations.
+- **Deal Score** — A 0–100 algorithm rating that answers "should I buy now?" based on proximity to all-time low, discount from average, recent trend, and volatility.
+- **Watchlist with Buy Priority** — Save products to a watchlist with high/medium/low priority. A composite score (priority + time on list + deal score) suggests what to buy next.
+- **Responsive UI** — Full desktop and mobile layout with collapsible sidebar, dark/light theme toggle, and sticky navigation.
+- **Google OAuth Authentication** — Sign in with Google via Supabase Auth. Session managed via cookies with middleware refresh.
+- **Dashboard Analytics** — Tabbed dashboard showing products, insights (total savings, top deals), watchlist (sorted by buy priority), alerts (active/triggered/disabled), and settings.
 
-### Smart Price Alerts
-Set a target price on any tracked product. When the price drops to your target, you receive an instant email notification. Alerts are checked automatically every 24 hours.
+---
 
-### Deal Score™
-A proprietary 0–100 algorithm that evaluates four weighted signals to tell you exactly when to buy. No external API calls — pure client-side math.
+## Problem Statement
 
-### Trend Indicator
-A local calculation that shows how far the current price deviates from the historical average. Positive values signal a discount opportunity.
+Online shoppers face several challenges:
 
-### AI Deal Analysis
-Powered by Gemini, each product gets a contextual buy recommendation:
-- *Great time to buy* — price trends and historical data align favorably
-- *Wait for a lower price* — the price is expected to drop further
-- *Price recently increased* — recent uptick detected
+1. **Price volatility** — Product prices change frequently, often daily. Manually checking multiple stores is impractical.
+2. **No centralized view** — A product may be available on 5+ stores at different prices. Comparing them requires opening multiple tabs.
+3. **Missed opportunities** — Without monitoring, price drops and deals go unnoticed. A product might hit the desired price for a few hours and then revert.
+4. **Decision uncertainty** — Knowing the current price isn't enough. Shoppers need context: is this a good price relative to history? Is the trend dropping further?
 
-### Insights Dashboard
-A centralized view of total savings, top deals sorted by Deal Score, and a history of every triggered alert with savings amounts.
+---
 
-### Priority Watchlist
-Flag products you're considering. Each item is ranked by a Buy Priority score that combines your manual priority, Deal Score, and time on list.
+## Solution
 
-### Savings Tracking
-Every triggered alert automatically calculates savings. Total savings accumulate across all products.
+NexPrice addresses these problems through automated monitoring and analysis:
+
+- **Automated scheduled scraping** — A cron job rescrapes every tracked product daily, recording prices in a time-series history table. No manual checking required.
+- **Multi-store aggregation** — The same product's price across different retailers is stored and compared, with the cheapest option highlighted automatically.
+- **Proactive alerts** — Users set a target price once. The system monitors continuously and pushes alerts via Telegram and email when the target is reached, without the user having to check.
+- **Data-driven purchase decisions** — The Deal Score algorithm provides a quantitative answer to "should I buy now?" using historical price data, reducing guesswork.
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   Browser (Client)                       │
+│  Next.js App Router · React 19 · Tailwind v4 · Recharts │
+└────────────────────────┬────────────────────────────────┘
+                         │  HTTP / Server Actions
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              Next.js 16 Server (App Router)              │
+│                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌───────────────┐  │
+│  │  Server      │  │  Server      │  │  API Routes   │  │
+│  │  Components  │  │  Actions     │  │  (cron, etc)  │  │
+│  └──────────────┘  └──────────────┘  └───────┬───────┘  │
+│                                               │          │
+└───────────────────────────────────────────────┼──────────┘
+                                                │
+        ┌───────────────────────────────────────┼───────────────┐
+        │                                       │               │
+        ▼                                       ▼               ▼
+┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+│   Supabase       │  │   Firecrawl      │  │   Telegram Bot   │
+│   (PostgreSQL)   │  │   (Web Scraper)  │  │   API            │
+│   · Auth         │  │                  │  │                  │
+│   · RLS          │  │  scrapeProduct() │  │  sendMessage()   │
+│   · Storage      │  │                  │  │                  │
+└──────────────────┘  └──────────────────┘  └──────────────────┘
+        │                                                   
+        ▼                                                   
+┌──────────────────┐                                        
+│   Resend         │                                        
+│   (Email)        │                                        
+└──────────────────┘                                        
+```
+
+### Frontend
+
+- **Server Components** — Page-level data fetching and layout rendering. Each page fetches its own data directly from Supabase using server actions.
+- **Client Components** — Interactive UI elements (price charts, alert forms, watchlist toggles, theme switch). Marked with `"use client"`.
+- **State Management** — Server actions for mutations (add product, set alert, update watchlist) with automatic `revalidatePath` cache invalidation. No client-side state library needed.
+- **Routing** — Next.js App Router with dynamic route segments (`/products/[id]`, `/dashboard/product/[productId]`).
+- **Styling** — Tailwind CSS v4 with CSS variables for theming. Dark mode via class-based toggling with pre-hydration script to prevent flash.
+
+### Backend
+
+- **Server Actions** — All mutations implemented as `"use server"` functions in `app/actions.js`. Each action validates authentication, performs the operation, and revalidates the cache.
+- **API Routes** — `POST /api/cron/check-prices` handles the daily price check cron job. Authenticated via `CRON_SECRET` bearer token.
+- **Middleware** — Supabase session refresh on every request via `utils/supabase/middleware.js`.
+
+### Database
+
+- **Supabase (PostgreSQL)** — All persistent state. Row-Level Security (RLS) on every table scopes data to the authenticated user.
+- **Migrations** — 6 SQL migration files in `supabase/` covering all tables, indexes, and policies.
+
+### Notification Service
+
+- **Email (Resend)** — HTML-formatted email templates for price drops and target-reached alerts.
+- **Telegram Bot API** — Markdown-formatted messages sent via `https://api.telegram.org/bot<TOKEN>/sendMessage`.
+- **Notifications Table** — Every sent notification (both email and Telegram) is logged with status, recipient, and error tracking for auditability.
+
+---
+
+## Database Design
+
+### Main Entities
+
+| Table | Purpose | Key Columns |
+|---|---|---|
+| `products` | Tracked products per user | `id`, `user_id`, `name`, `url`, `current_price`, `currency`, `image_url` |
+| `price_history` | Time-series price data | `id`, `product_id`, `price`, `currency`, `checked_at` |
+| `price_alerts` | User-set target price alerts | `id`, `user_id`, `product_id`, `target_price`, `status` (active/triggered/disabled) |
+| `store_prices` | Multi-store price records | `id`, `product_id`, `store_name`, `product_url`, `price`, `last_updated` |
+| `watchlist` | Prioritized product shortlist | `id`, `user_id`, `product_id`, `priority` (low/medium/high) |
+| `user_settings` | User preferences | `id`, `user_id`, `weekly_digest`, `telegram_chat_id`, `telegram_enabled` |
+| `notifications` | Notification history audit log | `id`, `user_id`, `product_id`, `channel`, `status` (sent/failed) |
+| `price_predictions` | Cached ML predictions | `id`, `product_id`, `predicted_price`, `confidence`, `expires_at` |
+
+Each table has Row-Level Security enabled. Policies verify `user_id = auth.uid()` or check product ownership via a subquery.
+
+---
+
+## Multi-Store Price Comparison
+
+When viewing a product's detail page, the server fetches all rows from `store_prices` for that product. The data is sorted by `price ASC`, and the cheapest store is visually highlighted with a "Best Price" badge.
+
+- **Data source**: Real prices come from the `store_prices` table, populated via server actions. For demo purposes, fallback mock data generates realistic prices across 6 Indian retailers.
+- **Architecture**: The `StoreComparison` component receives an array of price objects, sorts them client-side, and renders responsive cards with store name, price, price difference from cheapest, last-updated timestamp, and a direct link to the product page on that store.
+- **Extensibility**: When real store APIs are integrated, the mock fallback is removed and `upsertStorePrice` is called from the scraping pipeline instead.
+
+---
+
+## Telegram Alert System
+
+### Alert Flow
+
+1. **User sets a target price** via the `SetPriceAlert` component on any product. This inserts a row in `price_alerts` with `status = 'active'`.
+2. **Cron job runs daily** — `POST /api/cron/check-prices` authenticates via `CRON_SECRET`, iterates all products in chunks of 5, rescrapes each via Firecrawl, and updates the price.
+3. **Trigger condition** — For each active alert on a product, if `newPrice <= alert.target_price`:
+   - The alert is marked `status = 'triggered'` with a timestamp and computed savings.
+   - An **email notification** is sent via Resend.
+   - A **Telegram notification** is sent if the user has connected their Telegram account (`user_settings.telegram_chat_id` exists and `telegram_enabled` is true).
+4. **Deduplication** — Once an alert is triggered, its status changes from `active` to `triggered`. The cron job only processes alerts with `status = 'active'`, preventing duplicate notifications for the same price drop.
+
+### Telegram Bot Integration
+
+- The bot sends messages via the REST API: `POST https://api.telegram.org/bot<TOKEN>/sendMessage`
+- Messages use **Markdown formatting** with product name, prices, timestamps, and a clickable product link.
+- Two message templates: price drop alert (shows savings) and target reached alert (shows target vs current).
+- A test message endpoint is available in the Settings page to verify the connection.
+
+### Notification Logging
+
+Every notification attempt (both email and Telegram) is recorded in the `notifications` table with:
+
+- Channel (email / telegram)
+- Status (sent / failed / pending)
+- Prices at the time of the event
+- Error messages for debugging
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Version |
+| Category | Technology | Purpose |
 |---|---|---|
-| Framework | Next.js | 16.0.7 |
-| UI Library | React | 19.2.0 |
-| Styling | Tailwind CSS | v4 |
-| Animations | Framer Motion | 12.x |
-| Charts | Recharts | 3.5.1 |
-| Icons | Lucide React | 0.555.x |
-| UI Primitives | Radix UI / shadcn/ui | New York style |
-| Database | Supabase (PostgreSQL) | — |
-| Auth | Supabase Auth (Google OAuth) | — |
-| Scraping | Firecrawl JS SDK | 1.29.x |
-| Email | Resend | 6.5.x |
-| AI (Deal Analysis only) | Google Gemini | — |
-| Package Manager | npm / bun | — |
+| **Framework** | Next.js 16 (App Router) | Server-side rendering, routing, server actions |
+| **UI Library** | React 19 | Component-based UI |
+| **Styling** | Tailwind CSS v4 + tw-animate-css | Utility-first CSS with animation utilities |
+| **Components** | shadcn/ui (Radix primitives) | Accessible UI primitives (dialog, button, badge, card) |
+| **Charts** | Recharts | Interactive price history line charts |
+| **Icons** | Lucide React | Consistent icon set |
+| **Database** | Supabase (PostgreSQL) | Relational data store with RLS |
+| **Authentication** | Supabase Auth (Google OAuth) | User authentication and session management |
+| **Web Scraping** | Firecrawl | Product data extraction from any e-commerce URL |
+| **Email** | Resend | Transactional email alerts |
+| **Notifications** | Telegram Bot API | Real-time push notifications |
+| **Animation** | Framer Motion | Scroll-triggered fade-in animations |
+| **Linting** | ESLint (Next.js config) | Code quality |
+| **Package Manager** | npm / bun | Dependency management |
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Node.js 18+ and npm/bun
+- A Supabase account (free tier)
+- A Firecrawl API key (free tier available)
+- A Resend API key (free tier: 100 emails/day)
+- A Telegram Bot Token (from [@BotFather](https://t.me/BotFather))
+
+### Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/yourusername/nexprice.git
+cd nexprice
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up environment variables
+cp .env.example .env
+# Fill in your keys (see Environment Variables below)
+
+# 4. Run database migrations
+# Open the Supabase SQL Editor and run the migrations in order:
+# supabase/migration_price_alerts.sql
+# supabase/migration_settings.sql
+# supabase/migration_savings.sql
+# supabase/migration_phase_b.sql
+# supabase/migration_store_prices.sql
+# supabase/migration_telegram.sql
+
+# 5. Start the development server
+npm run dev
+```
+
+---
+
+## Environment Variables
+
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Firecrawl (web scraping)
+FIRECRAWL_API_KEY=your_firecrawl_api_key
+
+# Resend (email notifications)
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM_EMAIL=notifications@yourdomain.com
+
+# Telegram Bot
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+
+# Cron job security
+CRON_SECRET=a_random_secret_string_for_authorization
+
+# App URL (for email/webhook links)
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+---
+
+## Running Locally
+
+```bash
+npm run dev
+# Open http://localhost:3000
+```
+
+Build for production:
+
+```bash
+npm run build
+npm start
+```
+
+Run linting:
+
+```bash
+npm run lint
+```
+
+---
+
+## Future Improvements
+
+- **Browser Extension** — A Chrome/Firefox extension that adds a "Track on NexPrice" button to any e-commerce product page, allowing one-click addition to the user's dashboard.
+- **AI-Based Price Prediction** — Currently the app shows a trend indicator (above/below average). Integration with a price prediction model (time-series forecasting) could predict the optimal buy window.
+- **WhatsApp Notifications** — Extend the notification system beyond email and Telegram to support WhatsApp Business API for users in markets where WhatsApp is the primary messaging platform.
+- **More Store Integrations** — Replace mock store prices with real data from affiliate APIs (Amazon PA-API, Flipkart Affiliate, etc.) and automated cross-store scraping.
+- **Email Digest** — The weekly digest setting exists in the database but the email generation logic is not yet implemented. A scheduled job could compile a weekly summary of price changes, savings, and recommendations.
+- **Public Share Pages** — Generate a public, shareable URL for any tracked product showing its price history and Deal Score, allowing users to share deals without requiring recipients to sign up.
+
+---
+
+## Key Learnings
+
+This project demonstrates competence in several software engineering areas:
+
+- **API Integration** — Working with external APIs (Firecrawl for scraping, Resend for email, Telegram Bot API for notifications) and handling failures gracefully.
+- **Database Design** — Schema design with RLS policies, unique constraints, indexes for query performance, and migration-based schema evolution.
+- **State Management** — Next.js server actions for mutations with automatic cache revalidation. No client-side state library needed due to the server-centric data model.
+- **Full-Stack Development** — Single codebase spanning database (SQL), backend (Node.js server actions), and frontend (React components with responsive design).
+- **Data Visualization** — Interactive time-series charts using Recharts with dynamic domain calculations and responsive containers.
+- **Notification Systems** — Multi-channel notification delivery (email + Telegram) with deduplication, status tracking, and failure logging.
+- **Authentication & Authorization** — Google OAuth flow, session management via cookies, RLS for row-level data isolation.
+- **Automated Workflows** — Cron-driven price checking with chunked parallel processing, progress logging, and error isolation per product.
+
+---
+
+## Resume Highlights
+
+1. Built a full-stack production-grade web application using Next.js 16, React 19, Supabase (PostgreSQL), and Tailwind CSS v4, featuring automated product price tracking with daily cron-based scraping across multiple e-commerce stores.
+
+2. Designed and implemented a multi-channel notification system integrating Telegram Bot API and Resend (email) with status tracking, deduplication logic, and failure logging — delivering real-time price alerts to users.
+
+3. Developed a weighted Deal Score algorithm (0–100) analyzing four quantitative factors (proximity to historical low, discount from average, recent trend, and volatility) to provide data-driven purchase recommendations.
+
+4. Engineered a responsive single-page dashboard with tabbed navigation (products, insights, watchlist, alerts, settings), interactive Recharts visualizations, dark/light theme support, and Google OAuth authentication with Row-Level Security.
 
 ---
 
 ## Project Structure
 
 ```
-app/
-├── page.js                    # SPA Dashboard — landing + tabs
-├── layout.js                  # Root layout (NavBar, fonts, Toaster)
-├── globals.css                # Tailwind v4 theme
-├── actions.js                 # All server actions
-├── products/[id]/             # Product detail page
-│   ├── page.js                # Server component, fetches data
-│   └── ProductDetail.js       # Client component, full layout
-├── api/
-│   ├── cron/check-prices/     # Daily price checker
-│   └── products/[productId]/
-│       └── deal-analysis/     # AI deal analysis (Gemini)
-├── auth/callback/             # OAuth callback
-└── error/                     # Auth error page
-
-components/
-├── NavBar.js                  # Top navigation (logo + auth only)
-├── AddProductForm.js          # URL submission
-├── ProductCard.js             # Dashboard product card
-├── InsightsDashboard.js       # Insights tab panel
-├── WatchlistDashboard.js      # Watchlist tab panel
-├── AlertsDashboard.js         # Alerts tab panel
-├── SettingsForm.js            # Settings tab panel
-├── PriceChart.js              # Recharts chart component
-├── PricePrediction.js         # Trend indicator display
-├── DealAnalyzer.js            # AI deal analysis display
-├── DealScoreBadge.js          # 0-100 score badge
-├── SetPriceAlert.js           # Alert management
-├── AuthModal.js               # Google OAuth modal
-├── AuthButton.js              # Sign in/out button
-├── LandingCTA.js              # Landing page CTA
-├── Footer.js                  # Site footer
-└── ui/                        # shadcn/ui primitives
-
-lib/
-├── deal-score.js              # Deal Score + Trend Indicator
-├── buy-priority.js            # Buy Priority ranking
-├── firecrawl.js               # Firecrawl scraper wrapper
-├── email.js                   # Resend email templates
-└── utils.js                   # cn() utility
-
-utils/supabase/
-├── client.js                  # Browser Supabase client
-├── server.js                  # Server Supabase client
-└── middleware.js              # Session refresh
+nexprice/
+├── app/
+│   ├── actions.js                    # All server actions
+│   ├── globals.css                   # Tailwind v4 theme + dark mode
+│   ├── layout.js                     # Root layout with fonts + toaster
+│   ├── page.js                       # Homepage / authenticated dashboard
+│   ├── loading.js                    # Root loading skeleton
+│   ├── error.js                      # Global error boundary
+│   ├── not-found.js                  # 404 page
+│   ├── auth/callback/route.js        # OAuth callback handler
+│   ├── api/cron/check-prices/route.js # Daily price check cron endpoint
+│   ├── products/[id]/
+│   │   ├── page.js                   # Product detail (server)
+│   │   └── ProductDetail.js          # Product detail (client)
+│   └── dashboard/
+│       ├── page.js                   # Dashboard redirect
+│       └── product/[productId]/
+│           ├── page.js               # Full product detail page
+│           ├── loading.js            # Loading skeleton
+│           └── ProductActions.js     # Action buttons
+├── components/
+│   ├── ui/                           # shadcn/ui primitives
+│   │   ├── button.jsx
+│   │   ├── card.jsx
+│   │   ├── dialog.jsx
+│   │   ├── input.jsx
+│   │   ├── badge.jsx
+│   │   ├── alert.jsx
+│   │   └── sonner.jsx
+│   ├── NavBar.js
+│   ├── Sidebar.js
+│   ├── DashboardShell.js
+│   ├── AddProductForm.js
+│   ├── ProductCard.js
+│   ├── PriceChart.js
+│   ├── PricePrediction.js
+│   ├── PriceHistoryPreview.js
+│   ├── DealScoreBadge.js
+│   ├── SetPriceAlert.js
+│   ├── StoreComparison.js
+│   ├── AlertsDashboard.js
+│   ├── WatchlistDashboard.js
+│   ├── InsightsDashboard.js
+│   ├── SettingsForm.js
+│   ├── RecentActivity.js
+│   ├── AuthModal.js
+│   ├── AuthButton.js
+│   ├── ThemeToggle.js
+│   ├── HeroVisual.js
+│   ├── AmbientCanvas.js
+│   ├── SectionFade.js
+│   ├── LandingCTA.js
+│   └── Footer.js
+├── lib/
+│   ├── utils.js                      # cn() utility
+│   ├── deal-score.js                 # Deal Score algorithm
+│   ├── buy-priority.js               # Buy Priority algorithm
+│   ├── firecrawl.js                  # Firecrawl scraper wrapper
+│   ├── email.js                      # Email notification templates
+│   ├── telegram.js                   # Telegram Bot API service
+│   ├── mock-stores.js                # Mock store price generator
+│   ├── dates.js                      # Date formatting utilities
+│   └── constants.js                  # Design constants
+├── utils/supabase/
+│   ├── server.js                     # Server-side Supabase client
+│   ├── client.js                     # Browser-side Supabase client
+│   └── middleware.js                  # Auth session middleware
+├── supabase/
+│   ├── migration_price_alerts.sql
+│   ├── migration_settings.sql
+│   ├── migration_savings.sql
+│   ├── migration_phase_b.sql
+│   ├── migration_store_prices.sql
+│   └── migration_telegram.sql
+├── proxy.js                          # Next.js middleware
+├── next.config.mjs
+├── postcss.config.mjs
+├── package.json
+└── README.md
 ```
 
 ---
 
-## Key Algorithms
+## License
 
-### Deal Score (`lib/deal-score.js`)
+MIT
 
-```js
-calculateDealScore(currentPrice, priceHistory)
-```
+Copyright (c) 2026
 
-Returns `{ score, label, tier }` — a 0–100 score computed from:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-1. **Proximity to all-time low (40%)**: `((max - current) / range) × 100` — 100 when at the lowest price ever
-2. **Discount from average (30%)**: Scaled distance from the mean — 100 when far below average
-3. **Recent trend (20%)**: Rate of change over the last 3 price points — positive trend (dropping) boosts score
-4. **Volatility (10%)**: Coefficient of variation — more price swings mean more opportunities
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-### Trend Indicator (`lib/deal-score.js`)
-
-```js
-calculateTrendIndicator(currentPrice, priceHistory)
-```
-
-Returns `number | null` — the percentage difference between the current price and the historical average:
-
-```
-trend = ((avgPrice - currentPrice) / avgPrice) × 100
-```
-
-- **+15%** → current price is 15% below average (good deal)
-- **−8%** → current price is 8% above average (wait for drop)
-- **null** → fewer than 2 data points
-
-### Buy Priority (`lib/buy-priority.js`)
-
-```js
-calculateBuyPriority({ priority, createdAt, dealScore })
-```
-
-Returns a 0–100 score combining:
-- User priority weight (high=40, medium=25, low=10)
-- Age bonus (up to 30 points for older items)
-- Deal Score contribution (scaled by 0.3)
-
----
-
-## Getting Started
-
-### Prerequisites
-- Node.js 18+ (recommended: 20 LTS)
-- A Supabase project (free tier works)
-- A Firecrawl API key
-- A Resend API key (for email alerts)
-- A Google Cloud OAuth client (for authentication)
-
-### 1. Clone & Install
-
-```bash
-git clone <repo-url>
-cd smart-product-price-tracker
-npm install
-```
-
-### 2. Configure Environment
-
-Create a `.env.local` file with:
-
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-
-# Firecrawl
-FIRECRAWL_API_KEY=your_firecrawl_key
-
-# Email (Resend)
-RESEND_API_KEY=your_resend_key
-RESEND_FROM_EMAIL=onboarding@resend.dev
-
-# Cron security
-CRON_SECRET=your_random_secret
-
-# OAuth
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Optional — Gemini (only needed for Deal Analyzer)
-GEMINI_API_KEY=your_gemini_key
-GEMINI_MODEL=gemini-2.5-flash
-```
-
-### 3. Run Database Migrations
-
-Execute the SQL from [Database Schema](#database-schema) in your Supabase SQL Editor.
-
-### 4. Start Dev Server
-
-```bash
-npm run dev
-```
-
-The app runs at `http://localhost:3000`.
-
----
-
-## API Routes
-
-### `POST /api/cron/check-prices`
-Triggered by Supabase `pg_cron` daily at midnight. Iterates all active products, rescrapes current prices, records history, and triggers alerts if target prices are met. Products are processed in parallel chunks of 5 using `Promise.allSettled` — each chunk runs concurrently, and failures are isolated so one product doesn't block the rest.
-
-### `GET /api/products/[productId]/deal-analysis`
-Returns an AI-generated deal analysis using Gemini:
-```json
-{
-  "analysis": {
-    "label": "Great time to buy",
-    "confidence": "high",
-    "summary": "Price is at its 90-day low...",
-    "reasons": ["Price dropped 15% in the last week"]
-  },
-  "stats": {
-    "averagePrice": "$24.99",
-    "lowestPrice": "$19.99",
-    "highestPrice": "$34.99",
-    "historyCount": 45
-  },
-  "source": "ai"
-}
-```
-
----
-
-## Database Schema
-
-### `products`
-```sql
-CREATE TABLE products (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  url TEXT NOT NULL,
-  name TEXT NOT NULL,
-  image_url TEXT,
-  currency TEXT DEFAULT '$',
-  current_price NUMERIC NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, url)
-);
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-```
-
-### `price_history`
-```sql
-CREATE TABLE price_history (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-  price NUMERIC NOT NULL,
-  currency TEXT DEFAULT '$',
-  checked_at TIMESTAMPTZ DEFAULT NOW()
-);
-ALTER TABLE price_history ENABLE ROW LEVEL SECURITY;
-```
-
-### `price_alerts`
-```sql
-CREATE TABLE price_alerts (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-  target_price NUMERIC NOT NULL,
-  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'triggered', 'disabled')),
-  price_at_creation NUMERIC,
-  savings NUMERIC DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  triggered_at TIMESTAMPTZ
-);
-ALTER TABLE price_alerts ENABLE ROW LEVEL SECURITY;
-```
-
-### `watchlist`
-```sql
-CREATE TABLE watchlist (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-  priority TEXT DEFAULT 'medium' CHECK (priority IN ('high', 'medium', 'low')),
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, product_id)
-);
-ALTER TABLE watchlist ENABLE ROW LEVEL SECURITY;
-```
-
-### `user_settings`
-```sql
-CREATE TABLE user_settings (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
-  weekly_digest BOOLEAN DEFAULT true,
-  digest_day TEXT DEFAULT 'sunday',
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
-```
-
----
-
-## Automation & Cron Jobs
-
-NexPrice uses Supabase `pg_cron` to schedule daily price checks, avoiding external cron services. The cron endpoint processes products in parallel chunks of 5 using `Promise.allSettled` — each chunk's `scrapeProduct()` calls run concurrently, and a single failure never blocks the rest.
-
-```sql
-CREATE EXTENSION IF NOT EXISTS pg_cron;
-
-SELECT cron.schedule(
-  'daily-price-scraper',
-  '0 0 * * *',
-  $$
-    SELECT net.http_post(
-        url:='https://YOUR_DOMAIN/api/cron/check-prices',
-        headers:='{"Content-Type": "application/json"}'::jsonb
-    )
-  $$
-);
-```
-
-Replace `YOUR_DOMAIN` with your production URL. For local testing, use `ngrok`.
-
----
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push your repository to GitHub.
-2. Create a new project on [Vercel](https://vercel.com) and import your repo.
-3. Add all environment variables from `.env.local` to Vercel.
-4. Deploy.
-
-### Post-Deploy Steps
-
-1. **Supabase Auth**: Update Site URL and Redirect URIs to your production domain.
-2. **Google OAuth**: Update Authorized Redirect URIs in Google Cloud Console.
-3. **Cron Job**: Update the `pg_cron` URL to your production domain.
-4. **Resend**: Verify your sending domain.
-
-### Scripts
-
-```bash
-npm run dev       # Start development server
-npm run build     # Production build
-npm run start     # Start production server
-npm run lint      # Run ESLint
-```
-
----
-
-<p align="center">
-  Built by <a href="https://github.com/ABHISHEK-ADIGA">Abhishek Adiga</a>
-</p>
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
