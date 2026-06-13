@@ -1,8 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { updateUserSettings } from "@/app/actions";
+import {
+  updateUserSettings,
+  updateTelegramChatId,
+  disconnectTelegram,
+} from "@/app/actions";
+import { sendTestMessage } from "@/lib/telegram";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Bell,
   Loader2,
@@ -11,6 +17,10 @@ import {
   Check,
   Calendar,
   AtSign,
+  Send,
+  MessageCircle,
+  XCircle,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -74,6 +84,9 @@ export default function SettingsForm({ user, settings }) {
   const [weeklyDigest, setWeeklyDigest] = useState(settings?.weekly_digest ?? true);
   const [digestDay, setDigestDay] = useState(settings?.digest_day || "sunday");
   const [saving, setSaving] = useState(false);
+  const [telegramChatId, setTelegramChatId] = useState(settings?.telegram_chat_id || "");
+  const [telegramSaving, setTelegramSaving] = useState(false);
+  const [telegramTesting, setTelegramTesting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,6 +162,118 @@ export default function SettingsForm({ user, settings }) {
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+          </div>
+        </Section>
+
+        <Section icon={MessageCircle} title="Telegram Alerts" description="Get instant price alerts on Telegram">
+          <div className="space-y-4">
+            {settings?.telegram_chat_id ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="size-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="size-4 text-emerald-600" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-semibold text-foreground">Connected</span>
+                    <p className="text-xs text-muted-foreground font-mono mt-0.5">Chat ID: {settings.telegram_chat_id}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={telegramTesting}
+                    onClick={async () => {
+                      setTelegramTesting(true);
+                      const result = await sendTestMessage(settings.telegram_chat_id);
+                      if (result.success) {
+                        toast.success("Test message sent! Check Telegram.");
+                      } else {
+                        toast.error(result.error || "Failed to send test");
+                      }
+                      setTelegramTesting(false);
+                    }}
+                    className="gap-1.5 text-xs h-8"
+                  >
+                    {telegramTesting ? (
+                      <Loader2 className="size-3 animate-spin" />
+                    ) : (
+                      <Send className="size-3" />
+                    )}
+                    Test
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={async () => {
+                      const result = await disconnectTelegram();
+                      if (result.error) {
+                        toast.error(result.error);
+                      } else {
+                        setTelegramChatId("");
+                        toast.success("Telegram disconnected");
+                      }
+                    }}
+                    className="gap-1.5 text-xs h-8 text-red-400 hover:text-red-600"
+                  >
+                    <XCircle className="size-3" />
+                    Disconnect
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Connect your Telegram to receive instant price alerts when your target prices are hit.
+                </p>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Enter your Telegram Chat ID"
+                    value={telegramChatId}
+                    onChange={(e) => setTelegramChatId(e.target.value)}
+                    className="h-9 text-xs flex-1"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={telegramSaving || !telegramChatId}
+                    onClick={async () => {
+                      setTelegramSaving(true);
+                      const result = await updateTelegramChatId(telegramChatId);
+                      if (result.error) {
+                        toast.error(result.error);
+                      } else {
+                        toast.success(result.message);
+                      }
+                      setTelegramSaving(false);
+                    }}
+                    className="gap-1.5 h-9 text-xs"
+                  >
+                    {telegramSaving ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <MessageCircle className="size-3.5" />
+                    )}
+                    Connect
+                  </Button>
+                </div>
+                <p className="text-[11px] text-muted-foreground/50">
+                  Don&apos;t know your Chat ID? Message &nbsp;
+                  <a
+                    href="https://t.me/userinfobot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-orange-500 hover:text-orange-600 underline underline-offset-2"
+                  >
+                    @userinfobot
+                  </a>
+                  &nbsp; on Telegram to get it.
+                </p>
               </div>
             )}
           </div>

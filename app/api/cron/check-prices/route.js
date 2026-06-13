@@ -1,9 +1,79 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { scrapeProduct } from "@/lib/firecrawl";
-import { sendPriceDropAlert, sendTargetPriceAlert } from "@/lib/email";
+import { sendPriceDropAlert as sendEmailPriceDrop, sendTargetPriceAlert as sendEmailTarget } from "@/lib/email";
+import { sendPriceDropAlert as sendTelegramDrop, sendTargetReachedAlert as sendTelegramTarget } from "@/lib/telegram";
 
 const CHUNK_SIZE = 5;
+
+async function logNotification(supabase, { userId, productId, alertId, type, channel, status, recipient, priceAtEvent, targetPrice, oldPrice, errorMessage }) {
+  try {
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      product_id: productId,
+      alert_id: alertId,
+      notification_type: type,
+      channel,
+      status,
+      recipient,
+      price_at_event: priceAtEvent,
+      target_price: targetPrice,
+      old_price: oldPrice,
+      error_message: errorMessage,
+    });
+  } catch (err) {
+    console.error("Failed to log notification:", err);
+  }
+}
+
+async function sendTelegramNotification(supabase, userId, product, type, data) {
+  try {
+    const { data: settings } = await supabase
+      .from("user_settings")
+      .select("telegram_chat_id, telegram_enabled")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const chatId = settings?.telegram_chat_id;
+    if (!chatId || !settings?.telegram_enabled) return null;
+
+    let result;
+    if (type === "price_drop") {
+      result = await sendTelegramDrop(chatId, product, data.oldPrice, data.newPrice);
+    } else {
+      result = await sendTelegramTarget(chatId, product, data.targetPrice, data.currentPrice);
+    }
+
+    await logNotification(supabase, {
+      userId,
+      productId: product.id,
+      alertId: data.alertId || null,
+      type,
+      channel: "telegram",
+      status: result.success ? "sent" : "failed",
+      recipient: chatId,
+      priceAtEvent: type === "price_drop" ? data.newPrice : data.currentPrice,
+      targetPrice: data.targetPrice || null,
+      oldPrice: data.oldPrice || null,
+      errorMessage: result.error || null,
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Telegram notification error:", error);
+    await logNotification(supabase, {
+      userId,
+      productId: product.id,
+      alertId: data?.alertId || null,
+      type,
+      channel: "telegram",
+      status: "failed",
+      recipient: null,
+      errorMessage: error.message,
+    });
+    return { success: false, error: error.message };
+  }
+}
 
 async function processProduct(product, supabase) {
   const result = { id: product.id, updated: false, failed: false, priceChanged: false, alertSent: false };
@@ -43,11 +113,27 @@ async function processProduct(product, supabase) {
         const { data: { user } } = await supabase.auth.admin.getUserById(product.user_id);
 
         if (user?.email) {
-          const emailResult = await sendPriceDropAlert(user.email, product, oldPrice, newPrice);
-          if (emailResult.success) {
-            result.alertSent = true;
-          }
+          const emailResult = await sendEmailPriceDrop(user.email, product, oldPrice, newPrice);
+          await logNotification(supabase, {
+            userId: product.user_id,
+            productId: product.id,
+            alertId: null,
+            type: "price_drop",
+            channel: "email",
+            status: emailResult.success ? "sent" : "failed",
+            recipient: user.email,
+            priceAtEvent: newPrice,
+            oldPrice,
+            errorMessage: emailResult.error || null,
+          });
+          if (emailResult.success) result.alertSent = true;
         }
+
+        await sendTelegramNotification(supabase, product.user_id, product, "price_drop", {
+          oldPrice,
+          newPrice,
+          alertId: null,
+        });
       }
 
       const { data: activeAlerts } = await supabase
@@ -61,25 +147,41 @@ async function processProduct(product, supabase) {
           const { data: { user: alertUser } } = await supabase.auth.admin.getUserById(product.user_id);
 
           if (alertUser?.email) {
-            const emailResult = await sendTargetPriceAlert(alertUser.email, product, alert.target_price, newPrice);
-
-            if (emailResult.success) {
-              const savings = alert.price_at_creation
-                ? parseFloat(alert.price_at_creation) - newPrice
-                : null;
-
-              await supabase
-                .from("price_alerts")
-                .update({
-                  status: "triggered",
-                  triggered_at: new Date().toISOString(),
-                  savings: savings && savings > 0 ? savings : 0,
-                })
-                .eq("id", alert.id);
-
-              result.alertSent = true;
-            }
+            const emailResult = await sendEmailTarget(alertUser.email, product, alert.target_price, newPrice);
+            await logNotification(supabase, {
+              userId: product.user_id,
+              productId: product.id,
+              alertId: alert.id,
+              type: "target_reached",
+              channel: "email",
+              status: emailResult.success ? "sent" : "failed",
+              recipient: alertUser.email,
+              priceAtEvent: newPrice,
+              targetPrice: alert.target_price,
+              errorMessage: emailResult.error || null,
+            });
           }
+
+          await sendTelegramNotification(supabase, product.user_id, product, "target_reached", {
+            targetPrice: alert.target_price,
+            currentPrice: newPrice,
+            alertId: alert.id,
+          });
+
+          const savings = alert.price_at_creation
+            ? parseFloat(alert.price_at_creation) - newPrice
+            : null;
+
+          await supabase
+            .from("price_alerts")
+            .update({
+              status: "triggered",
+              triggered_at: new Date().toISOString(),
+              savings: savings && savings > 0 ? savings : 0,
+            })
+            .eq("id", alert.id);
+
+          result.alertSent = true;
         }
       }
     }
