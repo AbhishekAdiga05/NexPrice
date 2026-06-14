@@ -497,6 +497,23 @@ export async function getInsights() {
         triggeredAt: a.triggered_at || a.created_at,
       }));
 
+    const { data: storeData } =
+      productIds.length > 0
+        ? await supabase
+            .from("store_prices")
+            .select("store_name, product_id")
+            .in("product_id", productIds)
+        : { data: [] };
+
+    const uniqueStores = new Set();
+    const productsWithStores = new Set();
+    for (const s of storeData || []) {
+      uniqueStores.add(s.store_name);
+      productsWithStores.add(s.product_id);
+    }
+
+    const bestDealScore = topDeals.length > 0 ? topDeals[0].dealScore.score : null;
+
     return {
       totalSavings,
       totalSavingsFormatted: `${currency} ${totalSavings.toFixed(2)}`,
@@ -504,6 +521,9 @@ export async function getInsights() {
       triggeredCount: triggeredAlerts.length,
       totalAlerts: alerts.length,
       productCount: products.length,
+      storeCount: uniqueStores.size,
+      productsWithStoreCount: productsWithStores.size,
+      bestDealScore,
       topDeals,
       recentSavings,
     };

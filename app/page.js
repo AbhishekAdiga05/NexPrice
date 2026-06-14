@@ -15,6 +15,7 @@ import WatchlistDashboard from "@/components/WatchlistDashboard";
 import AlertsDashboard from "@/components/AlertsDashboard";
 import SettingsForm from "@/components/SettingsForm";
 import DashboardShell from "@/components/DashboardShell";
+import DashboardAnalyticsChart from "@/components/DashboardAnalyticsChart";
 import RecentActivity from "@/components/RecentActivity";
 import LandingCTA from "@/components/LandingCTA";
 import Footer from "@/components/Footer";
@@ -31,6 +32,8 @@ import {
   ListChecks,
   Store,
   TrendingDown,
+  Sparkles,
+  BarChart3,
 } from "lucide-react";
 import HeroVisual from "@/components/HeroVisual";
 
@@ -189,69 +192,83 @@ async function DashboardStats({ insights }) {
   if (!insights) return null;
 
   const bestDeal = insights?.topDeals?.[0] || null;
+  const bestDealScore = insights.bestDealScore;
 
   const stats = [
     {
-      label: "Tracked Products",
+      label: "Products Tracked",
       value: insights.productCount,
-      icon: Activity,
+      icon: BarChart3,
       sub: `${insights.productCount} product${insights.productCount !== 1 ? "s" : ""} tracked`,
+      accent: "from-orange-500 to-amber-500",
+      bg: "bg-orange-50",
+      iconColor: "text-orange-600",
     },
     {
-      label: "Best Deal Available",
-      value: bestDeal ? `${bestDeal.currency} ${bestDeal.current_price.toFixed(2)}` : "\u2014",
+      label: "Stores Compared",
+      value: insights.storeCount,
       icon: Store,
-      sub: bestDeal ? bestDeal.name.substring(0, 30) : "Track products to see deals",
-      highlight: !!bestDeal,
+      sub: `${insights.productsWithStoreCount} product${insights.productsWithStoreCount !== 1 ? "s" : ""} with store data`,
+      accent: "from-blue-500 to-indigo-500",
+      bg: "bg-indigo-50",
+      iconColor: "text-indigo-600",
     },
     {
-      label: "Total Savings",
+      label: "Best Deal Score",
+      value: bestDealScore !== null ? `${bestDealScore}` : "\u2014",
+      icon: Sparkles,
+      sub: bestDealScore !== null
+        ? bestDealScore >= 70 ? "Great Deal" : bestDealScore >= 50 ? "Good Deal" : bestDealScore >= 30 ? "Fair" : "Not Now"
+        : "Track products to see scores",
+      accent: "from-emerald-500 to-teal-500",
+      bg: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+      highlight: bestDealScore !== null,
+    },
+    {
+      label: "Potential Savings",
       value: insights.totalSavingsFormatted,
       icon: Wallet,
-      sub: `${insights.triggeredCount} captured`,
+      sub: `${insights.triggeredCount} alert${insights.triggeredCount !== 1 ? "s" : ""} triggered`,
+      accent: "from-violet-500 to-purple-500",
+      bg: "bg-violet-50",
+      iconColor: "text-violet-600",
     },
-  ];
-
-  const iconColors = [
-    "text-orange-600 bg-orange-50",
-    "text-orange-600 bg-orange-50",
-    "text-emerald-600 bg-emerald-50",
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 mb-6 sm:mb-8">
-      {stats.map((s, i) => (
+    <div className="mb-6 sm:mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {stats.map((s) => (
           <div
             key={s.label}
-            className={`bg-white rounded-xl border ${
-              s.highlight
-                ? "border-orange-200/60 shadow-[0_0_0_1px_rgba(249,115,22,0.15)]"
-                : "border-gray-200/80 shadow-card"
-            } p-4 sm:p-5`}
+            className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 sm:p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
           >
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground/70">
                 {s.label}
               </span>
-              <div className={`size-9 sm:size-10 rounded-xl flex items-center justify-center ${iconColors[i]}`}>
-                <s.icon className="size-4 sm:size-[18px]" />
+              <div className={`size-9 sm:size-10 rounded-xl ${s.bg} flex items-center justify-center shadow-sm`}>
+                <s.icon className={`size-4 sm:size-[18px] ${s.iconColor}`} />
               </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
+            <div className={`text-2xl sm:text-3xl font-bold font-mono tracking-tight leading-none ${
+              s.highlight
+                ? "bg-gradient-to-r bg-clip-text text-transparent " + s.accent
+                : "text-foreground"
+            }`}>
               {s.value}
             </div>
-            <div className="text-[11px] sm:text-xs text-muted-foreground font-mono mt-1.5 sm:mt-2 leading-none">
+            <div className="text-[11px] sm:text-xs text-muted-foreground font-medium mt-1.5 leading-none">
               {s.sub}
             </div>
-            {s.highlight && (
-              <div className="mt-2 pt-2 border-t border-orange-100">
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-orange-600">
-                  Lowest priced product
-                </span>
-              </div>
-            )}
           </div>
-      ))}
+        ))}
+      </div>
+
+      <div className="mt-3 sm:mt-4">
+        <DashboardAnalyticsChart />
+      </div>
     </div>
   );
 }

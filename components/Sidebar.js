@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Package,
+  LayoutDashboard,
   BarChart3,
   ListChecks,
   Bell,
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Products", href: "/", icon: Package },
+  { label: "Products", href: "/", icon: LayoutDashboard },
   { label: "Insights", href: "/?tab=insights", icon: BarChart3 },
   { label: "Watchlist", href: "/?tab=watchlist", icon: ListChecks },
   { label: "Alerts", href: "/?tab=alerts", icon: Bell },
@@ -61,22 +61,36 @@ export default function Sidebar({ open, onClose }) {
               key={label}
               href={href}
               onClick={onClose}
-              className={`group flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 active
-                  ? "bg-orange-50 text-orange-600 shadow-sm"
+                  ? "bg-gradient-to-r from-orange-50 to-orange-50/50 text-orange-600 shadow-sm"
                   : "text-muted-foreground hover:text-secondary-foreground hover:bg-gray-50"
               }`}
             >
-              <Icon className={`size-[18px] shrink-0 transition-colors duration-200 ${
-                active ? "text-orange-500" : "text-muted-foreground group-hover:text-secondary-foreground"
-              }`} />
+              <Icon
+                className={`size-[18px] shrink-0 transition-colors duration-200 ${
+                  active
+                    ? "text-orange-500"
+                    : "text-muted-foreground group-hover:text-secondary-foreground"
+                }`}
+              />
               <span>{label}</span>
               {active && (
-                <span className="ml-auto size-1.5 rounded-full bg-orange-500" />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 size-1.5 rounded-full bg-orange-500 shadow-[0_0_4px_rgba(249,115,22,0.4)]" />
+              )}
+              {!active && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 size-1.5 rounded-full bg-transparent group-hover:bg-gray-300 transition-colors" />
               )}
             </Link>
           );
         })}
+      </div>
+
+      <div className="px-6 pt-5 mt-4 border-t border-gray-100">
+        <div className="flex items-center gap-2 px-1">
+          <div className="size-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.3)]" />
+          <span className="text-[11px] text-muted-foreground font-medium">All systems normal</span>
+        </div>
       </div>
     </nav>
   );
