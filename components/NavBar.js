@@ -50,7 +50,7 @@ export default function NavBar({ user, onMenuToggle }) {
             onClick={() => setShowAuth(true)}
             className="inline-flex items-center gap-2 rounded-xl font-semibold text-sm transition-all cursor-pointer shadow-sm hover:shadow-md active:scale-[0.97] h-9 px-5 bg-primary text-primary-foreground hover:bg-orange-600"
           >
-            Sign Up
+            Get Started
           </button>
         </div>
       </div>
