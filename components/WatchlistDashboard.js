@@ -16,9 +16,12 @@ import {
   Flag,
   ChevronDown,
   Eye,
+  Store,
+  TrendingDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import StorePriceBadge from "./StorePriceBadge";
 
 const DEAL_SCORE_COLORS = {
   great: "bg-emerald-50 text-emerald-700 border-emerald-200/60",
@@ -103,6 +106,7 @@ function PriorityDropdown({ value, onChange }) {
 
 function WatchlistItem({ item, onRemove, onPriorityChange }) {
   const [removing, setRemoving] = useState(false);
+  const [now] = useState(() => Date.now());
 
   const handleRemove = async () => {
     setRemoving(true);
@@ -127,7 +131,7 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
   };
 
   const daysOnList = Math.floor(
-    (Date.now() - new Date(item.createdAt).getTime()) /
+    (now - new Date(item.createdAt).getTime()) /
       (1000 * 60 * 60 * 24)
   );
 
@@ -173,6 +177,11 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
             </span>
             <PriorityDropdown value={item.priority} onChange={handlePriority} />
           </div>
+          {item.product && (
+            <div className="mt-2">
+              <StorePriceBadge productId={item.productId} currency={item.product.currency} />
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">

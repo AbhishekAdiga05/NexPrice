@@ -7,10 +7,9 @@
   <img src="https://img.shields.io/badge/Tailwind_v4-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white" alt="Supabase" />
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Telegram_Bot-26A5E4?logo=telegram&logoColor=white" alt="Telegram Bot API" />
 </p>
 
-**NexPrice** is a full-stack product price tracking application that monitors e-commerce prices across multiple stores, analyzes historical trends, and sends real-time alerts via Telegram and email when products reach target prices.
+**NexPrice** is a full-stack product price tracking application that monitors e-commerce prices across multiple stores, analyzes historical trends, and sends real-time email alerts when products reach target prices.
 
 ---
 
@@ -24,7 +23,6 @@ Screenshot placeholders — add these after deployment:
 [Product Tracking] → public/screenshots/product-tracking.png
 [Price Comparison] → public/screenshots/price-comparison.png
 [Price Analytics]  → public/screenshots/price-analytics.png
-[Telegram Alert]   → public/screenshots/telegram-alert.png
 ```
 
 ---
@@ -33,7 +31,6 @@ Screenshot placeholders — add these after deployment:
 
 - **Product Price Tracking** — Add any product URL; the app scrapes the page and records the price. A cron job rescrapes all tracked products daily to build a historical record.
 - **Target Price Alerts** — Set a target price per product. When the price drops to or below the target, you receive an immediate notification.
-- **Telegram Notifications** — Connect your Telegram account to receive instant price alerts. Supports both price-drop and target-reached notifications.
 - **Multi-Store Price Comparison** — View the same product priced across multiple retailers (Amazon, Flipkart, Croma, Reliance Digital, Tata CLiQ, Vijay Sales) side by side. The cheapest store is highlighted.
 - **Historical Price Trends** — Interactive Recharts line chart showing price changes over time with min/max/average annotations.
 - **Deal Score** — A 0–100 algorithm rating that answers "should I buy now?" based on proximity to all-time low, discount from average, recent trend, and volatility.
@@ -61,7 +58,7 @@ NexPrice addresses these problems through automated monitoring and analysis:
 
 - **Automated scheduled scraping** — A cron job rescrapes every tracked product daily, recording prices in a time-series history table. No manual checking required.
 - **Multi-store aggregation** — The same product's price across different retailers is stored and compared, with the cheapest option highlighted automatically.
-- **Proactive alerts** — Users set a target price once. The system monitors continuously and pushes alerts via Telegram and email when the target is reached, without the user having to check.
+- **Proactive alerts** — Users set a target price once. The system monitors continuously and pushes email alerts when the target is reached, without the user having to check.
 - **Data-driven purchase decisions** — The Deal Score algorithm provides a quantitative answer to "should I buy now?" using historical price data, reducing guesswork.
 
 ---
@@ -85,17 +82,17 @@ NexPrice addresses these problems through automated monitoring and analysis:
 │                                               │          │
 └───────────────────────────────────────────────┼──────────┘
                                                 │
-        ┌───────────────────────────────────────┼───────────────┐
-        │                                       │               │
-        ▼                                       ▼               ▼
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│   Supabase       │  │   Firecrawl      │  │   Telegram Bot   │
-│   (PostgreSQL)   │  │   (Web Scraper)  │  │   API            │
-│   · Auth         │  │                  │  │                  │
-│   · RLS          │  │  scrapeProduct() │  │  sendMessage()   │
-│   · Storage      │  │                  │  │                  │
-└──────────────────┘  └──────────────────┘  └──────────────────┘
-        │                                                   
+        ┌───────────────────────────────────────┐
+        │                                       │
+        ▼                                       ▼
+┌──────────────────┐  ┌──────────────────┐
+│   Supabase       │  │   Firecrawl      │
+│   (PostgreSQL)   │  │   (Web Scraper)  │
+│   · Auth         │  │                  │
+│   · RLS          │  │  scrapeProduct() │
+│   · Storage      │  │                  │
+└──────────────────┘  └──────────────────┘
+        │                                   
         ▼                                                   
 ┌──────────────────┐                                        
 │   Resend         │                                        
@@ -120,13 +117,12 @@ NexPrice addresses these problems through automated monitoring and analysis:
 ### Database
 
 - **Supabase (PostgreSQL)** — All persistent state. Row-Level Security (RLS) on every table scopes data to the authenticated user.
-- **Migrations** — 6 SQL migration files in `supabase/` covering all tables, indexes, and policies.
+- **Migrations** — 5 SQL migration files in `supabase/` covering all tables, indexes, and policies.
 
 ### Notification Service
 
 - **Email (Resend)** — HTML-formatted email templates for price drops and target-reached alerts.
-- **Telegram Bot API** — Markdown-formatted messages sent via `https://api.telegram.org/bot<TOKEN>/sendMessage`.
-- **Notifications Table** — Every sent notification (both email and Telegram) is logged with status, recipient, and error tracking for auditability.
+- **Notifications Table** — Every sent notification is logged with status, recipient, and error tracking for auditability.
 
 ---
 
@@ -141,7 +137,7 @@ NexPrice addresses these problems through automated monitoring and analysis:
 | `price_alerts` | User-set target price alerts | `id`, `user_id`, `product_id`, `target_price`, `status` (active/triggered/disabled) |
 | `store_prices` | Multi-store price records | `id`, `product_id`, `store_name`, `product_url`, `price`, `last_updated` |
 | `watchlist` | Prioritized product shortlist | `id`, `user_id`, `product_id`, `priority` (low/medium/high) |
-| `user_settings` | User preferences | `id`, `user_id`, `weekly_digest`, `telegram_chat_id`, `telegram_enabled` |
+| `user_settings` | User preferences | `id`, `user_id`, `weekly_digest`, `digest_day` |
 | `notifications` | Notification history audit log | `id`, `user_id`, `product_id`, `channel`, `status` (sent/failed) |
 | `price_predictions` | Cached ML predictions | `id`, `product_id`, `predicted_price`, `confidence`, `expires_at` |
 
@@ -159,7 +155,7 @@ When viewing a product's detail page, the server fetches all rows from `store_pr
 
 ---
 
-## Telegram Alert System
+## Alert System
 
 ### Alert Flow
 
@@ -168,21 +164,13 @@ When viewing a product's detail page, the server fetches all rows from `store_pr
 3. **Trigger condition** — For each active alert on a product, if `newPrice <= alert.target_price`:
    - The alert is marked `status = 'triggered'` with a timestamp and computed savings.
    - An **email notification** is sent via Resend.
-   - A **Telegram notification** is sent if the user has connected their Telegram account (`user_settings.telegram_chat_id` exists and `telegram_enabled` is true).
 4. **Deduplication** — Once an alert is triggered, its status changes from `active` to `triggered`. The cron job only processes alerts with `status = 'active'`, preventing duplicate notifications for the same price drop.
-
-### Telegram Bot Integration
-
-- The bot sends messages via the REST API: `POST https://api.telegram.org/bot<TOKEN>/sendMessage`
-- Messages use **Markdown formatting** with product name, prices, timestamps, and a clickable product link.
-- Two message templates: price drop alert (shows savings) and target reached alert (shows target vs current).
-- A test message endpoint is available in the Settings page to verify the connection.
 
 ### Notification Logging
 
-Every notification attempt (both email and Telegram) is recorded in the `notifications` table with:
+Every notification attempt is recorded in the `notifications` table with:
 
-- Channel (email / telegram)
+- Channel (email)
 - Status (sent / failed / pending)
 - Prices at the time of the event
 - Error messages for debugging
@@ -203,7 +191,6 @@ Every notification attempt (both email and Telegram) is recorded in the `notific
 | **Authentication** | Supabase Auth (Google OAuth) | User authentication and session management |
 | **Web Scraping** | Firecrawl | Product data extraction from any e-commerce URL |
 | **Email** | Resend | Transactional email alerts |
-| **Notifications** | Telegram Bot API | Real-time push notifications |
 | **Animation** | Framer Motion | Scroll-triggered fade-in animations |
 | **Linting** | ESLint (Next.js config) | Code quality |
 | **Package Manager** | npm / bun | Dependency management |
@@ -218,7 +205,6 @@ Every notification attempt (both email and Telegram) is recorded in the `notific
 - A Supabase account (free tier)
 - A Firecrawl API key (free tier available)
 - A Resend API key (free tier: 100 emails/day)
-- A Telegram Bot Token (from [@BotFather](https://t.me/BotFather))
 
 ### Steps
 
@@ -241,7 +227,6 @@ cp .env.example .env
 # supabase/migration_savings.sql
 # supabase/migration_phase_b.sql
 # supabase/migration_store_prices.sql
-# supabase/migration_telegram.sql
 
 # 5. Start the development server
 npm run dev
@@ -263,9 +248,6 @@ FIRECRAWL_API_KEY=your_firecrawl_api_key
 # Resend (email notifications)
 RESEND_API_KEY=your_resend_api_key
 RESEND_FROM_EMAIL=notifications@yourdomain.com
-
-# Telegram Bot
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 
 # Cron job security
 CRON_SECRET=a_random_secret_string_for_authorization
@@ -302,7 +284,7 @@ npm run lint
 
 - **Browser Extension** — A Chrome/Firefox extension that adds a "Track on NexPrice" button to any e-commerce product page, allowing one-click addition to the user's dashboard.
 - **AI-Based Price Prediction** — Currently the app shows a trend indicator (above/below average). Integration with a price prediction model (time-series forecasting) could predict the optimal buy window.
-- **WhatsApp Notifications** — Extend the notification system beyond email and Telegram to support WhatsApp Business API for users in markets where WhatsApp is the primary messaging platform.
+- **WhatsApp Notifications** — Extend the notification system beyond email to support WhatsApp Business API for users in markets where WhatsApp is the primary messaging platform.
 - **More Store Integrations** — Replace mock store prices with real data from affiliate APIs (Amazon PA-API, Flipkart Affiliate, etc.) and automated cross-store scraping.
 - **Email Digest** — The weekly digest setting exists in the database but the email generation logic is not yet implemented. A scheduled job could compile a weekly summary of price changes, savings, and recommendations.
 - **Public Share Pages** — Generate a public, shareable URL for any tracked product showing its price history and Deal Score, allowing users to share deals without requiring recipients to sign up.
@@ -313,12 +295,12 @@ npm run lint
 
 This project demonstrates competence in several software engineering areas:
 
-- **API Integration** — Working with external APIs (Firecrawl for scraping, Resend for email, Telegram Bot API for notifications) and handling failures gracefully.
+- **API Integration** — Working with external APIs (Firecrawl for scraping, Resend for email) and handling failures gracefully.
 - **Database Design** — Schema design with RLS policies, unique constraints, indexes for query performance, and migration-based schema evolution.
 - **State Management** — Next.js server actions for mutations with automatic cache revalidation. No client-side state library needed due to the server-centric data model.
 - **Full-Stack Development** — Single codebase spanning database (SQL), backend (Node.js server actions), and frontend (React components with responsive design).
 - **Data Visualization** — Interactive time-series charts using Recharts with dynamic domain calculations and responsive containers.
-- **Notification Systems** — Multi-channel notification delivery (email + Telegram) with deduplication, status tracking, and failure logging.
+- **Notification Systems** — Email notification delivery with deduplication, status tracking, and failure logging.
 - **Authentication & Authorization** — Google OAuth flow, session management via cookies, RLS for row-level data isolation.
 - **Automated Workflows** — Cron-driven price checking with chunked parallel processing, progress logging, and error isolation per product.
 
@@ -328,7 +310,7 @@ This project demonstrates competence in several software engineering areas:
 
 1. Built a full-stack production-grade web application using Next.js 16, React 19, Supabase (PostgreSQL), and Tailwind CSS v4, featuring automated product price tracking with daily cron-based scraping across multiple e-commerce stores.
 
-2. Designed and implemented a multi-channel notification system integrating Telegram Bot API and Resend (email) with status tracking, deduplication logic, and failure logging — delivering real-time price alerts to users.
+2. Designed and implemented a notification system using Resend (email) with status tracking, deduplication logic, and failure logging — delivering real-time price alerts to users.
 
 3. Developed a weighted Deal Score algorithm (0–100) analyzing four quantitative factors (proximity to historical low, discount from average, recent trend, and volatility) to provide data-driven purchase recommendations.
 
@@ -398,7 +380,6 @@ nexprice/
 │   ├── buy-priority.js               # Buy Priority algorithm
 │   ├── firecrawl.js                  # Firecrawl scraper wrapper
 │   ├── email.js                      # Email notification templates
-│   ├── telegram.js                   # Telegram Bot API service
 │   ├── mock-stores.js                # Mock store price generator
 │   ├── dates.js                      # Date formatting utilities
 │   └── constants.js                  # Design constants
@@ -411,8 +392,7 @@ nexprice/
 │   ├── migration_settings.sql
 │   ├── migration_savings.sql
 │   ├── migration_phase_b.sql
-│   ├── migration_store_prices.sql
-│   └── migration_telegram.sql
+│   └── migration_store_prices.sql
 ├── proxy.js                          # Next.js middleware
 ├── next.config.mjs
 ├── postcss.config.mjs

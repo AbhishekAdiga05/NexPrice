@@ -386,40 +386,6 @@ export async function updateUserSettings(formData) {
   }
 }
 
-export async function updateTelegramChatId(chatId) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) return { error: "Not authenticated" };
-
-    const { error } = await supabase
-      .from("user_settings")
-      .upsert(
-        {
-          user_id: user.id,
-          telegram_chat_id: chatId || null,
-          telegram_enabled: !!chatId,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id" }
-      );
-
-    if (error) throw error;
-
-    revalidatePath("/settings");
-    return { success: true, message: chatId ? "Telegram connected successfully" : "Telegram disconnected" };
-  } catch (error) {
-    return { error: error.message || "Failed to update Telegram settings" };
-  }
-}
-
-export async function disconnectTelegram() {
-  return updateTelegramChatId(null);
-}
-
 export async function getNotificationHistory(limit = 20) {
   try {
     const supabase = await createClient();

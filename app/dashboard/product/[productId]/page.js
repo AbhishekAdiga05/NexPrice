@@ -3,7 +3,9 @@ import {
   getProductById,
   getPriceHistory,
   isOnWatchlist,
+  getStorePrices,
 } from "@/app/actions";
+import { generateMockStorePrices } from "@/lib/mock-stores";
 import { calculateTrendIndicator } from "@/lib/deal-score";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -14,6 +16,7 @@ import PriceChart from "@/components/PriceChart";
 import PricePrediction from "@/components/PricePrediction";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import SetPriceAlert from "@/components/SetPriceAlert";
+import StoreComparison from "@/components/StoreComparison";
 import ProductActions from "./ProductActions";
 import {
   Card,
@@ -131,6 +134,12 @@ export default async function ProductDetailPage({ params }) {
 
   const priceHistory = await getPriceHistory(productId);
   const watchlistEntry = await isOnWatchlist(productId);
+
+  let storePrices = await getStorePrices(productId);
+  if (!storePrices || storePrices.length === 0) {
+    storePrices = generateMockStorePrices(productId, product.current_price);
+  }
+
   const trend = calculateTrendIndicator(
     parseFloat(product.current_price),
     priceHistory
@@ -258,6 +267,10 @@ export default async function ProductDetailPage({ params }) {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <StoreComparison prices={storePrices} currency={product.currency} />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-5">

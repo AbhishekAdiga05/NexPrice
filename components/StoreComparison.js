@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Store, Clock, TrendingDown } from "lucide-react";
+import { ExternalLink, Store, Clock, TrendingDown, Zap } from "lucide-react";
 
 function formatLastUpdated(dateString) {
   const now = Date.now();
@@ -55,6 +55,8 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
     (a, b) => parseFloat(a.price) - parseFloat(b.price)
   );
   const lowestPrice = parseFloat(sorted[0].price);
+  const highestPrice = parseFloat(sorted[sorted.length - 1].price);
+  const totalSavings = highestPrice - lowestPrice;
 
   return (
     <div className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
@@ -63,7 +65,7 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
         <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
           Store Comparison
         </h2>
-        <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg ml-auto leading-none">
+        <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none ml-auto">
           {sorted.length} stores
         </span>
       </div>
@@ -73,6 +75,7 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
           const price = parseFloat(store.price);
           const diff = price - lowestPrice;
           const isCheapest = diff === 0;
+          const diffPercent = lowestPrice > 0 ? ((diff / lowestPrice) * 100).toFixed(1) : "0";
           const colorClass = storeColors[index % storeColors.length];
 
           return (
@@ -98,8 +101,8 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
                   </span>
                   {isCheapest && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-700 bg-orange-50 border border-orange-200/60 px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0">
-                      <TrendingDown className="size-2.5" />
-                      Best Price
+                      <Zap className="size-2.5" />
+                      Best Deal
                     </span>
                   )}
                 </div>
@@ -110,13 +113,19 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
                   </span>
                   {!isCheapest && (
                     <span className="text-[11px] font-mono text-muted-foreground/60">
-                      +{currency} {diff.toFixed(2)} more
+                      +{currency} {diff.toFixed(2)} ({diffPercent}% more)
                     </span>
                   )}
                 </div>
               </div>
 
               <div className="flex flex-col items-end gap-1 shrink-0">
+                {isCheapest && totalSavings > 0 && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200/60 px-2 py-1 rounded-lg whitespace-nowrap">
+                    <TrendingDown className="size-3" />
+                    Save {currency} {totalSavings.toFixed(2)}
+                  </span>
+                )}
                 <div className="flex items-center gap-1 text-[11px] text-muted-foreground/50">
                   <Clock className="size-3" />
                   <span>{formatLastUpdated(store.last_updated)}</span>
@@ -129,6 +138,18 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
           );
         })}
       </div>
+
+      {sorted.length > 1 && (
+        <div className="px-6 py-3 bg-gradient-to-r from-orange-50/60 to-transparent border-t border-gray-100">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Zap className="size-3 text-orange-500" />
+            <span>
+              Compare across <strong className="text-foreground">{sorted.length} stores</strong> to find the best deal.{" "}
+              <strong className="text-orange-600">Save up to {currency} {totalSavings.toFixed(2)}</strong>
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

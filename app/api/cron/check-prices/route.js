@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { scrapeProduct } from "@/lib/firecrawl";
 import { sendPriceDropAlert as sendEmailPriceDrop, sendTargetPriceAlert as sendEmailTarget } from "@/lib/email";
-import { sendPriceDropAlert as sendTelegramDrop, sendTargetReachedAlert as sendTelegramTarget } from "@/lib/telegram";
 
 const CHUNK_SIZE = 5;
 
@@ -23,55 +22,6 @@ async function logNotification(supabase, { userId, productId, alertId, type, cha
     });
   } catch (err) {
     console.error("Failed to log notification:", err);
-  }
-}
-
-async function sendTelegramNotification(supabase, userId, product, type, data) {
-  try {
-    const { data: settings } = await supabase
-      .from("user_settings")
-      .select("telegram_chat_id, telegram_enabled")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    const chatId = settings?.telegram_chat_id;
-    if (!chatId || !settings?.telegram_enabled) return null;
-
-    let result;
-    if (type === "price_drop") {
-      result = await sendTelegramDrop(chatId, product, data.oldPrice, data.newPrice);
-    } else {
-      result = await sendTelegramTarget(chatId, product, data.targetPrice, data.currentPrice);
-    }
-
-    await logNotification(supabase, {
-      userId,
-      productId: product.id,
-      alertId: data.alertId || null,
-      type,
-      channel: "telegram",
-      status: result.success ? "sent" : "failed",
-      recipient: chatId,
-      priceAtEvent: type === "price_drop" ? data.newPrice : data.currentPrice,
-      targetPrice: data.targetPrice || null,
-      oldPrice: data.oldPrice || null,
-      errorMessage: result.error || null,
-    });
-
-    return result;
-  } catch (error) {
-    console.error("Telegram notification error:", error);
-    await logNotification(supabase, {
-      userId,
-      productId: product.id,
-      alertId: data?.alertId || null,
-      type,
-      channel: "telegram",
-      status: "failed",
-      recipient: null,
-      errorMessage: error.message,
-    });
-    return { success: false, error: error.message };
   }
 }
 
@@ -129,11 +79,6 @@ async function processProduct(product, supabase) {
           if (emailResult.success) result.alertSent = true;
         }
 
-        await sendTelegramNotification(supabase, product.user_id, product, "price_drop", {
-          oldPrice,
-          newPrice,
-          alertId: null,
-        });
       }
 
       const { data: activeAlerts } = await supabase
@@ -161,12 +106,6 @@ async function processProduct(product, supabase) {
               errorMessage: emailResult.error || null,
             });
           }
-
-          await sendTelegramNotification(supabase, product.user_id, product, "target_reached", {
-            targetPrice: alert.target_price,
-            currentPrice: newPrice,
-            alertId: alert.id,
-          });
 
           const savings = alert.price_at_creation
             ? parseFloat(alert.price_at_creation) - newPrice

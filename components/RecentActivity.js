@@ -1,4 +1,4 @@
-import { Clock, CheckCircle2, PlusCircle } from "lucide-react";
+import { Clock, CheckCircle2, PlusCircle, Store } from "lucide-react";
 import Link from "next/link";
 import { formatTimeAgo } from "@/lib/dates";
 
@@ -36,11 +36,13 @@ export default function RecentActivity({ recentSavings = [], recentProducts = []
   const typeStyles = {
     alert_triggered: "text-emerald-600 bg-emerald-50 border-emerald-200/60",
     product_added: "text-orange-600 bg-orange-50 border-orange-200/60",
+    store_price_found: "text-orange-600 bg-orange-50 border-orange-200/60",
   };
 
   const typeIcons = {
     alert_triggered: CheckCircle2,
     product_added: PlusCircle,
+    store_price_found: Store,
   };
 
   return (

@@ -10,6 +10,8 @@ import {
   Sparkles,
   DollarSign,
   Tag,
+  Store,
+  TrendingDown,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -43,9 +45,11 @@ export default function InsightsDashboard({ insights }) {
     recentSavings,
   } = insights;
 
+  const topDeal = topDeals?.[0] || null;
+
   return (
     <div className="space-y-6 sm:space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
         <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Total Savings</span>
@@ -68,15 +72,35 @@ export default function InsightsDashboard({ insights }) {
           <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">{activeCount}</div>
           <div className="text-xs text-muted-foreground font-mono mt-2 leading-none">{totalAlerts} total set</div>
         </div>
+        <div className="bg-white rounded-xl border border-orange-200/60 shadow-[0_0_0_1px_rgba(249,115,22,0.15)] p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Best Deal</span>
+            <div className="size-10 rounded-xl bg-orange-50 flex items-center justify-center">
+              <Store className="size-[18px] text-orange-600" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
+            {topDeal ? `${topDeal.currency} ${topDeal.current_price.toFixed(2)}` : "\u2014"}
+          </div>
+          <div className="text-xs text-muted-foreground font-mono mt-2 leading-none truncate">
+            {topDeal ? topDeal.name : "Track products to find deals"}
+          </div>
+        </div>
       </div>
 
-      <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
-        <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
-          <Sparkles className="size-4 text-orange-500" />
-          <h2 className="text-section">Best Deals Now</h2>
-          <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">{topDeals.length}</span>
-        </div>
-        {topDeals.length === 0 ? (
+        <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+            <Sparkles className="size-4 text-orange-500" />
+            <h2 className="text-section">Best Deals Now</h2>
+            <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">{topDeals.length}</span>
+            {topDeals.length > 0 && (
+              <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200/60 px-2 py-0.5 rounded-lg leading-none flex items-center gap-1">
+                <TrendingDown className="size-2.5" />
+                Lowest prices
+              </span>
+            )}
+          </div>
+          {topDeals.length === 0 ? (
           <div className="text-center py-12 px-5">
             <TrendingUp className="size-10 text-muted-foreground/50 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">Track products to see your best deals here.</p>
@@ -121,11 +145,17 @@ export default function InsightsDashboard({ insights }) {
       </section>
 
       <section className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
-        <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
-          <Wallet className="size-4 text-emerald-500" />
-          <h2 className="text-section">Recent Savings</h2>
-          <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">{recentSavings.length}</span>
-        </div>
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
+            <Wallet className="size-4 text-emerald-500" />
+            <h2 className="text-section">Recent Savings</h2>
+            <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none">{recentSavings.length}</span>
+            {recentSavings.length > 0 && (
+              <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200/60 px-2 py-0.5 rounded-lg leading-none flex items-center gap-1">
+                <Store className="size-2.5" />
+                Price alerts triggered
+              </span>
+            )}
+          </div>
         {recentSavings.length === 0 ? (
           <div className="text-center py-12 px-5">
             <DollarSign className="size-10 text-muted-foreground/50 mx-auto mb-3" />

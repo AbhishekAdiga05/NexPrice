@@ -29,6 +29,8 @@ import {
   Bell,
   LineChart,
   ListChecks,
+  Store,
+  TrendingDown,
 } from "lucide-react";
 import HeroVisual from "@/components/HeroVisual";
 
@@ -40,11 +42,13 @@ function LandingHero() {
           <h1 className="text-[2.2rem] sm:text-[4.2rem] lg:text-[5.2rem] font-bold text-foreground tracking-tight leading-[1.05]">
             Track Prices.
             <br />
+            Compare Stores.
+            <br />
             Buy at the{" "}
             <span className="text-orange-500">Right Time.</span>
           </h1>
           <p className="text-sm sm:text-lg text-secondary-foreground mt-4 sm:mt-6 leading-relaxed max-w-md mx-auto lg:mx-0">
-            Monitor product prices and get notified when they hit your target.
+            Monitor product prices across Amazon, Flipkart, and more. Find the best deal with one click.
           </p>
           <div className="mt-6 sm:mt-10">
             <LandingCTA label="Start Tracking" />
@@ -64,17 +68,17 @@ function HowItWorksSection() {
     {
       icon: Link2,
       title: "Add Product",
-      desc: "Paste any product URL.",
+      desc: "Paste any product URL to start tracking.",
     },
     {
-      icon: Target,
-      title: "Set Target Price",
-      desc: "Pick the price you want.",
+      icon: Store,
+      title: "Compare Store Prices",
+      desc: "See prices across Amazon, Flipkart, and more.",
     },
     {
-      icon: Bell,
-      title: "Get Alert",
-      desc: "We notify you when it drops.",
+      icon: TrendingDown,
+      title: "Find Best Deal",
+      desc: "We highlight the cheapest store for you.",
     },
   ];
 
@@ -115,9 +119,9 @@ function HowItWorksSection() {
 function FeaturesSection() {
   const features = [
     { icon: Activity, title: "Price Tracking", desc: "Auto-track prices across stores." },
-    { icon: Bell, title: "Smart Alerts", desc: "Instant notifications at your target price." },
+    { icon: Store, title: "Multi-Store Comparison", desc: "Compare prices across Amazon, Flipkart, Croma, and more." },
     { icon: LineChart, title: "Price History", desc: "View trends before you buy." },
-    { icon: ListChecks, title: "Watchlist", desc: "Manage all tracked products in one place." },
+    { icon: TrendingDown, title: "Best Deal Finder", desc: "We find and highlight the cheapest option for you." },
   ];
 
   const iconColors = [
@@ -184,6 +188,8 @@ function PriceHistorySection() {
 async function DashboardStats({ insights }) {
   if (!insights) return null;
 
+  const bestDeal = insights?.topDeals?.[0] || null;
+
   const stats = [
     {
       label: "Tracked Products",
@@ -192,10 +198,11 @@ async function DashboardStats({ insights }) {
       sub: `${insights.productCount} product${insights.productCount !== 1 ? "s" : ""} tracked`,
     },
     {
-      label: "Active Alerts",
-      value: insights.activeCount,
-      icon: Target,
-      sub: `${insights.totalAlerts} total alerts`,
+      label: "Best Deal Available",
+      value: bestDeal ? `${bestDeal.currency} ${bestDeal.current_price.toFixed(2)}` : "\u2014",
+      icon: Store,
+      sub: bestDeal ? bestDeal.name.substring(0, 30) : "Track products to see deals",
+      highlight: !!bestDeal,
     },
     {
       label: "Total Savings",
@@ -207,32 +214,43 @@ async function DashboardStats({ insights }) {
 
   const iconColors = [
     "text-orange-600 bg-orange-50",
-    "text-indigo-600 bg-indigo-50",
+    "text-orange-600 bg-orange-50",
     "text-emerald-600 bg-emerald-50",
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 mb-6 sm:mb-8">
       {stats.map((s, i) => (
-        <div
-          key={s.label}
-          className="bg-white rounded-xl border border-gray-200/80 shadow-card p-4 sm:p-5"
-        >
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              {s.label}
-            </span>
-            <div className={`size-9 sm:size-10 rounded-xl flex items-center justify-center ${iconColors[i]}`}>
-              <s.icon className="size-4 sm:size-[18px]" />
+          <div
+            key={s.label}
+            className={`bg-white rounded-xl border ${
+              s.highlight
+                ? "border-orange-200/60 shadow-[0_0_0_1px_rgba(249,115,22,0.15)]"
+                : "border-gray-200/80 shadow-card"
+            } p-4 sm:p-5`}
+          >
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+                {s.label}
+              </span>
+              <div className={`size-9 sm:size-10 rounded-xl flex items-center justify-center ${iconColors[i]}`}>
+                <s.icon className="size-4 sm:size-[18px]" />
+              </div>
             </div>
+            <div className="text-2xl sm:text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
+              {s.value}
+            </div>
+            <div className="text-[11px] sm:text-xs text-muted-foreground font-mono mt-1.5 sm:mt-2 leading-none">
+              {s.sub}
+            </div>
+            {s.highlight && (
+              <div className="mt-2 pt-2 border-t border-orange-100">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-orange-600">
+                  Lowest priced product
+                </span>
+              </div>
+            )}
           </div>
-          <div className="text-2xl sm:text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
-            {s.value}
-          </div>
-          <div className="text-[11px] sm:text-xs text-muted-foreground font-mono mt-1.5 sm:mt-2 leading-none">
-            {s.sub}
-          </div>
-        </div>
       ))}
     </div>
   );

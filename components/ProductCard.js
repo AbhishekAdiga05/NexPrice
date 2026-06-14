@@ -5,8 +5,9 @@ import { deleteProduct } from "@/app/actions";
 import PriceChart from "./PriceChart";
 import SetPriceAlert from "./SetPriceAlert";
 import DealScoreBadge from "./DealScoreBadge";
+import StorePriceBadge from "./StorePriceBadge";
 import Image from "next/image";
-import { Trash2, BarChart3, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, BarChart3, ExternalLink, ChevronDown, ChevronUp, Store } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -98,6 +99,11 @@ export default function ProductCard({ product }) {
               </span>
             )}
           </div>
+        </div>
+
+        {/* Store comparison badge */}
+        <div className="px-4 sm:px-5 pb-2 sm:pb-2">
+          <StorePriceBadge productId={product.id} currency={product.currency} />
         </div>
 
         {/* Second row: Target price, Alert status, Quick actions */}

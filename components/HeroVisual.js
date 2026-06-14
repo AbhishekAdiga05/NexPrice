@@ -1,54 +1,88 @@
 "use client";
 
-import Image from "next/image";
-import { Bell, TrendingDown } from "lucide-react";
+import { Store, TrendingDown, Zap, ExternalLink } from "lucide-react";
+
+const stores = [
+  { name: "Amazon India", price: "₹49,999", color: "bg-orange-500" },
+  { name: "Flipkart", price: "₹50,499", color: "bg-emerald-500" },
+  { name: "Reliance Digital", price: "₹48,999", color: "bg-rose-500" },
+  { name: "Croma", price: "₹51,299", color: "bg-indigo-500" },
+];
 
 export default function HeroVisual() {
   return (
     <div className="relative w-full min-h-[420px] sm:min-h-[520px] flex items-center justify-center">
-      {/* Orange glow */}
       <div className="absolute inset-0 bg-gradient-radial from-orange-200/25 via-orange-100/10 to-transparent rounded-[80px] blur-3xl" />
 
-      {/* Price card - top right */}
-      <div className="absolute top-2 sm:top-8 right-0 sm:right-4 z-20 bg-white rounded-2xl border border-gray-100/80 shadow-lg px-5 py-4 min-w-[170px] sm:min-w-[190px]">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="size-2 rounded-full bg-emerald-500" />
-          <span className="text-[11px] font-semibold text-emerald-600">Target Reached</span>
-        </div>
-        <div className="flex items-center justify-between gap-5">
-          <div>
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Current</span>
-            <div className="text-base sm:text-lg font-bold font-mono text-foreground tracking-tight mt-0.5">₹47,999</div>
+      <div className="relative z-10 w-full max-w-sm mx-auto">
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xl overflow-hidden">
+          <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
+            <Store className="size-4 text-orange-500" />
+            <span className="text-xs font-bold uppercase tracking-wider text-foreground">
+              Store Comparison
+            </span>
+            <span className="text-[11px] font-semibold text-muted-foreground bg-gray-100 px-2 py-0.5 rounded-lg leading-none ml-auto">
+              6 stores
+            </span>
           </div>
-          <div className="text-right">
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Target</span>
-            <div className="text-sm sm:text-base font-bold font-mono text-muted-foreground mt-0.5 line-through decoration-gray-300">₹50,000</div>
+
+          <div className="divide-y divide-gray-50">
+            {stores.map((store, i) => {
+              const isCheapest = store.name === "Reliance Digital";
+              return (
+                <div
+                  key={store.name}
+                  className={`flex items-center gap-3 px-5 py-3.5 ${
+                    isCheapest ? "bg-orange-50/40" : ""
+                  }`}
+                >
+                  <div
+                    className={`size-2 rounded-full shrink-0 ${store.color} ${
+                      isCheapest ? "shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" : ""
+                    }`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-semibold text-foreground">
+                        {store.name}
+                      </span>
+                      {isCheapest && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-700 bg-orange-50 border border-orange-200/60 px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0">
+                          <Zap className="size-2.5" />
+                          Best Deal
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-base font-bold font-mono text-foreground tracking-tight">
+                      {store.price}
+                    </span>
+                  </div>
+                  {!isCheapest && (
+                    <span className="text-[11px] font-mono text-muted-foreground/60 shrink-0">
+                      +₹{i === 1 ? "1,500" : i === 0 ? "1,000" : "2,300"}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="px-5 py-3.5 bg-gradient-to-r from-orange-50/80 to-transparent border-t border-gray-100">
+            <div className="flex items-center gap-2">
+              <div className="size-7 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                <TrendingDown className="size-3.5 text-orange-600" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-orange-700">
+                  Best Price Available
+                </span>
+                <p className="text-[11px] text-orange-500/80 mt-0.5">
+                  Save ₹2,300 compared to highest store
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* iPhone image - centered */}
-      <div className="relative z-10">
-        <Image
-          src="/iphone 17.png"
-          alt="iPhone 17"
-          width={300}
-          height={620}
-          priority
-          className="w-[220px] sm:w-[300px] h-auto object-contain drop-shadow-2xl"
-        />
-      </div>
-
-      {/* Alert card - bottom left */}
-      <div className="absolute bottom-2 sm:bottom-8 left-0 sm:left-4 z-20 bg-white rounded-xl border border-gray-100/80 shadow-lg px-4 py-3 flex items-center gap-3 max-w-[200px] sm:max-w-[220px]">
-        <div className="size-8 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-          <Bell className="size-4 text-orange-600" />
-        </div>
-        <div className="min-w-0">
-          <span className="text-xs font-semibold text-orange-700">Price Alert</span>
-          <p className="text-[11px] text-orange-500/80 mt-0.5 truncate">Target price reached</p>
-        </div>
-        <TrendingDown className="size-3.5 text-emerald-500 shrink-0" />
       </div>
     </div>
   );
