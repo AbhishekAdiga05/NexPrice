@@ -51,9 +51,37 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
     );
   }
 
-  const sorted = [...prices].sort(
-    (a, b) => parseFloat(a.price) - parseFloat(b.price)
-  );
+  const sorted = [...prices]
+    .filter((p) => {
+      const val = parseFloat(p.price);
+      return !isNaN(val) && val > 0;
+    })
+    .sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+
+  if (sorted.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200/80 shadow-card p-6">
+        <div className="flex items-center gap-2 mb-5 pb-4 border-b border-gray-100">
+          <Store className="size-4 text-orange-500" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
+            Store Comparison
+          </h2>
+        </div>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="size-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+            <Store className="size-5 text-muted-foreground/50" />
+          </div>
+          <p className="text-sm font-medium text-muted-foreground mb-1">
+            No valid store prices
+          </p>
+          <p className="text-xs text-muted-foreground/50 max-w-[240px]">
+            Store prices will appear here once we start tracking across multiple retailers.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const lowestPrice = parseFloat(sorted[0].price);
   const highestPrice = parseFloat(sorted[sorted.length - 1].price);
   const totalSavings = highestPrice - lowestPrice;

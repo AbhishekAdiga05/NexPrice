@@ -8,10 +8,21 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function addProduct(formData) {
-  const url = formData.get("url");
+  const rawUrl = formData.get("url");
 
-  if (!url) {
-    return { error: "URL is required" };
+  if (!rawUrl || typeof rawUrl !== "string") {
+    return { error: "Please paste a valid product URL" };
+  }
+
+  let url;
+  try {
+    url = new URL(rawUrl.trim()).href;
+  } catch {
+    return { error: "Please enter a valid URL (e.g., https://example.com/product)" };
+  }
+
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    return { error: "URL must start with http:// or https://" };
   }
 
   try {
@@ -28,8 +39,7 @@ export async function addProduct(formData) {
     const productData = await scrapeProduct(url);
 
     if (!productData.productName || !productData.currentPrice) {
-      console.log(productData, "productData");
-      return { error: "Could not extract product information from this URL" };
+      return { error: "Could not extract product information from this URL. The site may require JavaScript or block scraping." };
     }
 
     const newPrice = parseFloat(productData.currentPrice);
@@ -81,6 +91,8 @@ export async function addProduct(formData) {
     }
 
     revalidatePath("/");
+    revalidatePath(`/products/${product.id}`);
+    revalidatePath(`/dashboard/product/${product.id}`);
     return {
       success: true,
       product,
@@ -89,7 +101,7 @@ export async function addProduct(formData) {
         : "Product added successfully!",
     };
   } catch (error) {
-    console.error("Add product error:", error);
+    console.error("Add product error:", error?.message || error);
     return { error: error.message || "Failed to add product" };
   }
 }
@@ -97,27 +109,40 @@ export async function addProduct(formData) {
 export async function deleteProduct(productId) {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
     const { error } = await supabase
       .from("products")
       .delete()
-      .eq("id", productId);
+      .eq("id", productId)
+      .eq("user_id", user.id);
 
     if (error) throw error;
 
     revalidatePath("/");
     return { success: true };
   } catch (error) {
-    return { error: error.message };
+    return { error: error.message || "Failed to delete product" };
   }
 }
 
 export async function getProducts() {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return [];
 
     const { data: products, error } = await supabase
       .from("products")
       .select("*")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -211,7 +236,7 @@ export async function setPriceAlert(productId, targetPrice) {
     revalidatePath("/alerts");
     return { success: true, message: "Alert set! We'll notify you when your target price is hit." };
   } catch (error) {
-    console.error("Set price alert error:", error);
+    console.error("Set price alert error:", error?.message || error);
     return { error: error.message || "Failed to set price alert" };
   }
 }
@@ -219,10 +244,17 @@ export async function setPriceAlert(productId, targetPrice) {
 export async function removePriceAlert(alertId) {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
     const { error } = await supabase
       .from("price_alerts")
       .update({ status: "disabled" })
-      .eq("id", alertId);
+      .eq("id", alertId)
+      .eq("user_id", user.id);
 
     if (error) throw error;
 
@@ -230,7 +262,7 @@ export async function removePriceAlert(alertId) {
     revalidatePath("/alerts");
     return { success: true };
   } catch (error) {
-    return { error: error.message };
+    return { error: error.message || "Failed to remove alert" };
   }
 }
 
@@ -268,7 +300,7 @@ export async function getAlerts() {
       product: productMap[alert.product_id] || null,
     }));
   } catch (error) {
-    console.error("Get alerts error:", error);
+    console.error("Get alerts error:", error?.message || error);
     return [];
   }
 }
@@ -300,7 +332,7 @@ export async function getProductById(productId) {
 
     return product;
   } catch (error) {
-    console.error("Get product error:", error);
+    console.error("Get product error:", error?.message || error);
     return null;
   }
 }
@@ -308,6 +340,21 @@ export async function getProductById(productId) {
 export async function getPriceHistory(productId) {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return [];
+
+    const product = await supabase
+      .from("products")
+      .select("id")
+      .eq("id", productId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!product.data) return [];
+
     const { data, error } = await supabase
       .from("price_history")
       .select("*")
@@ -317,7 +364,7 @@ export async function getPriceHistory(productId) {
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error("Get price history error:", error);
+    console.error("Get price history error:", error?.message || error);
     return [];
   }
 }
@@ -339,16 +386,15 @@ export async function getUserSettings() {
 
     if (existing) return existing;
 
-    // Auto-create settings row on first visit
     const { data: created } = await supabase
       .from("user_settings")
-      .insert({ user_id: user.id })
+      .upsert({ user_id: user.id }, { onConflict: "user_id", ignoreDuplicates: true })
       .select()
       .single();
 
     return created;
   } catch (error) {
-    console.error("Get user settings error:", error);
+    console.error("Get user settings error:", error?.message || error);
     return null;
   }
 }
@@ -379,7 +425,7 @@ export async function updateUserSettings(formData) {
 
     if (error) throw error;
 
-    revalidatePath("/settings");
+    revalidatePath("/");
     return { success: true, message: "Preferences saved successfully" };
   } catch (error) {
     return { error: error.message || "Failed to save settings" };
@@ -405,7 +451,7 @@ export async function getNotificationHistory(limit = 20) {
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error("Get notifications error:", error);
+    console.error("Get notifications error:", error?.message || error);
     return [];
   }
 }
@@ -428,13 +474,16 @@ export async function getInsights() {
     if (!products || products.length === 0) {
       return {
         totalSavings: 0,
-        totalSavingsFormatted: "$0.00",
+        totalSavingsFormatted: null,
         activeCount: 0,
         triggeredCount: 0,
         totalAlerts: 0,
         productCount: 0,
         topDeals: [],
         recentSavings: [],
+        storeCount: 0,
+        productsWithStoreCount: 0,
+        bestDealScore: null,
       };
     }
 
@@ -528,7 +577,7 @@ export async function getInsights() {
       recentSavings,
     };
   } catch (error) {
-    console.error("Get insights error:", error);
+    console.error("Get insights error:", error?.message || error);
     return null;
   }
 }
@@ -564,7 +613,7 @@ export async function addToWatchlist(productId, priority = "medium") {
     revalidatePath("/watchlist");
     return { success: true, message: "Added to your watchlist" };
   } catch (error) {
-    console.error("Add to watchlist error:", error);
+    console.error("Add to watchlist error:", error?.message || error);
     return { error: error.message || "Failed to add to watchlist" };
   }
 }
@@ -589,7 +638,7 @@ export async function removeFromWatchlist(productId) {
     revalidatePath("/watchlist");
     return { success: true };
   } catch (error) {
-    console.error("Remove from watchlist error:", error);
+    console.error("Remove from watchlist error:", error?.message || error);
     return { error: error.message || "Failed to remove from watchlist" };
   }
 }
@@ -686,7 +735,7 @@ export async function getWatchlist() {
 
     return result.sort((a, b) => b.buyPriority - a.buyPriority);
   } catch (error) {
-    console.error("Get watchlist error:", error);
+    console.error("Get watchlist error:", error?.message || error);
     return [];
   }
 }
@@ -698,7 +747,7 @@ export async function isOnWatchlist(productId) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return false;
+    if (!user) return null;
 
     const { data } = await supabase
       .from("watchlist")
@@ -707,9 +756,9 @@ export async function isOnWatchlist(productId) {
       .eq("product_id", productId)
       .maybeSingle();
 
-    return data || false;
+    return data || null;
   } catch (error) {
-    return false;
+    return null;
   }
 }
 
@@ -723,6 +772,22 @@ export async function signOut() {
 export async function getStorePrices(productId) {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return [];
+
+    const { data: product, error: productError } = await supabase
+      .from("products")
+      .select("id")
+      .eq("id", productId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (productError) throw productError;
+    if (!product) return [];
+
     const { data: prices, error } = await supabase
       .from("store_prices")
       .select("*")
@@ -732,7 +797,7 @@ export async function getStorePrices(productId) {
     if (error) throw error;
     return prices || [];
   } catch (error) {
-    console.error("Get store prices error:", error);
+    console.error("Get store prices error:", error?.message || error);
     return [];
   }
 }
@@ -740,6 +805,21 @@ export async function getStorePrices(productId) {
 export async function upsertStorePrice(productId, storeName, productUrl, price, currency = "INR") {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
+    const product = await supabase
+      .from("products")
+      .select("id")
+      .eq("id", productId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!product.data) return { error: "Product not found" };
+
     const { error } = await supabase.from("store_prices").upsert(
       {
         product_id: productId,
@@ -763,11 +843,34 @@ export async function upsertStorePrice(productId, storeName, productUrl, price, 
 export async function deleteStorePrice(priceId) {
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
+    const { data: price } = await supabase
+      .from("store_prices")
+      .select("product_id")
+      .eq("id", priceId)
+      .single();
+
+    if (!price) return { error: "Store price not found" };
+
+    const product = await supabase
+      .from("products")
+      .select("id")
+      .eq("id", price.product_id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!product.data) return { error: "Not authorized" };
+
     const { error } = await supabase.from("store_prices").delete().eq("id", priceId);
     if (error) throw error;
     revalidatePath("/");
     return { success: true };
   } catch (error) {
-    return { error: error.message };
+    return { error: error.message || "Failed to delete store price" };
   }
 }

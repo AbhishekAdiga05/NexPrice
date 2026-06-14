@@ -31,7 +31,7 @@ export default function StorePriceBadge({ productId, currency = "INR", compact =
     );
   }
 
-  if (!summary) return null;
+  if (!summary || !summary.cheapestPrice || isNaN(summary.cheapestPrice)) return null;
 
   if (compact) {
     return (

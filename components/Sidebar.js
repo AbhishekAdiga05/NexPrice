@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   BarChart3,
@@ -22,10 +22,15 @@ const NAV_ITEMS = [
 
 export default function Sidebar({ open, onClose }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     };
     if (open) {
       document.addEventListener("keydown", handleEscape);
@@ -35,11 +40,14 @@ export default function Sidebar({ open, onClose }) {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
     };
-  }, [open, onClose]);
+  }, [open, handleClose]);
 
   const isActive = (href) => {
-    if (href === "/") return pathname === "/" && !pathname.includes("?tab=");
-    return pathname.startsWith(href.split("?")[0]) && pathname.includes(href.split("?")[1] || "");
+    if (href === "/") return pathname === "/" && !searchParams.has("tab");
+    const [base, query] = href.split("?");
+    if (!query) return pathname === base;
+    const [key, value] = query.split("=");
+    return pathname === base && searchParams.get(key) === value;
   };
 
   const sidebar = (

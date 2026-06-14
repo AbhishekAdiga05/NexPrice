@@ -50,7 +50,6 @@ export default function SetPriceAlert({ productId, currentPrice, currency, alert
           type="number"
           step="0.01"
           min="0.01"
-          max={current}
           placeholder="Target"
           value={targetPrice}
           onChange={(e) => setTargetPrice(e.target.value)}

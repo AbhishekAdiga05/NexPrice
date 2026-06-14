@@ -45,7 +45,9 @@ export default function InsightsDashboard({ insights }) {
     recentSavings,
   } = insights;
 
+  const currency = topDeals?.[0]?.currency || "$";
   const topDeal = topDeals?.[0] || null;
+  const savingsDisplay = totalSavingsFormatted || `${currency} 0.00`;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -58,7 +60,7 @@ export default function InsightsDashboard({ insights }) {
             </div>
           </div>
           <div className="text-3xl font-bold font-mono text-foreground tracking-tight leading-none">
-            {totalSavingsFormatted}
+            {savingsDisplay}
           </div>
           <div className="text-xs text-muted-foreground font-mono mt-2 leading-none">{triggeredCount} alerts triggered</div>
         </div>

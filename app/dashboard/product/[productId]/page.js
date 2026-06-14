@@ -10,7 +10,6 @@ import { calculateTrendIndicator } from "@/lib/deal-score";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import NavBar from "@/components/NavBar";
 import DashboardShell from "@/components/DashboardShell";
 import PriceChart from "@/components/PriceChart";
 import PricePrediction from "@/components/PricePrediction";
@@ -170,8 +169,7 @@ export default async function ProductDetailPage({ params }) {
 
   return (
     <>
-      <NavBar user={user} />
-      <DashboardShell>
+      <DashboardShell user={user}>
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-5"

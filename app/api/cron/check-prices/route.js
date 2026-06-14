@@ -21,7 +21,7 @@ async function logNotification(supabase, { userId, productId, alertId, type, cha
       error_message: errorMessage,
     });
   } catch (err) {
-    console.error("Failed to log notification:", err);
+    console.error("Failed to log notification:", err?.message || err);
   }
 }
 
@@ -39,6 +39,11 @@ async function processProduct(product, supabase) {
     const newPrice = parseFloat(productData.currentPrice);
     const oldPrice = parseFloat(product.current_price);
 
+    if (isNaN(newPrice) || newPrice <= 0) {
+      result.failed = true;
+      return result;
+    }
+
     await supabase
       .from("products")
       .update({
@@ -50,7 +55,9 @@ async function processProduct(product, supabase) {
       })
       .eq("id", product.id);
 
-    if (oldPrice !== newPrice) {
+    const priceChanged = Math.abs(oldPrice - newPrice) > 0.001;
+
+    if (priceChanged) {
       await supabase.from("price_history").insert({
         product_id: product.id,
         price: newPrice,
@@ -127,7 +134,7 @@ async function processProduct(product, supabase) {
 
     result.updated = true;
   } catch (error) {
-    console.error(`Error processing product ${product.id}:`, error);
+    console.error(`Error processing product ${product.id}:`, error?.message || error);
     result.failed = true;
   }
 
@@ -172,7 +179,7 @@ export async function POST(request) {
           if (r.priceChanged) results.priceChanges++;
           if (r.alertSent) results.alertsSent++;
         } else {
-          console.error("Chunk promise rejected:", settled.reason);
+          console.error("Chunk promise rejected:", settled.reason?.message || settled.reason);
           results.failed++;
         }
       }

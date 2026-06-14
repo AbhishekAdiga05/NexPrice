@@ -7,7 +7,7 @@ import {
   getAlerts,
   getUserSettings,
 } from "./actions";
-import NavBar from "@/components/NavBar";
+import LandingShell from "@/components/LandingShell";
 import AddProductForm from "@/components/AddProductForm";
 import ProductCard from "@/components/ProductCard";
 import InsightsDashboard from "@/components/InsightsDashboard";
@@ -17,174 +17,15 @@ import SettingsForm from "@/components/SettingsForm";
 import DashboardShell from "@/components/DashboardShell";
 import DashboardAnalyticsChart from "@/components/DashboardAnalyticsChart";
 import RecentActivity from "@/components/RecentActivity";
-import LandingCTA from "@/components/LandingCTA";
-import Footer from "@/components/Footer";
-import SectionFade from "@/components/SectionFade";
-import PriceHistoryPreview from "@/components/PriceHistoryPreview";
 import {
   Activity,
   Target,
   Wallet,
   Search,
-  Link2,
-  Bell,
-  LineChart,
-  ListChecks,
-  Store,
-  TrendingDown,
-  Sparkles,
   BarChart3,
+  Store,
+  Sparkles,
 } from "lucide-react";
-import HeroVisual from "@/components/HeroVisual";
-
-function LandingHero() {
-  return (
-    <section className="pt-20 sm:pt-32 pb-16 sm:pb-28 px-4 sm:px-8 bg-white overflow-hidden">
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] gap-8 lg:gap-12 items-center">
-        <div className="max-w-lg mx-auto lg:mx-0 text-center lg:text-left">
-          <h1 className="text-[2.2rem] sm:text-[4.2rem] lg:text-[5.2rem] font-bold text-foreground tracking-tight leading-[1.05]">
-            Track Prices.
-            <br />
-            Compare Stores.
-            <br />
-            Buy at the{" "}
-            <span className="text-orange-500">Right Time.</span>
-          </h1>
-          <p className="text-sm sm:text-lg text-secondary-foreground mt-4 sm:mt-6 leading-relaxed max-w-md mx-auto lg:mx-0">
-            Monitor product prices across Amazon, Flipkart, and more. Find the best deal with one click.
-          </p>
-          <div className="mt-6 sm:mt-10">
-            <LandingCTA label="Start Tracking" />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-center">
-          <HeroVisual />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function HowItWorksSection() {
-  const steps = [
-    {
-      icon: Link2,
-      title: "Add Product",
-      desc: "Paste any product URL to start tracking.",
-    },
-    {
-      icon: Store,
-      title: "Compare Store Prices",
-      desc: "See prices across Amazon, Flipkart, and more.",
-    },
-    {
-      icon: TrendingDown,
-      title: "Find Best Deal",
-      desc: "We highlight the cheapest store for you.",
-    },
-  ];
-
-  return (
-    <section id="how-it-works" className="py-16 sm:py-28 px-4 sm:px-8 bg-orange-50/40">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10 sm:mb-14">
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
-            How It Works
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3">Three simple steps.</p>
-        </div>
-
-        <div className="flex flex-col sm:grid sm:grid-cols-3 gap-4 sm:gap-8">
-          {steps.map((step, i) => (
-            <div
-              key={step.title}
-              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm p-6 sm:p-10 text-center group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
-            >
-              <div className="flex items-center justify-center mb-5 sm:mb-6">
-                <div className="relative size-14 sm:size-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.25)]">
-                  <step.icon className="size-6 sm:size-7 text-white" />
-                  <span className="absolute -top-1 -right-1 size-5 sm:size-6 rounded-full bg-white border-2 border-orange-500 flex items-center justify-center text-[10px] sm:text-[11px] font-bold text-orange-500 shadow-sm">
-                    {i + 1}
-                  </span>
-                </div>
-              </div>
-              <h3 className="text-sm sm:text-lg font-semibold text-foreground">{step.title}</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 sm:mt-2 leading-relaxed">{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FeaturesSection() {
-  const features = [
-    { icon: Activity, title: "Price Tracking", desc: "Auto-track prices across stores." },
-    { icon: Store, title: "Multi-Store Comparison", desc: "Compare prices across Amazon, Flipkart, Croma, and more." },
-    { icon: LineChart, title: "Price History", desc: "View trends before you buy." },
-    { icon: TrendingDown, title: "Best Deal Finder", desc: "We find and highlight the cheapest option for you." },
-  ];
-
-  const iconColors = [
-    "from-orange-400 to-amber-500",
-    "from-blue-400 to-indigo-500",
-    "from-emerald-400 to-teal-500",
-    "from-violet-400 to-purple-500",
-  ];
-
-  return (
-    <section id="features" className="py-16 sm:py-28 px-4 sm:px-8 bg-white">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10 sm:mb-14">
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
-            Key Features
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3">
-            Simple tools for smarter shopping.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-          {features.map((feature, i) => (
-            <div
-              key={feature.title}
-              className="bg-white rounded-2xl border border-gray-100/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 p-5 sm:p-8 text-center"
-            >
-              <div className="flex items-center justify-center mb-3 sm:mb-5">
-                <div className={`size-10 sm:size-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${iconColors[i]} flex items-center justify-center shadow-sm sm:shadow-md`}>
-                  <feature.icon className="size-5 sm:size-7 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xs sm:text-lg font-semibold text-foreground">{feature.title}</h3>
-              <p className="text-[11px] sm:text-sm text-muted-foreground mt-1 sm:mt-2 leading-relaxed">{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PriceHistorySection() {
-  return (
-    <section id="price-trend" className="py-16 sm:py-28 px-4 sm:px-8 bg-orange-50/40">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10 sm:mb-14">
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
-            Price Trend Analysis
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3">
-            30-day price history for iPhone 15.
-          </p>
-        </div>
-
-        <PriceHistoryPreview />
-      </div>
-    </section>
-  );
-}
 
 // ─── Dashboard stat cards ───────────────────────────────────────────────────
 
@@ -227,7 +68,7 @@ async function DashboardStats({ insights }) {
     },
     {
       label: "Potential Savings",
-      value: insights.totalSavingsFormatted,
+      value: insights.totalSavingsFormatted || "$0.00",
       icon: Wallet,
       sub: `${insights.triggeredCount} alert${insights.triggeredCount !== 1 ? "s" : ""} triggered`,
       accent: "from-violet-500 to-purple-500",
@@ -330,26 +171,7 @@ export default async function Home({ searchParams }) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return (
-      <>
-        <NavBar user={null} />
-        <main className="font-sans">
-          <SectionFade delay={0}>
-            <LandingHero />
-          </SectionFade>
-          <SectionFade delay={100}>
-            <HowItWorksSection />
-          </SectionFade>
-          <SectionFade delay={200}>
-            <FeaturesSection />
-          </SectionFade>
-          <SectionFade delay={300}>
-            <PriceHistorySection />
-          </SectionFade>
-          <Footer />
-        </main>
-      </>
-    );
+    return <LandingShell />;
   }
 
   const params = await searchParams;

@@ -1,15 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import AuthModal from "./AuthModal";
 import AuthButton from "./AuthButton";
 import ThemeToggle from "./ThemeToggle";
 
-export default function NavBar({ user, onMenuToggle }) {
-  const [showAuth, setShowAuth] = useState(false);
-
+export default function NavBar({ user, onMenuToggle, onShowAuth }) {
   if (user) {
     return (
       <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#0a0a0b]/80 backdrop-blur-lg border-b border-gray-100/80">
@@ -47,15 +43,13 @@ export default function NavBar({ user, onMenuToggle }) {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
-            onClick={() => setShowAuth(true)}
+            onClick={onShowAuth}
             className="inline-flex items-center gap-2 rounded-xl font-semibold text-sm transition-all cursor-pointer shadow-sm hover:shadow-md active:scale-[0.97] h-9 px-5 bg-primary text-primary-foreground hover:bg-orange-600"
           >
             Get Started
           </button>
         </div>
       </div>
-
-      <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
     </header>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { deleteProduct } from "@/app/actions";
+import { toast } from "sonner";
 import PriceChart from "./PriceChart";
 import SetPriceAlert from "./SetPriceAlert";
 import DealScoreBadge from "./DealScoreBadge";
@@ -37,7 +38,13 @@ export default function ProductCard({ product }) {
   const handleDelete = async () => {
     setDeleting(true);
     setShowDeleteDialog(false);
-    await deleteProduct(product.id);
+    const result = await deleteProduct(product.id);
+    if (result.error) {
+      toast.error(result.error);
+      setDeleting(false);
+    } else {
+      toast.success("Product removed");
+    }
   };
 
   const activeAlert = product.price_alerts?.find(
