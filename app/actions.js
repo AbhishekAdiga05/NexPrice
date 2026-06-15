@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { calculateDealScore } from "@/lib/deal-score";
 import { calculateBuyPriority } from "@/lib/buy-priority";
 import { scrapeProduct } from "@/lib/firecrawl";
+import { discoverForProduct } from "@/lib/store-discovery";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -88,6 +89,35 @@ export async function addProduct(formData) {
         price: newPrice,
         currency: currency,
       });
+    }
+
+    if (!isUpdate) {
+      try {
+        const storeResults = await discoverForProduct(product, {
+          searchTimeout: 20000,
+          scrapeTimeout: 12000,
+        });
+
+        for (const r of storeResults) {
+          await supabase.from("store_prices").upsert(
+            {
+              product_id: product.id,
+              store_name: r.storeName,
+              product_url: r.productUrl,
+              product_name: r.productName,
+              price: r.price,
+              currency: r.currency,
+              last_updated: new Date().toISOString(),
+            },
+            { onConflict: "product_id,store_name" }
+          );
+        }
+      } catch (discoveryError) {
+        console.warn(
+          "[StoreDiscovery] Background discovery error:",
+          discoveryError.message
+        );
+      }
     }
 
     revalidatePath("/");
@@ -445,7 +475,7 @@ export async function getNotificationHistory(limit = 20) {
       .from("notifications")
       .select("*, products:product_id(name)")
       .eq("user_id", user.id)
-      .order("sent_at", { ascending: false })
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) throw error;
@@ -802,7 +832,14 @@ export async function getStorePrices(productId) {
   }
 }
 
-export async function upsertStorePrice(productId, storeName, productUrl, price, currency = "INR") {
+export async function upsertStorePrice(
+  productId,
+  storeName,
+  productUrl,
+  price,
+  currency = "INR",
+  productName = null
+) {
   try {
     const supabase = await createClient();
     const {
@@ -825,6 +862,7 @@ export async function upsertStorePrice(productId, storeName, productUrl, price, 
         product_id: productId,
         store_name: storeName,
         product_url: productUrl,
+        product_name: productName,
         price,
         currency,
         last_updated: new Date().toISOString(),
@@ -833,7 +871,9 @@ export async function upsertStorePrice(productId, storeName, productUrl, price, 
     );
 
     if (error) throw error;
+    revalidatePath("/");
     revalidatePath(`/products/${productId}`);
+    revalidatePath(`/dashboard/product/${productId}`);
     return { success: true };
   } catch (error) {
     return { error: error.message || "Failed to save store price" };

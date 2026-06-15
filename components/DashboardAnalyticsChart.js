@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { Loader2, TrendingDown, Sparkles, Activity } from "lucide-react";
 import { calculateDealScore } from "@/lib/deal-score";
-import { getPriceHistory } from "@/app/actions";
+import { createClient } from "@/utils/supabase/client";
 
 export default function DashboardAnalyticsChart() {
   const [data, setData] = useState(null);
@@ -29,18 +29,31 @@ export default function DashboardAnalyticsChart() {
         return;
       }
 
-      const dealScores = await Promise.all(
-        products.map(async (p) => {
-          const history = await getPriceHistory(p.id);
-          const score = calculateDealScore(parseFloat(p.current_price), history);
-          return {
-            name: p.name?.substring(0, 18) || "Product",
-            score: score?.score ?? 0,
-            price: parseFloat(p.current_price),
-            currency: p.currency || "₹",
-          };
-        })
-      );
+      const productIds = products.map((p) => p.id);
+      const supabase = createClient();
+
+      const { data: historyRows } = await supabase
+        .from("price_history")
+        .select("product_id, price")
+        .in("product_id", productIds)
+        .order("checked_at", { ascending: true });
+
+      const historyByProduct = {};
+      for (const h of historyRows || []) {
+        if (!historyByProduct[h.product_id]) historyByProduct[h.product_id] = [];
+        historyByProduct[h.product_id].push({ price: h.price });
+      }
+
+      const dealScores = products.map((p) => {
+        const history = historyByProduct[p.id] || [];
+        const score = calculateDealScore(parseFloat(p.current_price), history);
+        return {
+          name: p.name?.substring(0, 18) || "Product",
+          score: score?.score ?? 0,
+          price: parseFloat(p.current_price),
+          currency: p.currency || "₹",
+        };
+      });
 
       dealScores.sort((a, b) => b.score - a.score);
 

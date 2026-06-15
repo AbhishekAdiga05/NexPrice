@@ -5,7 +5,6 @@ import {
   isOnWatchlist,
   getStorePrices,
 } from "@/app/actions";
-import { generateMockStorePrices } from "@/lib/mock-stores";
 import { calculateTrendIndicator } from "@/lib/deal-score";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -134,10 +133,7 @@ export default async function ProductDetailPage({ params }) {
   const priceHistory = await getPriceHistory(productId);
   const watchlistEntry = await isOnWatchlist(productId);
 
-  let storePrices = await getStorePrices(productId);
-  if (!storePrices || storePrices.length === 0) {
-    storePrices = generateMockStorePrices(productId, product.current_price);
-  }
+  const storePrices = await getStorePrices(productId);
 
   const trend = calculateTrendIndicator(
     parseFloat(product.current_price),

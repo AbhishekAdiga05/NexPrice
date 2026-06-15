@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { scrapeProduct } from "@/lib/firecrawl";
+import { refreshStorePrices } from "@/lib/store-discovery";
 import { sendPriceDropAlert as sendEmailPriceDrop, sendTargetPriceAlert as sendEmailTarget } from "@/lib/email";
 
 const CHUNK_SIZE = 5;
@@ -26,7 +27,7 @@ async function logNotification(supabase, { userId, productId, alertId, type, cha
 }
 
 async function processProduct(product, supabase) {
-  const result = { id: product.id, updated: false, failed: false, priceChanged: false, alertSent: false };
+  const result = { id: product.id, updated: false, failed: false, priceChanged: false, alertSent: false, storePricesRefreshed: false };
 
   try {
     const productData = await scrapeProduct(product.url);
@@ -133,6 +134,18 @@ async function processProduct(product, supabase) {
     }
 
     result.updated = true;
+
+    try {
+      const refreshed = await refreshStorePrices(
+        { id: product.id, name: product.name, url: product.url },
+        supabase
+      );
+      if (refreshed > 0) {
+        result.storePricesRefreshed = true;
+      }
+    } catch (storeError) {
+      console.warn(`Store price refresh failed for ${product.id}:`, storeError.message);
+    }
   } catch (error) {
     console.error(`Error processing product ${product.id}:`, error?.message || error);
     result.failed = true;
@@ -163,7 +176,7 @@ export async function POST(request) {
 
     console.log(`Found ${products.length} products to check`);
 
-    const results = { total: products.length, updated: 0, failed: 0, priceChanges: 0, alertsSent: 0 };
+    const results = { total: products.length, updated: 0, failed: 0, priceChanges: 0, alertsSent: 0, storePricesRefreshed: 0 };
 
     for (let i = 0; i < products.length; i += CHUNK_SIZE) {
       const chunk = products.slice(i, i + CHUNK_SIZE);
@@ -178,6 +191,7 @@ export async function POST(request) {
           if (r.failed) results.failed++;
           if (r.priceChanged) results.priceChanges++;
           if (r.alertSent) results.alertsSent++;
+          if (r.storePricesRefreshed) results.storePricesRefreshed++;
         } else {
           console.error("Chunk promise rejected:", settled.reason?.message || settled.reason);
           results.failed++;

@@ -10,44 +10,25 @@ import {
   AreaChart,
 } from "recharts";
 
-const MOCK_PRICES = [
-  { day: "Oct 1", price: 899 },
-  { day: "Oct 3", price: 879 },
-  { day: "Oct 5", price: 869 },
-  { day: "Oct 7", price: 849 },
-  { day: "Oct 9", price: 839 },
-  { day: "Oct 11", price: 829 },
-  { day: "Oct 13", price: 819 },
-  { day: "Oct 15", price: 824 },
-  { day: "Oct 17", price: 809 },
-  { day: "Oct 19", price: 799 },
-  { day: "Oct 21", price: 789 },
-  { day: "Oct 23", price: 779 },
-  { day: "Oct 25", price: 769 },
-  { day: "Oct 27", price: 759 },
-  { day: "Oct 29", price: 749 },
-  { day: "Oct 31", price: 739 },
-  { day: "Nov 2", price: 729 },
-  { day: "Nov 4", price: 719 },
-  { day: "Nov 6", price: 714 },
-  { day: "Nov 8", price: 709 },
-  { day: "Nov 10", price: 699 },
-  { day: "Nov 12", price: 694 },
-  { day: "Nov 14", price: 689 },
-  { day: "Nov 16", price: 749 },
-  { day: "Nov 18", price: 729 },
-  { day: "Nov 20", price: 709 },
-  { day: "Nov 22", price: 689 },
-  { day: "Nov 24", price: 674 },
-  { day: "Nov 26", price: 664 },
-  { day: "Nov 28", price: 659 },
-];
+const DEMO_PRICES = (() => {
+  const data = [];
+  let price = 899;
+  const start = new Date("2025-10-01");
+  for (let i = 0; i < 30; i++) {
+    const date = new Date(start);
+    date.setDate(date.getDate() + i * 2);
+    const day = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    price = Math.round(price - (Math.random() * 15 + 5));
+    data.push({ day, price });
+  }
+  return data;
+})();
 
 export default function PriceHistoryPreview() {
-  const minPrice = Math.min(...MOCK_PRICES.map((d) => d.price));
-  const maxPrice = Math.max(...MOCK_PRICES.map((d) => d.price));
-  const latestPrice = MOCK_PRICES[MOCK_PRICES.length - 1].price;
-  const firstPrice = MOCK_PRICES[0].price;
+  const minPrice = Math.min(...DEMO_PRICES.map((d) => d.price));
+  const maxPrice = Math.max(...DEMO_PRICES.map((d) => d.price));
+  const latestPrice = DEMO_PRICES[DEMO_PRICES.length - 1].price;
+  const firstPrice = DEMO_PRICES[0].price;
   const change = latestPrice - firstPrice;
   const changePercent = ((change / firstPrice) * 100).toFixed(1);
 
@@ -56,7 +37,7 @@ export default function PriceHistoryPreview() {
       <div className="grid grid-cols-3 divide-x divide-border border-b border-border">
         <div className="px-5 py-4">
           <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Current</span>
-          <div className="text-lg font-bold font-mono text-foreground tracking-tight mt-0.5">$659</div>
+          <div className="text-lg font-bold font-mono text-foreground tracking-tight mt-0.5">${latestPrice}</div>
         </div>
         <div className="px-5 py-4">
           <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Target</span>
@@ -70,10 +51,16 @@ export default function PriceHistoryPreview() {
         </div>
       </div>
 
+      <div className="px-5 pt-2">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-200/60">
+          Demo preview
+        </span>
+      </div>
+
       <div className="p-5">
         <div className="h-[240px] sm:h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={MOCK_PRICES} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+            <AreaChart data={DEMO_PRICES} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
               <defs>
                 <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#f97316" stopOpacity={0.15} />
@@ -124,15 +111,17 @@ export default function PriceHistoryPreview() {
           <div className="flex items-center gap-5">
             <div>
               <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Low</span>
-              <div className="text-sm font-bold font-mono text-foreground tracking-tight mt-0.5">$659</div>
+              <div className="text-sm font-bold font-mono text-foreground tracking-tight mt-0.5">${minPrice}</div>
             </div>
             <div>
               <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">High</span>
-              <div className="text-sm font-bold font-mono text-foreground tracking-tight mt-0.5">$899</div>
+              <div className="text-sm font-bold font-mono text-foreground tracking-tight mt-0.5">${maxPrice}</div>
             </div>
             <div>
               <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Average</span>
-              <div className="text-sm font-bold font-mono text-foreground tracking-tight mt-0.5">$759</div>
+              <div className="text-sm font-bold font-mono text-foreground tracking-tight mt-0.5">
+                ${Math.round(DEMO_PRICES.reduce((s, d) => s + d.price, 0) / DEMO_PRICES.length)}
+              </div>
             </div>
           </div>
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 bg-teal-50 px-3 py-1.5 rounded-lg">

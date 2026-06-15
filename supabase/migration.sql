@@ -99,12 +99,16 @@ CREATE TABLE IF NOT EXISTS store_prices (
   product_id UUID REFERENCES products(id) ON DELETE CASCADE,
   store_name TEXT NOT NULL,
   product_url TEXT NOT NULL,
+  product_name TEXT,
   price NUMERIC NOT NULL,
   currency TEXT DEFAULT 'INR',
   last_updated TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(product_id, store_name)
 );
+
+-- Add product_name for existing databases (idempotent)
+ALTER TABLE store_prices ADD COLUMN IF NOT EXISTS product_name TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_store_prices_product ON store_prices(product_id);
 CREATE INDEX IF NOT EXISTS idx_store_prices_price ON store_prices(product_id, price ASC);

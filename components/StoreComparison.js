@@ -17,14 +17,23 @@ function formatLastUpdated(dateString) {
   return new Date(dateString).toLocaleDateString();
 }
 
-const storeColors = [
-  "bg-orange-500",
-  "bg-emerald-500",
-  "bg-indigo-500",
-  "bg-rose-500",
-  "bg-sky-500",
-  "bg-amber-500",
+const STORE_COLOR_MAP = {
+  Amazon: "bg-orange-500",
+  Flipkart: "bg-emerald-500",
+  Croma: "bg-indigo-500",
+  "Reliance Digital": "bg-rose-500",
+  "Tata CLiQ": "bg-sky-500",
+  "Vijay Sales": "bg-amber-500",
+};
+
+const FALLBACK_COLORS = [
+  "bg-orange-500", "bg-emerald-500", "bg-indigo-500",
+  "bg-rose-500", "bg-sky-500", "bg-amber-500",
 ];
+
+function getStoreColor(storeName, fallbackIndex) {
+  return STORE_COLOR_MAP[storeName] || FALLBACK_COLORS[fallbackIndex % FALLBACK_COLORS.length];
+}
 
 export default function StoreComparison({ prices = [], currency = "INR" }) {
   if (!prices || prices.length === 0) {
@@ -104,7 +113,7 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
           const diff = price - lowestPrice;
           const isCheapest = diff === 0;
           const diffPercent = lowestPrice > 0 ? ((diff / lowestPrice) * 100).toFixed(1) : "0";
-          const colorClass = storeColors[index % storeColors.length];
+          const colorClass = getStoreColor(store.store_name, index);
 
           return (
             <a
