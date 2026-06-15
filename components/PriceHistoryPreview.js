@@ -10,7 +10,16 @@ import {
   AreaChart,
 } from "recharts";
 
+function seededRandom(seed) {
+  let s = seed;
+  return () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+}
+
 const DEMO_PRICES = (() => {
+  const rand = seededRandom(42);
   const data = [];
   let price = 899;
   const start = new Date("2025-10-01");
@@ -18,7 +27,7 @@ const DEMO_PRICES = (() => {
     const date = new Date(start);
     date.setDate(date.getDate() + i * 2);
     const day = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    price = Math.round(price - (Math.random() * 15 + 5));
+    price = Math.round(price - (rand() * 15 + 5));
     data.push({ day, price });
   }
   return data;
