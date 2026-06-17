@@ -1,94 +1,188 @@
-
-
-```md
 <div align="center">
 
-# NexPrice
+# 🚀 NexPrice
 
-**A smart product price tracker that helps shoppers monitor price drops, compare stores, and buy at the right time.**
+### Smart Product Price Tracking & Deal Intelligence Platform
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit-blue?style=flat-square)](https://getnexprice.vercel.app/)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-black?style=flat-square)](https://github.com/AbhishekAdiga05/NexPrice)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+Track product prices across multiple online stores, receive instant price-drop alerts, analyze historical trends, and discover the best time to buy.
 
+<p>
+  <a href="https://getnexprice.vercel.app">🌐 Live Demo</a> •
+  <a href="https://github.com/AbhishekAdiga05/NexPrice">💻 Source Code</a>
+</p>
+
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![React](https://img.shields.io/badge/React-19-blue)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-38BDF8)
+![License](https://img.shields.io/badge/License-MIT-success)
 
 </div>
 
 ---
 
-## 🧐 What is this?
+## 🎯 Overview
 
-NexPrice is a full-stack web app that helps online shoppers track product prices, view price history, compare prices across stores, and receive alerts when a target price is reached.
+NexPrice is a full-stack web application that helps online shoppers monitor product prices, compare prices across multiple retailers, visualize price history, and receive automated notifications when products reach their desired price.
 
-I built this because manually checking product prices on sites like Amazon and Flipkart is repetitive and easy to miss. It currently supports product tracking, price history, target alerts, deal scoring, watchlists, store comparison, and automated cron-based price checks. I’m working on improving scraping reliability, cron monitoring, search/filtering, and production-grade alert delivery.
-
-> **Live:** [https://your-project.vercel.app](https://your-project.vercel.app)
+Instead of manually checking e-commerce websites every day, users can simply add a product URL and let NexPrice track prices automatically.
 
 ---
 
-## ✨ Features
+## ✨ Key Highlights
 
-- **Product Price Tracking** — Paste a product URL and the app extracts the product name, price, currency, and image using Firecrawl.
-- **Price History Charts** — Stores price snapshots over time and displays them using Recharts.
-- **Target Price Alerts** — Users can set a target price and receive email alerts when the price reaches that target.
-- **Price Drop Emails** — Sends email notifications through Resend when a tracked product’s price drops.
-- **Deal Score Algorithm** — Calculates a 0–100 score based on historical low, average price, recent trend, and volatility.
-- **Buy Priority Score** — Ranks watchlisted products based on user priority, days on watchlist, and deal score.
-- **Multi-Store Comparison** — Searches and compares prices across Amazon, Flipkart, Croma, Reliance Digital, and Tata CLiQ.
-- **Watchlist** — Save products for later with High, Medium, or Low priority.
-- **Dashboard Insights** — Shows tracked products, best deals, potential savings, alert counts, and recent activity.
-- **Google OAuth Authentication** — Users sign in with Google through Supabase Auth.
-- **Row-Level Security** — Supabase policies ensure users can only access their own data.
-- **Dark / Light Theme** — Theme preference is saved in localStorage with flash-free initialization.
+✅ Real-Time Product Price Tracking
+
+✅ Multi-Store Price Comparison
+
+✅ Historical Price Analytics
+
+✅ Automated Price Drop Alerts
+
+✅ Google OAuth Authentication
+
+✅ Smart Deal Score Algorithm
+
+✅ Buy Priority Ranking System
+
+✅ Cron-Based Automated Monitoring
+
+✅ Responsive Dashboard Experience
+
+✅ Production-Ready Architecture
+
+---
+
+## 📸 Preview
+
+### Landing Page
+
+![Landing Page](./assets/screenshot-1.png)
+
+### Dashboard
+
+![Dashboard](./assets/screenshot-2.png)
+
+### Product Analytics
+
+![Product Detail](./assets/screenshot-3.png)
+
+### Store Comparison
+
+![Store Comparison](./assets/screenshot-4.png)
+
+---
+
+## 💡 Why I Built NexPrice
+
+Online shoppers frequently miss good deals because product prices change constantly across different retailers.
+
+NexPrice was built to solve this problem by automatically tracking products, maintaining historical price records, monitoring discounts, and notifying users whenever a product becomes a worthwhile purchase.
+
+The goal is simple:
+
+> Stop guessing when to buy. Start buying at the right time.
+
+---
+
+## ✨ Core Features
+
+| Feature | Description |
+|----------|-------------|
+| 📈 Price Tracking | Track product prices automatically from supported stores |
+| 📊 Price History | View historical price changes through interactive charts |
+| 🔔 Price Alerts | Receive notifications when products reach target prices |
+| 📉 Price Drop Detection | Get informed whenever prices decrease |
+| 🏪 Store Comparison | Compare prices across multiple retailers |
+| 🎯 Deal Score Engine | Calculate deal quality using historical data |
+| ⭐ Watchlist Management | Save products with custom priorities |
+| 📊 Dashboard Analytics | Monitor savings, deals, and activity |
+| 🔐 Google Authentication | Secure login using Google OAuth |
+| 🛡 Row-Level Security | Users can only access their own data |
+| 🌙 Dark & Light Mode | Fully responsive modern UI experience |
 
 ---
 
 ## 🛠 Tech Stack
 
 | Layer | Technology |
-|---|---|
-| Frontend | Next.js 16 App Router, React 19, Tailwind CSS v4 |
-| UI | shadcn/ui, Radix UI, Lucide React |
-| Charts | Recharts |
+|---------|------------|
+| Frontend | Next.js 16, React 19, Tailwind CSS v4 |
+| UI Components | shadcn/ui, Radix UI, Lucide React |
 | Animations | Framer Motion |
+| Charts | Recharts |
 | Backend | Next.js Server Actions, Route Handlers |
 | Database | Supabase PostgreSQL |
-| Auth | Supabase Auth with Google OAuth |
-| Security | Supabase Row-Level Security, cron bearer token, safe OAuth redirects |
+| Authentication | Supabase Auth + Google OAuth |
+| Security | Row-Level Security (RLS) |
 | Scraping | Firecrawl |
-| Email | Resend |
+| Email Service | Resend |
 | Notifications | Sonner |
-| Deployment | Vercel / Node-compatible hosting |
-| Linting | ESLint + Next.js core web vitals config |
+| Deployment | Vercel |
+| Linting | ESLint |
 
 ---
 
-## 🧠 How It Works
+## 🏗️ System Architecture
 
-1. User signs in with Google.
-2. User pastes a product URL.
-3. Next.js Server Action validates the URL.
-4. Firecrawl extracts product name, price, currency, and image.
-5. Product data is saved to Supabase under the signed-in user.
-6. Price history is recorded for trend tracking.
-7. Store discovery searches supported retailers and saves comparable store prices.
-8. Users can set target alerts.
-9. A cron job re-checks product prices, updates history, checks alerts, sends emails, and logs notifications.
+The application follows a modern serverless architecture powered by Next.js, Supabase, Firecrawl, and Resend.
 
 ```mermaid
 flowchart TD
-  A[User] --> B[Next.js App]
+  A[User] --> B[Next.js Application]
   B --> C[Server Actions]
   C --> D[Supabase PostgreSQL]
+
   C --> E[Firecrawl]
   E --> C
+
   C --> F[Store Discovery]
   F --> D
-  G[Cron Job] --> C
+
+  G[Cron Jobs] --> C
   G --> H[Resend Emails]
   G --> D
+
   D --> B
 ```
+
+---
+
+## ⚙️ How It Works
+
+### 1. User Authentication
+
+Users sign in securely using Google OAuth.
+
+### 2. Product Tracking
+
+Users paste a product URL.
+
+The application:
+
+- Validates the URL
+- Extracts product information
+- Saves product details
+- Starts price monitoring
+
+### 3. Price Monitoring
+
+A scheduled cron job:
+
+- Rechecks product prices
+- Updates price history
+- Detects price drops
+- Triggers alerts
+- Refreshes store comparisons
+
+### 4. Insights Generation
+
+The dashboard calculates:
+
+- Best deals
+- Potential savings
+- Deal scores
+- Buy priority rankings
 
 ---
 
@@ -96,307 +190,242 @@ flowchart TD
 
 ### Prerequisites
 
-Make sure you have the following installed:
-
-- [Node.js](https://nodejs.org/) v18+
-- [npm](https://www.npmjs.com/)
-- [Git](https://git-scm.com/)
-- A [Supabase](https://supabase.com/) project
-- A [Firecrawl](https://www.firecrawl.dev/) API key
-- A [Resend](https://resend.com/) API key
-
----
+- Node.js v18+
+- npm
+- Git
+- Supabase Project
+- Firecrawl API Key
+- Resend API Key
 
 ### Installation
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/yourusername/smart-product-price-tracker.git
+# Clone repository
+git clone https://github.com/AbhishekAdiga05/NexPrice.git
 
-# 2. Move into the project folder
-cd smart-product-price-tracker
+# Navigate to project
+cd NexPrice
 
-# 3. Install dependencies
+# Install dependencies
 npm install
 
-# 4. Copy environment example
+# Create environment file
 cp .env.example .env
 
-# 5. Fill in your environment variables in .env
+# Configure environment variables
 
-# 6. Run Supabase migration
-# Open Supabase Dashboard → SQL Editor → paste supabase/migration.sql → Run
+# Run database migration
 
-# 7. Start the dev server
+# Start development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Visit:
+
+```txt
+http://localhost:3000
+```
 
 ---
 
-## ⚙️ Environment Variables
-
-Create a `.env` file in the root directory.
+## 🔑 Environment Variables
 
 ```env
-# === Required: Supabase ===
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 
-# === Required: Web Scraping ===
-FIRECRAWL_API_KEY=fc-your-firecrawl-key
+# Firecrawl
+FIRECRAWL_API_KEY=
 
-# === Required: Email Notifications ===
-RESEND_API_KEY=re_your-resend-key
-RESEND_FROM_EMAIL=onboarding@resend.dev
+# Resend
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
 
-# === Required: Cron Job Security ===
-CRON_SECRET=your-random-secret
+# Cron Security
+CRON_SECRET=
 
-# === Optional: AI Price Predictions ===
-GEMINI_API_KEY=your-gemini-key
+# AI Predictions (Optional)
+GEMINI_API_KEY=
 GEMINI_MODEL=gemini-2.5-flash
 
-# === Required: App URL ===
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+# Application URL
+NEXT_PUBLIC_APP_URL=
 ```
-
-> Never commit real `.env` values. Only placeholder values should exist in `.env.example`.
 
 ---
 
 ## 📂 Project Structure
 
 ```txt
-smart-product-price-tracker/
+NexPrice/
+│
 ├── app/
-│   ├── actions.js                         # Server Actions
-│   ├── api/
-│   │   └── cron/check-prices/route.js     # Cron endpoint
-│   ├── auth/callback/route.js             # Google OAuth callback
-│   ├── dashboard/
-│   │   └── product/[productId]/           # Product detail dashboard route
-│   ├── products/[id]/                     # Product detail route
-│   ├── layout.js                          # Root layout
-│   ├── page.js                            # Landing page / dashboard
-│   ├── loading.js                         # Global loading UI
-│   ├── error.js                           # Error boundary
-│   └── not-found.js                       # 404 page
 ├── components/
-│   ├── ui/                                # shadcn/ui primitives
-│   ├── AddProductForm.js
-│   ├── AlertsDashboard.js
-│   ├── AuthButton.js
-│   ├── AuthModal.js
-│   ├── DashboardAnalyticsChart.js
-│   ├── DashboardShell.js
-│   ├── DealScoreBadge.js
-│   ├── InsightsDashboard.js
-│   ├── NavBar.js
-│   ├── PriceChart.js
-│   ├── ProductCard.js
-│   ├── SetPriceAlert.js
-│   ├── StoreComparison.js
-│   ├── WatchlistDashboard.js
-│   └── SettingsForm.js
 ├── lib/
-│   ├── buy-priority.js                    # Buy Priority scoring
-│   ├── deal-score.js                      # Deal Score algorithm
-│   ├── email.js                           # Resend email templates
-│   ├── firecrawl.js                       # Firecrawl wrapper
-│   ├── product-matcher.js                 # Product text matching
-│   ├── retailers.js                       # Supported retailers
-│   ├── store-discovery.js                 # Store comparison logic
-│   └── store-utils.js                     # Store price helpers
-├── utils/supabase/
-│   ├── client.js
-│   ├── server.js
-│   └── middleware.js
+├── utils/
 ├── supabase/
-│   └── migration.sql
-├── middleware.js
-├── next.config.mjs
-├── package.json
-├── .env.example
-└── README.md
+│
+├── Authentication
+├── Product Tracking
+├── Price Analytics
+├── Store Comparison
+├── Notifications
+├── Dashboard Insights
+└── Cron Automation
 ```
 
 ---
 
-## 📸 Screenshots
+## 🔐 Authentication Flow
 
-| Landing Page | Dashboard |
-|---|---|
-| ![Landing Page](./assets/screenshot-1.png) | ![Dashboard](./assets/screenshot-2.png) |
+```text
+User
+  ↓
+Google OAuth
+  ↓
+Supabase Auth
+  ↓
+Session Creation
+  ↓
+Dashboard Access
+```
 
-| Product Detail | Store Comparison |
-|---|---|
-| ![Product Detail](./assets/screenshot-3.png) | ![Store Comparison](./assets/screenshot-4.png) |
+### Features
 
----
-
-## 🔐 Authentication
-
-NexPrice uses Supabase Auth with Google OAuth.
-
-Authentication flow:
-
-1. User clicks **Sign In**.
-2. Google OAuth redirects to `/auth/callback`.
-3. The app exchanges the authorization code for a session.
-4. The user is redirected back to the dashboard.
-5. Middleware refreshes the Supabase session on requests.
-
-There is currently no email/password login or forgot-password flow.
+- Google Sign-In
+- Session Persistence
+- Secure Route Protection
+- OAuth Redirect Validation
 
 ---
 
 ## 📡 API Endpoints
 
-### `GET /`
+| Endpoint | Description |
+|-----------|------------|
+| GET / | Landing Page |
+| GET /?tab=insights | Dashboard Insights |
+| GET /?tab=watchlist | User Watchlist |
+| GET /?tab=alerts | Price Alerts |
+| GET /?tab=settings | User Settings |
+| GET /products/[id] | Product Details |
+| POST /api/cron/check-prices | Execute Price Monitoring |
 
-Returns the landing page for anonymous users or the dashboard for authenticated users.
-
-### `GET /?tab=insights`
-
-Shows insights such as total savings, active alerts, best deals, and recent savings.
-
-### `GET /?tab=watchlist`
-
-Shows saved watchlist items sorted by Buy Priority Score.
-
-### `GET /?tab=alerts`
-
-Shows active, triggered, and disabled price alerts.
-
-### `GET /?tab=settings`
-
-Shows account details and notification preferences.
-
-### `GET /products/[id]`
-
-Shows product details, price history, deal score, alerts, and store comparison.
-
-### `GET /dashboard/product/[productId]`
-
-Alternative dashboard product detail route.
-
-### `GET /api/cron/check-prices`
-
-Returns a status message confirming the cron endpoint is available.
-
-### `POST /api/cron/check-prices`
-
-Runs the price check workflow.
-
-Requires:
+### Protected Cron Endpoint
 
 ```http
+POST /api/cron/check-prices
+
 Authorization: Bearer YOUR_CRON_SECRET
 ```
 
-The cron job:
+### Cron Workflow
 
-1. Fetches all tracked products.
-2. Re-scrapes each product URL.
-3. Updates current price.
-4. Adds price history when price changes.
-5. Sends price drop emails.
-6. Checks target alerts.
-7. Sends target reached emails.
-8. Logs notification attempts.
-9. Refreshes store comparison prices.
-
-Run manually:
-
-```powershell
-Invoke-RestMethod -Uri "http://localhost:3000/api/cron/check-prices" `
-  -Method Post `
-  -Headers @{ Authorization = "Bearer YOUR_CRON_SECRET" }
-```
-
-> For real alert delivery, this endpoint must be scheduled by an external cron provider or deployment platform.
+1. Fetch tracked products
+2. Re-scrape prices
+3. Update database
+4. Save price history
+5. Detect price drops
+6. Trigger alerts
+7. Send emails
+8. Update store comparison data
 
 ---
-
-## 🧪 Manual Test Flow
-
-```bash
-# 1. Start the app
-npm run dev
-
-# 2. Open the app
-http://localhost:3000
-
-# 3. Sign in with Google
-
-# 4. Add a product URL
-
-# 5. Set a target price alert
-
-# 6. Run the cron job manually
-
-# 7. Check dashboard, alerts, email, and notifications table
-```
-
-
 
 ## 📊 Database Design
 
-Main tables:
+### Main Tables
 
 | Table | Purpose |
-|---|---|
-| `products` | Stores tracked products per user |
-| `price_history` | Stores time-series price snapshots |
-| `price_alerts` | Stores target price alerts |
-| `store_prices` | Stores prices from different retailers |
-| `watchlist` | Stores saved products and user priority |
-| `user_settings` | Stores notification preferences |
-| `notifications` | Stores email/notification attempt history |
-| `price_predictions` | Reserved for future prediction feature |
+|---------|---------|
+| products | Tracked products |
+| price_history | Historical price records |
+| price_alerts | User alerts |
+| store_prices | Retailer comparison data |
+| watchlist | Saved products |
+| user_settings | User preferences |
+| notifications | Alert history |
+| price_predictions | Future AI prediction support |
 
-Important constraints:
+### Security
 
-- `products`: unique `user_id + url`
-- `store_prices`: unique `product_id + store_name`
-- `watchlist`: unique `user_id + product_id`
-- `price_alerts`: target price must be greater than 0
-- Row-Level Security is enabled across tables
+- Row-Level Security Enabled
+- User Data Isolation
+- Secure OAuth Sessions
+- Protected Cron Endpoints
 
 ---
 
-## 📱 Mobile Support
+## 📱 Mobile Experience
 
-NexPrice is responsive and supports mobile layouts.
+NexPrice is fully responsive and optimized for:
 
-Supported mobile interactions:
+- Mobile Phones
+- Tablets
+- Laptops
+- Desktop Devices
 
-- Mobile sidebar navigation
-- Responsive product cards
-- Responsive charts
-- Touch-friendly forms
-- Mobile dialog modals
-- Responsive dashboard tabs
+### Supported Interactions
 
-Known mobile limitations:
+- Responsive Navigation
+- Adaptive Charts
+- Touch-Friendly Forms
+- Mobile Dialogs
+- Dashboard Tabs
 
-- Some badges and labels use small text.
-- Icon-only delete buttons may be small on very small screens.
-- Store comparison tables may require horizontal reading on narrow screens.
+---
+
+## 🛣️ Roadmap
+
+### Completed
+
+- [x] Product Tracking
+- [x] Price History
+- [x] Price Alerts
+- [x] Google OAuth
+- [x] Dashboard Analytics
+- [x] Multi-Store Comparison
+- [x] Email Notifications
+
+### Planned
+
+- [ ] AI Price Predictions
+- [ ] Browser Extension
+- [ ] Telegram Notifications
+- [ ] WhatsApp Alerts
+- [ ] Mobile Application
+- [ ] Advanced Retailer Support
+
+---
+
+## 🧪 Manual Testing
+
+```bash
+# Start application
+npm run dev
+
+# Login with Google
+
+# Add a product URL
+
+# Create price alert
+
+# Trigger cron endpoint
+
+# Verify dashboard updates
+
+# Check email notifications
+```
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+Distributed under the MIT License.
+
+See the LICENSE file for additional information.
 
 ---
 
-
-<div align="center">
-If this project helped you or you found it interesting, consider giving it a ⭐
-</div>
-```
