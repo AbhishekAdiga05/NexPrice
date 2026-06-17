@@ -1,428 +1,402 @@
-<div align="center">
-  <h1>NexPrice</h1>
-  <p><strong>Smart Product Price Tracker</strong></p>
-  <p>
-    Monitor e-commerce prices, get alerted on drops, compare across stores, and make data-driven buying decisions.
-  </p>
 
-  <p>
-    <img src="https://img.shields.io/badge/Next.js-16-000000?logo=next.js" alt="Next.js 16" />
-    <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" alt="React 19" />
-    <img src="https://img.shields.io/badge/Tailwind_v4-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS v4" />
-    <img src="https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white" alt="Supabase" />
-    <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" />
-    <img src="https://img.shields.io/badge/Firecrawl-F97316?logo=firecrawl&logoColor=white" alt="Firecrawl" />
-    <img src="https://img.shields.io/badge/Resend-000000?logo=resend&logoColor=white" alt="Resend" />
-  </p>
+
+```md
+<div align="center">
+
+# NexPrice
+
+**A smart product price tracker that helps shoppers monitor price drops, compare stores, and buy at the right time.**
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit-blue?style=flat-square)](https://getnexprice.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-black?style=flat-square)](https://github.com/AbhishekAdiga05/NexPrice)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+
 </div>
 
 ---
 
-## Table of Contents
+## 🧐 What is this?
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Database Design](#database-design)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
-- [Testing](#testing)
-- [Future Improvements](#future-improvements)
-- [License](#license)
+NexPrice is a full-stack web app that helps online shoppers track product prices, view price history, compare prices across stores, and receive alerts when a target price is reached.
+
+I built this because manually checking product prices on sites like Amazon and Flipkart is repetitive and easy to miss. It currently supports product tracking, price history, target alerts, deal scoring, watchlists, store comparison, and automated cron-based price checks. I’m working on improving scraping reliability, cron monitoring, search/filtering, and production-grade alert delivery.
+
+> **Live:** [https://your-project.vercel.app](https://your-project.vercel.app)
 
 ---
 
-## Features
+## ✨ Features
 
-### Product Price Tracking
-Users paste any e-commerce product URL (Amazon, Flipkart, etc.). The app scrapes the page using Firecrawl to extract the product name, price, currency, and image. Each product is saved to the user's personal dashboard.
-
-### Price History & Charts
-Every price check is recorded in a time-series history. Interactive line charts (Recharts) display price trends over time with low/high/average annotations.
-
-### Target Price Alerts
-Users set a target price on any product they track. A cron job checks prices daily; when the price drops to or below the target, the user receives an email notification via Resend. Alerts are deduplicated — once triggered, they won't fire again for the same price drop.
-
-### Deal Score Algorithm
-Each product gets a 0–100 score based on four weighted factors:
-
-| Factor | Weight | Description |
-|---|---|---|
-| Proximity to Low | 40% | How close the price is to the all-time low |
-| Discount from Average | 30% | How much below the historical average |
-| Recent Trend | 20% | Whether the price is currently trending down |
-| Volatility | 10% | How much the price typically fluctuates |
-
-The score translates to a tier: **Great Deal (70+)**, **Good Deal (50–69)**, **Fair (30–49)**, or **Not Now (<30)**.
-
-### Buy Priority Score
-For watchlisted products, a composite urgency score (0–100) that combines:
-- User-set priority weight (High/Medium/Low)
-- Days spent on the watchlist (up to 30 days)
-- Current Deal Score
-
-### Multi-Store Price Comparison
-The app searches the same product across 5 Indian retailers — Amazon, Flipkart, Croma, Reliance Digital, and Tata CLiQ — using product name matching with Jaccard similarity. Prices are displayed side by side with the cheapest store highlighted.
-
-### Watchlist
-Users can save products to a watchlist with a priority level (High/Medium/Low). Items are sorted by the computed Buy Priority score so the most urgent purchase appears first.
-
-### Dashboard & Insights
-A tabbed dashboard with sections for:
-- **Products** — list of tracked items with deal scores, price alerts, and charts
-- **Insights** — total savings, top deals, deal score distribution chart, recent activity timeline
-- **Watchlist** — prioritized product shortlist with buy urgency scores
-- **Alerts** — all active, triggered, and disabled price alerts
-- **Settings** — weekly digest preference and account info
-
-### Google OAuth Authentication
-Users sign in with Google via Supabase Auth. Sessions are managed with cookies and refreshed automatically via middleware on every request. Row-Level Security ensures users can only see their own data.
-
-### Automated Cron Job
-A `POST /api/cron/check-prices` endpoint processes all tracked products in chunks of 5. It rescrapes each URL, updates prices, records history, sends email notifications for price drops and triggered alerts, and refreshes store comparison data.
-
-### Email Notifications
-HTML email templates for two notification types:
-- **Price Drop Alert** — sent when a product's price decreases, showing the old price, new price, savings amount, and percentage drop
-- **Target Price Reached** — sent when a price hits or falls below the user's target, showing the target and current price
-
-Every notification attempt is logged in a `notifications` table with status tracking.
-
-### Dark / Light Theme
-Toggle between dark and light mode. Preference persists in localStorage with a pre-hydration script to prevent flash on page load.
+- **Product Price Tracking** — Paste a product URL and the app extracts the product name, price, currency, and image using Firecrawl.
+- **Price History Charts** — Stores price snapshots over time and displays them using Recharts.
+- **Target Price Alerts** — Users can set a target price and receive email alerts when the price reaches that target.
+- **Price Drop Emails** — Sends email notifications through Resend when a tracked product’s price drops.
+- **Deal Score Algorithm** — Calculates a 0–100 score based on historical low, average price, recent trend, and volatility.
+- **Buy Priority Score** — Ranks watchlisted products based on user priority, days on watchlist, and deal score.
+- **Multi-Store Comparison** — Searches and compares prices across Amazon, Flipkart, Croma, Reliance Digital, and Tata CLiQ.
+- **Watchlist** — Save products for later with High, Medium, or Low priority.
+- **Dashboard Insights** — Shows tracked products, best deals, potential savings, alert counts, and recent activity.
+- **Google OAuth Authentication** — Users sign in with Google through Supabase Auth.
+- **Row-Level Security** — Supabase policies ensure users can only access their own data.
+- **Dark / Light Theme** — Theme preference is saved in localStorage with flash-free initialization.
 
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
 
-| Category | Technology | Purpose |
-|---|---|---|
-| **Framework** | Next.js 16 (App Router) | SSR, routing, server actions |
-| **UI** | React 19, Tailwind CSS v4 | Component rendering, styling |
-| **UI Primitives** | shadcn/ui (Radix) | Accessible dialog, button, card, badge, input |
-| **Charts** | Recharts | Interactive price history line/area charts |
-| **Icons** | Lucide React | Consistent icon set |
-| **Animation** | Framer Motion | Scroll-triggered fade-in animations |
-| **Database** | Supabase (PostgreSQL) | Relational data store with RLS |
-| **Auth** | Supabase Auth | Google OAuth + session cookies |
-| **Scraping** | Firecrawl | Product data extraction from e-commerce URLs |
-| **Email** | Resend | Transactional email alerts with HTML templates |
-| **Notifications** | Sonner | In-app toast notifications |
-
----
-
-## Architecture
-
-```
-                      Browser (Client)
-         Next.js App Router · React 19 · Tailwind v4
-                            |
-                  HTTP / Server Actions
-                            |
-                    Next.js 16 Server
-         ┌──────────────────┬──────────────────┐
-         │  Server          │  Server          │
-         │  Components      │  Actions         │
-         │  (app/page.js)   │  (app/actions.js)│
-         └──────────────────┴──────────────────┘
-                            |
-              ┌─────────────┴─────────────┐
-              │                           │
-         Supabase                     Firecrawl
-     (PostgreSQL + Auth)           (Web Scraper)
-              │
-              │
-          Resend
-         (Email)
-```
-
-### Frontend
-- **Server Components** render page layouts and fetch data directly from Supabase
-- **Client Components** (`"use client"`) handle interactivity: charts, forms, modals, theme toggle
-- **Server Actions** (`app/actions.js`) handle all mutations — adding products, setting alerts, managing watchlist — with automatic `revalidatePath` cache invalidation
-- **Middleware** (`middleware.js`) refreshes the Supabase auth session on every request and includes an in-memory rate limiter (30 requests/minute per IP)
-
-### Backend
-- **API Routes** — `POST /api/cron/check-prices` protected by a Bearer token (`CRON_SECRET`). Processes all products in parallel chunks of 5
-- **Server Actions** — 19 exported functions handling auth, CRUD, and data aggregation
-
-### Data Flow
-1. User adds a product URL → Server Action scrapes via Firecrawl → upserts into `products` table → inserts `price_history` row → triggers store discovery
-2. Cron job runs daily → for each product: scrape URL → compare price → update DB → log history → send email if alert triggered → refresh store prices
-3. Dashboard loads → multiple Server Actions fetch products, insights, watchlist, alerts, settings in parallel
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16 App Router, React 19, Tailwind CSS v4 |
+| UI | shadcn/ui, Radix UI, Lucide React |
+| Charts | Recharts |
+| Animations | Framer Motion |
+| Backend | Next.js Server Actions, Route Handlers |
+| Database | Supabase PostgreSQL |
+| Auth | Supabase Auth with Google OAuth |
+| Security | Supabase Row-Level Security, cron bearer token, safe OAuth redirects |
+| Scraping | Firecrawl |
+| Email | Resend |
+| Notifications | Sonner |
+| Deployment | Vercel / Node-compatible hosting |
+| Linting | ESLint + Next.js core web vitals config |
 
 ---
 
-## Database Design
+## 🧠 How It Works
 
-The database has 8 tables with Row-Level Security on every table.
+1. User signs in with Google.
+2. User pastes a product URL.
+3. Next.js Server Action validates the URL.
+4. Firecrawl extracts product name, price, currency, and image.
+5. Product data is saved to Supabase under the signed-in user.
+6. Price history is recorded for trend tracking.
+7. Store discovery searches supported retailers and saves comparable store prices.
+8. Users can set target alerts.
+9. A cron job re-checks product prices, updates history, checks alerts, sends emails, and logs notifications.
 
-| Table | Purpose | Key Columns | RLS Policy |
-|---|---|---|---|
-| `products` | Tracked products per user | `id`, `user_id`, `url`, `name`, `current_price`, `currency` | `user_id = auth.uid()` |
-| `price_history` | Time-series price records | `id`, `product_id`, `price`, `checked_at` | Via products subquery |
-| `price_alerts` | Target price alerts | `id`, `user_id`, `product_id`, `target_price`, `status` | `user_id = auth.uid()` |
-| `store_prices` | Multi-store comparison | `id`, `product_id`, `store_name`, `price`, `product_url` | Via products subquery |
-| `watchlist` | Prioritized product shortlist | `id`, `user_id`, `product_id`, `priority` | `user_id = auth.uid()` |
-| `user_settings` | Notification preferences | `id`, `user_id`, `weekly_digest`, `digest_day` | `user_id = auth.uid()` |
-| `notifications` | Notification audit log | `id`, `user_id`, `product_id`, `type`, `channel`, `status` | `user_id = auth.uid()` |
-| `price_predictions` | Cached AI predictions | `id`, `product_id`, `predicted_price`, `confidence`, `expires_at` | Via products subquery |
-
-Key constraints:
-- `products`: `UNIQUE(user_id, url)` — prevents duplicate tracking
-- `store_prices`: `UNIQUE(product_id, store_name)` — one price per store per product
-- `price_alerts`: `CHECK (target_price > 0)`
-- `watchlist`: `UNIQUE(user_id, product_id)`
-
-A single migration file (`supabase/migration.sql`) creates all tables, indexes, and policies.
-
----
-
-## Project Structure
-
-```
-nexprice/
-├── app/
-│   ├── actions.js                    # Server actions (19 functions)
-│   ├── layout.js                     # Root layout + Toaster
-│   ├── page.js                       # Landing page / authenticated dashboard
-│   ├── globals.css                   # Tailwind v4 + dark mode vars
-│   ├── loading.js                    # Loading skeleton
-│   ├── error.js                      # Error boundary
-│   ├── not-found.js                  # 404 page
-│   ├── auth/
-│   │   └── callback/route.js         # Google OAuth callback handler
-│   ├── api/
-│   │   └── cron/check-prices/route.js # Daily price check cron endpoint
-│   ├── products/[id]/
-│   │   ├── page.js                   # Product detail page (server)
-│   │   └── ProductDetail.js          # Product detail (client component)
-│   └── dashboard/
-│       ├── page.js                   # Dashboard redirect
-│       └── product/[productId]/
-│           ├── page.js               # Full product detail page
-│           ├── loading.js            # Loading skeleton
-│           └── ProductActions.js     # Action buttons
-├── components/
-│   ├── ui/                           # shadcn/ui primitives
-│   │   ├── button.jsx, card.jsx, dialog.jsx, input.jsx
-│   │   ├── badge.jsx, alert.jsx, sonner.jsx
-│   ├── AddProductForm.js             # URL input + submit
-│   ├── AlertsDashboard.js            # Price alerts list + management
-│   ├── AuthModal.js / AuthButton.js  # Google OAuth modal/button
-│   ├── DashboardAnalyticsChart.js    # Deal score distribution chart
-│   ├── DashboardShell.js             # App layout wrapper
-│   ├── DealScoreBadge.js             # 0-100 deal score display
-│   ├── InsightsDashboard.js          # Analytics + top deals
-│   ├── LandingShell.js               # Landing page composer
-│   ├── NavBar.js / Sidebar.js        # Navigation
-│   ├── PriceChart.js                 # Interactive price history chart
-│   ├── PricePrediction.js            # Trend indicator + buying advice
-│   ├── ProductCard.js                # Product card with actions
-│   ├── RecentActivity.js             # Activity timeline
-│   ├── SectionFade.js                # Scroll animation wrapper
-│   ├── SetPriceAlert.js              # Target price form + progress
-│   ├── SettingsForm.js               # Weekly digest preferences
-│   ├── StoreComparison.js            # Multi-store price table
-│   ├── StorePriceBadge.js            # Compact store price display
-│   ├── ThemeToggle.js                # Dark/light mode toggle
-│   └── WatchlistDashboard.js         # Watchlist with priorities
-├── lib/
-│   ├── buy-priority.js               # Buy urgency scoring algorithm
-│   ├── dates.js                      # Relative time formatting
-│   ├── deal-score.js                 # Deal Score (0-100) algorithm
-│   ├── email.js                      # HTML email templates (Resend)
-│   ├── firecrawl.js                  # Firecrawl scraper wrapper
-│   ├── product-matcher.js            # Text similarity matching
-│   ├── retailers.js                  # 5 retailer configurations
-│   ├── store-discovery.js            # Cross-store product search
-│   ├── store-utils.js                # Store price comparison helpers
-│   └── utils.js                      # cn() Tailwind utility
-├── utils/supabase/
-│   ├── server.js                     # Server-side Supabase client
-│   ├── client.js                     # Browser-side Supabase client
-│   └── middleware.js                  # Auth session refresh
-├── supabase/
-│   └── migration.sql                 # Complete database migration
-├── middleware.js                      # Session refresh + rate limiter
-├── next.config.mjs
-├── package.json
-└── postcss.config.mjs
+```mermaid
+flowchart TD
+  A[User] --> B[Next.js App]
+  B --> C[Server Actions]
+  C --> D[Supabase PostgreSQL]
+  C --> E[Firecrawl]
+  E --> C
+  C --> F[Store Discovery]
+  F --> D
+  G[Cron Job] --> C
+  G --> H[Resend Emails]
+  G --> D
+  D --> B
 ```
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- Supabase account (free tier)
-- Firecrawl API key ([firecrawl.dev](https://firecrawl.dev))
-- Resend API key ([resend.com](https://resend.com))
+Make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/) v18+
+- [npm](https://www.npmjs.com/)
+- [Git](https://git-scm.com/)
+- A [Supabase](https://supabase.com/) project
+- A [Firecrawl](https://www.firecrawl.dev/) API key
+- A [Resend](https://resend.com/) API key
+
+---
 
 ### Installation
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/yourusername/nexprice.git
-cd nexprice
+# 1. Clone the repo
+git clone https://github.com/yourusername/smart-product-price-tracker.git
 
-# 2. Install dependencies
+# 2. Move into the project folder
+cd smart-product-price-tracker
+
+# 3. Install dependencies
 npm install
 
-# 3. Set up environment variables
+# 4. Copy environment example
 cp .env.example .env
-# Edit .env with your API keys (see below)
 
-# 4. Run database migration
+# 5. Fill in your environment variables in .env
+
+# 6. Run Supabase migration
 # Open Supabase Dashboard → SQL Editor → paste supabase/migration.sql → Run
 
-# 5. Start the dev server
+# 7. Start the dev server
 npm run dev
 ```
 
-### Running Commands
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-```bash
-# Development
-npm run dev              # Start at http://localhost:3000
+---
 
-# Production
-npm run build
-npm start
+## ⚙️ Environment Variables
 
-# Linting
-npm run lint
+Create a `.env` file in the root directory.
 
-# Run the cron job (replace YOUR_CRON_SECRET)
+```env
+# === Required: Supabase ===
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# === Required: Web Scraping ===
+FIRECRAWL_API_KEY=fc-your-firecrawl-key
+
+# === Required: Email Notifications ===
+RESEND_API_KEY=re_your-resend-key
+RESEND_FROM_EMAIL=onboarding@resend.dev
+
+# === Required: Cron Job Security ===
+CRON_SECRET=your-random-secret
+
+# === Optional: AI Price Predictions ===
+GEMINI_API_KEY=your-gemini-key
+GEMINI_MODEL=gemini-2.5-flash
+
+# === Required: App URL ===
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+> Never commit real `.env` values. Only placeholder values should exist in `.env.example`.
+
+---
+
+## 📂 Project Structure
+
+```txt
+smart-product-price-tracker/
+├── app/
+│   ├── actions.js                         # Server Actions
+│   ├── api/
+│   │   └── cron/check-prices/route.js     # Cron endpoint
+│   ├── auth/callback/route.js             # Google OAuth callback
+│   ├── dashboard/
+│   │   └── product/[productId]/           # Product detail dashboard route
+│   ├── products/[id]/                     # Product detail route
+│   ├── layout.js                          # Root layout
+│   ├── page.js                            # Landing page / dashboard
+│   ├── loading.js                         # Global loading UI
+│   ├── error.js                           # Error boundary
+│   └── not-found.js                       # 404 page
+├── components/
+│   ├── ui/                                # shadcn/ui primitives
+│   ├── AddProductForm.js
+│   ├── AlertsDashboard.js
+│   ├── AuthButton.js
+│   ├── AuthModal.js
+│   ├── DashboardAnalyticsChart.js
+│   ├── DashboardShell.js
+│   ├── DealScoreBadge.js
+│   ├── InsightsDashboard.js
+│   ├── NavBar.js
+│   ├── PriceChart.js
+│   ├── ProductCard.js
+│   ├── SetPriceAlert.js
+│   ├── StoreComparison.js
+│   ├── WatchlistDashboard.js
+│   └── SettingsForm.js
+├── lib/
+│   ├── buy-priority.js                    # Buy Priority scoring
+│   ├── deal-score.js                      # Deal Score algorithm
+│   ├── email.js                           # Resend email templates
+│   ├── firecrawl.js                       # Firecrawl wrapper
+│   ├── product-matcher.js                 # Product text matching
+│   ├── retailers.js                       # Supported retailers
+│   ├── store-discovery.js                 # Store comparison logic
+│   └── store-utils.js                     # Store price helpers
+├── utils/supabase/
+│   ├── client.js
+│   ├── server.js
+│   └── middleware.js
+├── supabase/
+│   └── migration.sql
+├── middleware.js
+├── next.config.mjs
+├── package.json
+├── .env.example
+└── README.md
+```
+
+---
+
+## 📸 Screenshots
+
+| Landing Page | Dashboard |
+|---|---|
+| ![Landing Page](./assets/screenshot-1.png) | ![Dashboard](./assets/screenshot-2.png) |
+
+| Product Detail | Store Comparison |
+|---|---|
+| ![Product Detail](./assets/screenshot-3.png) | ![Store Comparison](./assets/screenshot-4.png) |
+
+---
+
+## 🔐 Authentication
+
+NexPrice uses Supabase Auth with Google OAuth.
+
+Authentication flow:
+
+1. User clicks **Sign In**.
+2. Google OAuth redirects to `/auth/callback`.
+3. The app exchanges the authorization code for a session.
+4. The user is redirected back to the dashboard.
+5. Middleware refreshes the Supabase session on requests.
+
+There is currently no email/password login or forgot-password flow.
+
+---
+
+## 📡 API Endpoints
+
+### `GET /`
+
+Returns the landing page for anonymous users or the dashboard for authenticated users.
+
+### `GET /?tab=insights`
+
+Shows insights such as total savings, active alerts, best deals, and recent savings.
+
+### `GET /?tab=watchlist`
+
+Shows saved watchlist items sorted by Buy Priority Score.
+
+### `GET /?tab=alerts`
+
+Shows active, triggered, and disabled price alerts.
+
+### `GET /?tab=settings`
+
+Shows account details and notification preferences.
+
+### `GET /products/[id]`
+
+Shows product details, price history, deal score, alerts, and store comparison.
+
+### `GET /dashboard/product/[productId]`
+
+Alternative dashboard product detail route.
+
+### `GET /api/cron/check-prices`
+
+Returns a status message confirming the cron endpoint is available.
+
+### `POST /api/cron/check-prices`
+
+Runs the price check workflow.
+
+Requires:
+
+```http
+Authorization: Bearer YOUR_CRON_SECRET
+```
+
+The cron job:
+
+1. Fetches all tracked products.
+2. Re-scrapes each product URL.
+3. Updates current price.
+4. Adds price history when price changes.
+5. Sends price drop emails.
+6. Checks target alerts.
+7. Sends target reached emails.
+8. Logs notification attempts.
+9. Refreshes store comparison prices.
+
+Run manually:
+
+```powershell
 Invoke-RestMethod -Uri "http://localhost:3000/api/cron/check-prices" `
   -Method Post `
   -Headers @{ Authorization = "Bearer YOUR_CRON_SECRET" }
 ```
 
----
-
-## Environment Variables
-
-```env
-# Supabase (required)
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# Web Scraping (required)
-FIRECRAWL_API_KEY=fc-your-firecrawl-key
-
-# Email (required for notifications)
-RESEND_API_KEY=re_your-resend-key
-RESEND_FROM_EMAIL=onboarding@resend.dev
-
-# Cron Security (required)
-CRON_SECRET=your-random-secret
-
-# App URL (required)
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# AI Predictions (optional)
-GEMINI_API_KEY=your-gemini-key
-GEMINI_MODEL=gemini-2.5-flash
-```
+> For real alert delivery, this endpoint must be scheduled by an external cron provider or deployment platform.
 
 ---
 
-## API Endpoints
-
-### `POST /api/cron/check-prices`
-
-Triggers the daily price check workflow. Requires `Authorization: Bearer <CRON_SECRET>`.
-
-**What it does:**
-1. Fetches all products from the database
-2. Processes them in parallel chunks of 5
-3. For each product: scrapes URL via Firecrawl, updates price, logs history if changed
-4. Sends email notifications for price drops and triggered alerts
-5. Refreshes multi-store price data
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Price check completed",
-  "results": {
-    "total": 10,
-    "updated": 9,
-    "failed": 1,
-    "priceChanges": 3,
-    "alertsSent": 2,
-    "storePricesRefreshed": 1
-  }
-}
-```
-
-### `GET /api/cron/check-prices`
-
-Returns a status message confirming the endpoint is alive.
-
-### `GET /auth/callback`
-
-Handles the Google OAuth redirect. Exchanges the authorization code for a session and redirects to the dashboard. Validates redirect URLs to prevent open-redirect attacks.
-
----
-
-## Testing
-
-### Manual Test Flow
+## 🧪 Manual Test Flow
 
 ```bash
 # 1. Start the app
 npm run dev
 
-# 2. Sign in with Google at http://localhost:3000
+# 2. Open the app
+http://localhost:3000
 
-# 3. Add a product (paste an Amazon/Flipkart URL)
+# 3. Sign in with Google
 
-# 4. Set a price alert on the product
+# 4. Add a product URL
 
-# 5. Inflate the price in Supabase to trigger alerts:
-UPDATE products SET current_price = 99999 WHERE id = '<product-uuid>';
+# 5. Set a target price alert
 
-# 6. Run the cron job:
-Invoke-RestMethod -Uri "http://localhost:3000/api/cron/check-prices" `
-  -Method Post `
-  -Headers @{ Authorization = "Bearer YOUR_CRON_SECRET" }
+# 6. Run the cron job manually
 
-# 7. Check email and Supabase notifications table
+# 7. Check dashboard, alerts, email, and notifications table
 ```
 
-Key features to test:
-- Google sign-in/sign-out flow
-- Add product with valid/invalid URLs
-- Set and remove price alerts
-- View price history charts and deal scores
-- Multi-store price comparison
-- Watchlist add/remove/priority
-- Dashboard insights and analytics
-- Dark/light theme toggle
-- Rate limiting (30 requests/minute per IP)
-- Cron job response with real data
+
+
+## 📊 Database Design
+
+Main tables:
+
+| Table | Purpose |
+|---|---|
+| `products` | Stores tracked products per user |
+| `price_history` | Stores time-series price snapshots |
+| `price_alerts` | Stores target price alerts |
+| `store_prices` | Stores prices from different retailers |
+| `watchlist` | Stores saved products and user priority |
+| `user_settings` | Stores notification preferences |
+| `notifications` | Stores email/notification attempt history |
+| `price_predictions` | Reserved for future prediction feature |
+
+Important constraints:
+
+- `products`: unique `user_id + url`
+- `store_prices`: unique `product_id + store_name`
+- `watchlist`: unique `user_id + product_id`
+- `price_alerts`: target price must be greater than 0
+- Row-Level Security is enabled across tables
 
 ---
 
-## Future Improvements
+## 📱 Mobile Support
 
-- **Weekly Email Digest** — Scheduled job to compile and send a weekly summary of price changes, savings, and recommendations (database schema already supports this)
-- **Browser Extension** — Chrome/Firefox extension for one-click product tracking from any e-commerce page
-- **WhatsApp Notifications** — Extend the notification system to support WhatsApp Business API
-- **Store Affiliate APIs** — Replace Firecrawl scraping with official affiliate APIs (Amazon PA-API, Flipkart Affiliate) for more reliable pricing
-- **AI Price Predictions** — Gemini integration for time-series forecasting to predict optimal buy windows
-- **Public Share Pages** — Shareable URLs showing product price history and deal score without requiring sign-in
-- **Rate Limiting Upgrade** — Replace in-memory rate limiter with Redis-backed (Upstash) for multi-instance deployments
+NexPrice is responsive and supports mobile layouts.
+
+Supported mobile interactions:
+
+- Mobile sidebar navigation
+- Responsive product cards
+- Responsive charts
+- Touch-friendly forms
+- Mobile dialog modals
+- Responsive dashboard tabs
+
+Known mobile limitations:
+
+- Some badges and labels use small text.
+- Icon-only delete buttons may be small on very small screens.
+- Store comparison tables may require horizontal reading on narrow screens.
 
 ---
 
-## License
+## 📄 License
 
-MIT — see [LICENSE](LICENSE) for details.
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+
+<div align="center">
+If this project helped you or you found it interesting, consider giving it a ⭐
+</div>
+```
