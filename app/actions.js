@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { calculateDealScore } from "@/lib/deal-score";
 import { calculateBuyPriority } from "@/lib/buy-priority";
 import { scrapeProduct } from "@/lib/firecrawl";
@@ -359,6 +360,19 @@ export async function getProductById(productId) {
       .eq("product_id", productId);
 
     product.price_alerts = alerts || [];
+
+    const svc = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    const { data: storePrices } = await svc
+      .from("store_prices")
+      .select("*")
+      .eq("product_id", productId)
+      .order("price", { ascending: true });
+
+    product.store_prices = storePrices || [];
 
     return product;
   } catch (error) {
@@ -801,24 +815,12 @@ export async function signOut() {
 
 export async function getStorePrices(productId) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const svc = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
-    if (!user) return [];
-
-    const { data: product, error: productError } = await supabase
-      .from("products")
-      .select("id")
-      .eq("id", productId)
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (productError) throw productError;
-    if (!product) return [];
-
-    const { data: prices, error } = await supabase
+    const { data: prices, error } = await svc
       .from("store_prices")
       .select("*")
       .eq("product_id", productId)

@@ -9,6 +9,7 @@ import PricePrediction from "@/components/PricePrediction";
 import StoreComparison from "@/components/StoreComparison";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getProductImageFallback } from "@/lib/image-utils";
 import {
   deleteProduct,
   addToWatchlist,
@@ -103,20 +104,19 @@ export default function ProductDetail({
         <div className="bg-white rounded-2xl border border-gray-200/80 shadow-card overflow-hidden mb-8">
           <div className="flex flex-col md:flex-row gap-8 p-6 lg:p-8">
             <div className="shrink-0">
-              {product.image_url ? (
-                <Image
-                  src={product.image_url}
-                  alt={product.name}
-                  width={256}
-                  height={256}
-                  unoptimized
-                  className="w-full md:w-52 lg:w-64 rounded-xl border border-gray-100 object-cover aspect-square"
-                />
-              ) : (
-                <div className="w-full md:w-52 lg:w-64 rounded-xl border border-gray-100 bg-muted flex items-center justify-center text-muted-foreground aspect-square">
-                  <ShoppingCart className="size-12" />
-                </div>
-              )}
+              <Image
+                src={product.image_url || getProductImageFallback(product.name)}
+                alt={product.name}
+                width={256}
+                height={256}
+                unoptimized
+                className="w-full md:w-52 lg:w-64 rounded-xl border border-gray-100 object-cover aspect-square bg-gray-50"
+                onError={(e) => {
+                  if (e.target.src !== getProductImageFallback(product.name)) {
+                    e.target.src = getProductImageFallback(product.name);
+                  }
+                }}
+              />
             </div>
 
             <div className="flex-1 min-w-0 flex flex-col justify-between">

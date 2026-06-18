@@ -3,7 +3,6 @@ import {
   getProductById,
   getPriceHistory,
   isOnWatchlist,
-  getStorePrices,
 } from "@/app/actions";
 import { calculateTrendIndicator } from "@/lib/deal-score";
 import { redirect } from "next/navigation";
@@ -13,6 +12,7 @@ import DashboardShell from "@/components/DashboardShell";
 import PriceChart from "@/components/PriceChart";
 import PricePrediction from "@/components/PricePrediction";
 import DealScoreBadge from "@/components/DealScoreBadge";
+import { getProductImageFallback } from "@/lib/image-utils";
 import SetPriceAlert from "@/components/SetPriceAlert";
 import StoreComparison from "@/components/StoreComparison";
 import ProductActions from "./ProductActions";
@@ -133,7 +133,7 @@ export default async function ProductDetailPage({ params }) {
   const priceHistory = await getPriceHistory(productId);
   const watchlistEntry = await isOnWatchlist(productId);
 
-  const storePrices = await getStorePrices(productId);
+  const storePrices = product.store_prices || [];
 
   const trend = calculateTrendIndicator(
     parseFloat(product.current_price),
@@ -177,20 +177,14 @@ export default async function ProductDetailPage({ params }) {
         <div className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden mb-6">
           <div className="flex flex-col md:flex-row gap-5 p-5 sm:p-6">
             <div className="shrink-0">
-              {product.image_url ? (
-                <Image
-                  src={product.image_url}
-                  alt={product.name}
-                  width={140}
-                  height={140}
-                  unoptimized
-                  className="w-full md:w-36 rounded-xl border border-gray-100 object-cover aspect-square"
-                />
-              ) : (
-                <div className="w-full md:w-36 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center text-muted-foreground aspect-square">
-                  <ShoppingCart className="size-8" />
-                </div>
-              )}
+              <Image
+                src={product.image_url || getProductImageFallback(product.name)}
+                alt={product.name}
+                width={140}
+                height={140}
+                unoptimized
+                className="w-full md:w-36 rounded-xl border border-gray-100 object-cover aspect-square bg-gray-50"
+              />
             </div>
 
             <div className="flex-1 min-w-0">

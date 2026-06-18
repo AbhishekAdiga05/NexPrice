@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getProductImageFallback } from "@/lib/image-utils";
 import {
   TrendingUp,
   Wallet,
@@ -116,20 +117,19 @@ export default function InsightsDashboard({ insights }) {
                 className="bg-white p-4 hover:bg-gray-50 transition-colors group"
               >
                 <div className="aspect-[4/3] rounded-lg border border-gray-100 overflow-hidden bg-gray-50 mb-3">
-                  {deal.image_url ? (
-                    <Image
-                      src={deal.image_url}
-                      alt={deal.name}
-                      width={300}
-                      height={225}
-                      unoptimized
-                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Tag className="size-6 text-muted-foreground/50" />
-                    </div>
-                  )}
+                  <Image
+                    src={deal.image_url || getProductImageFallback(deal.name)}
+                    alt={deal.name}
+                    width={300}
+                    height={225}
+                    unoptimized
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
+                    onError={(e) => {
+                      if (e.target.src !== getProductImageFallback(deal.name)) {
+                        e.target.src = getProductImageFallback(deal.name);
+                      }
+                    }}
+                  />
                 </div>
                 <h3 className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-orange-600 transition-colors leading-snug">
                   {deal.name}
@@ -171,20 +171,19 @@ export default function InsightsDashboard({ insights }) {
                 href={`/products/${item.productId}`}
                 className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/80 transition-colors group"
               >
-                {item.imageUrl ? (
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.productName}
-                    width={40}
-                    height={40}
-                    unoptimized
-                    className="size-12 rounded-xl border border-gray-100 object-cover shrink-0"
-                  />
-                ) : (
-                  <div className="size-12 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0">
-                    <Tag className="size-4 text-muted-foreground/50" />
-                  </div>
-                )}
+                <Image
+                  src={item.imageUrl || getProductImageFallback(item.productName)}
+                  alt={item.productName}
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="size-12 rounded-xl border border-gray-100 object-cover shrink-0 bg-gray-50"
+                  onError={(e) => {
+                    if (e.target.src !== getProductImageFallback(item.productName)) {
+                      e.target.src = getProductImageFallback(item.productName);
+                    }
+                  }}
+                />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold text-foreground group-hover:text-orange-600 transition-colors truncate leading-snug">
                     {item.productName}

@@ -4,11 +4,26 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 import AuthButton from "./AuthButton";
 import ThemeToggle from "./ThemeToggle";
+import { useEffect, useState } from "react";
 
 export default function NavBar({ user, onMenuToggle, onShowAuth }) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const headerClass = `sticky top-0 z-30 transition-all duration-300 ${
+    scrolled
+      ? "bg-white/95 dark:bg-[#0a0a0b]/95 backdrop-blur-xl shadow-sm border-b border-gray-100/80"
+      : "bg-white/80 dark:bg-[#0a0a0b]/80 backdrop-blur-lg border-b border-gray-100/80"
+  }`;
+
   if (user) {
     return (
-      <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#0a0a0b]/80 backdrop-blur-lg border-b border-gray-100/80">
+      <header className={headerClass}>
         <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -33,7 +48,7 @@ export default function NavBar({ user, onMenuToggle, onShowAuth }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-gray-100/80">
+    <header className={headerClass}>
       <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 shrink-0">
           <div className="size-3 rounded-full bg-orange-500 shrink-0 shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" />

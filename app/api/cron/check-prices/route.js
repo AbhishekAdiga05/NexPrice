@@ -29,126 +29,118 @@ async function logNotification(supabase, { userId, productId, alertId, type, cha
 async function processProduct(product, supabase) {
   const result = { id: product.id, updated: false, failed: false, priceChanged: false, alertSent: false, storePricesRefreshed: false };
 
+  let newPrice = null;
+  let currency = product.currency;
+
   try {
     const productData = await scrapeProduct(product.url);
+    if (productData?.currentPrice) {
+      newPrice = parseFloat(productData.currentPrice);
+      currency = productData.currencyCode || product.currency;
 
-    if (!productData.currentPrice) {
-      result.failed = true;
-      return result;
-    }
+      if (!isNaN(newPrice) && newPrice > 0) {
+        const oldPrice = parseFloat(product.current_price);
 
-    const newPrice = parseFloat(productData.currentPrice);
-    const oldPrice = parseFloat(product.current_price);
+        await supabase
+          .from("products")
+          .update({
+            current_price: newPrice,
+            currency: currency,
+            name: productData.productName || product.name,
+            image_url: productData.productImageUrl || product.image_url,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", product.id);
 
-    if (isNaN(newPrice) || newPrice <= 0) {
-      result.failed = true;
-      return result;
-    }
+        const priceChanged = Math.abs(oldPrice - newPrice) > 0.001;
 
-    await supabase
-      .from("products")
-      .update({
-        current_price: newPrice,
-        currency: productData.currencyCode || product.currency,
-        name: productData.productName || product.name,
-        image_url: productData.productImageUrl || product.image_url,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", product.id);
-
-    const priceChanged = Math.abs(oldPrice - newPrice) > 0.001;
-
-    if (priceChanged) {
-      await supabase.from("price_history").insert({
-        product_id: product.id,
-        price: newPrice,
-        currency: productData.currencyCode || product.currency,
-      });
-
-      result.priceChanged = true;
-
-      if (newPrice < oldPrice) {
-        const { data: { user } } = await supabase.auth.admin.getUserById(product.user_id);
-
-        if (user?.email) {
-          const emailResult = await sendEmailPriceDrop(user.email, product, oldPrice, newPrice);
-          await logNotification(supabase, {
-            userId: product.user_id,
-            productId: product.id,
-            alertId: null,
-            type: "price_drop",
-            channel: "email",
-            status: emailResult.success ? "sent" : "failed",
-            recipient: user.email,
-            priceAtEvent: newPrice,
-            oldPrice,
-            errorMessage: emailResult.error || null,
+        if (priceChanged) {
+          await supabase.from("price_history").insert({
+            product_id: product.id,
+            price: newPrice,
+            currency: currency,
           });
-          if (emailResult.success) result.alertSent = true;
-        }
 
-      }
+          result.priceChanged = true;
 
-      const { data: activeAlerts } = await supabase
-        .from("price_alerts")
-        .select("*")
-        .eq("product_id", product.id)
-        .eq("status", "active");
-
-      for (const alert of activeAlerts || []) {
-        if (newPrice <= alert.target_price) {
-          const { data: { user: alertUser } } = await supabase.auth.admin.getUserById(product.user_id);
-
-          if (alertUser?.email) {
-            const emailResult = await sendEmailTarget(alertUser.email, product, alert.target_price, newPrice);
-            await logNotification(supabase, {
-              userId: product.user_id,
-              productId: product.id,
-              alertId: alert.id,
-              type: "target_reached",
-              channel: "email",
-              status: emailResult.success ? "sent" : "failed",
-              recipient: alertUser.email,
-              priceAtEvent: newPrice,
-              targetPrice: alert.target_price,
-              errorMessage: emailResult.error || null,
-            });
+          if (newPrice < oldPrice && product.user_id) {
+            const { data: { user } } = await supabase.auth.admin.getUserById(product.user_id);
+            if (user?.email) {
+              const emailResult = await sendEmailPriceDrop(user.email, product, oldPrice, newPrice);
+              await logNotification(supabase, {
+                userId: product.user_id,
+                productId: product.id,
+                alertId: null,
+                type: "price_drop",
+                channel: "email",
+                status: emailResult.success ? "sent" : "failed",
+                recipient: user.email,
+                priceAtEvent: newPrice,
+                oldPrice,
+                errorMessage: emailResult.error || null,
+              });
+              if (emailResult.success) result.alertSent = true;
+            }
           }
 
-          const savings = alert.price_at_creation
-            ? parseFloat(alert.price_at_creation) - newPrice
-            : null;
-
-          await supabase
+          const { data: activeAlerts } = await supabase
             .from("price_alerts")
-            .update({
-              status: "triggered",
-              triggered_at: new Date().toISOString(),
-              savings: savings && savings > 0 ? savings : 0,
-            })
-            .eq("id", alert.id);
+            .select("*")
+            .eq("product_id", product.id)
+            .eq("status", "active");
 
-          result.alertSent = true;
+          for (const alert of activeAlerts || []) {
+            if (newPrice <= alert.target_price && product.user_id) {
+              const { data: { user: alertUser } } = await supabase.auth.admin.getUserById(product.user_id);
+              if (alertUser?.email) {
+                const emailResult = await sendEmailTarget(alertUser.email, product, alert.target_price, newPrice);
+                await logNotification(supabase, {
+                  userId: product.user_id,
+                  productId: product.id,
+                  alertId: alert.id,
+                  type: "target_reached",
+                  channel: "email",
+                  status: emailResult.success ? "sent" : "failed",
+                  recipient: alertUser.email,
+                  priceAtEvent: newPrice,
+                  targetPrice: alert.target_price,
+                  errorMessage: emailResult.error || null,
+                });
+              }
+
+              await supabase
+                .from("price_alerts")
+                .update({
+                  status: "triggered",
+                  triggered_at: new Date().toISOString(),
+                  savings: alert.price_at_creation
+                    ? Math.max(0, parseFloat(alert.price_at_creation) - newPrice)
+                    : 0,
+                })
+                .eq("id", alert.id);
+
+              result.alertSent = true;
+            }
+          }
         }
-      }
-    }
 
-    result.updated = true;
-
-    try {
-      const refreshed = await refreshStorePrices(
-        { id: product.id, name: product.name, url: product.url },
-        supabase
-      );
-      if (refreshed > 0) {
-        result.storePricesRefreshed = true;
+        result.updated = true;
       }
-    } catch (storeError) {
-      console.warn(`Store price refresh failed for ${product.id}:`, storeError.message);
     }
   } catch (error) {
-    console.error(`Error processing product ${product.id}:`, error?.message || error);
-    result.failed = true;
+    console.warn(`[Cron] Scrape failed for ${product.id}, skipping price update:`, error.message);
+  }
+
+  try {
+    const refreshed = await refreshStorePrices(
+      { id: product.id, name: product.name, url: product.url },
+      supabase
+    );
+    if (refreshed > 0) {
+      result.storePricesRefreshed = true;
+    }
+  } catch (storeError) {
+    console.warn(`[Cron] Store price refresh failed for ${product.id}:`, storeError.message);
   }
 
   return result;

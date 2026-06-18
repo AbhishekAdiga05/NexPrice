@@ -3,7 +3,6 @@ import {
   getProductById,
   getPriceHistory,
   isOnWatchlist,
-  getStorePrices,
 } from "@/app/actions";
 import { calculateTrendIndicator } from "@/lib/deal-score";
 import ProductDetail from "./ProductDetail";
@@ -44,15 +43,13 @@ export default async function ProductPage({ params }) {
     priceHistory
   );
 
-  const storePrices = await getStorePrices(id);
-
   return (
     <ProductDetail
       product={product}
       priceHistory={priceHistory}
       watchlistEntry={watchlistEntry}
       trend={trend}
-      storePrices={storePrices}
+      storePrices={product.store_prices}
     />
   );
 }

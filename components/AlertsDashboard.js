@@ -6,6 +6,7 @@ import {
 } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { getProductImageFallback } from "@/lib/image-utils";
 import {
   Bell,
   BellOff,
@@ -66,20 +67,19 @@ function AlertCard({ alert, currency }) {
     <div className="p-4 sm:p-5">
       <div className={`h-0.5 rounded-full w-12 mb-4 ${isTriggered ? "bg-emerald-400" : "bg-indigo-400"}`} />
       <div className="flex items-center gap-4">
-        {alert.product?.image_url ? (
-          <Image
-            src={alert.product.image_url}
-            alt={alert.product.name}
-            width={40}
-            height={40}
-            unoptimized
-            className="size-11 rounded-xl border border-gray-100 object-cover shrink-0"
-          />
-        ) : (
-          <div className="size-11 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-muted-foreground shrink-0">
-            N/A
-          </div>
-        )}
+        <Image
+          src={alert.product?.image_url || getProductImageFallback(alert.product?.name)}
+          alt={alert.product?.name || "Product"}
+          width={44}
+          height={44}
+          unoptimized
+          className="size-11 rounded-xl border border-gray-100 object-cover shrink-0 bg-gray-50"
+          onError={(e) => {
+            if (e.target.src !== getProductImageFallback(alert.product?.name)) {
+              e.target.src = getProductImageFallback(alert.product?.name);
+            }
+          }}
+        />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">

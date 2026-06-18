@@ -7,6 +7,7 @@ import {
   updateWatchlistPriority,
 } from "@/app/actions";
 import Image from "next/image";
+import { getProductImageFallback } from "@/lib/image-utils";
 import {
   ListChecks,
   Loader2,
@@ -139,20 +140,19 @@ function WatchlistItem({ item, onRemove, onPriorityChange }) {
     <div className="bg-white rounded-xl border border-gray-200/80 shadow-card hover:shadow-elevated transition-shadow duration-300 overflow-hidden group">
       <div className="flex items-center gap-4 p-4 sm:p-5">
         <Link href={`/products/${item.productId}`} className="shrink-0">
-          {item.product?.image_url ? (
-            <Image
-              src={item.product.image_url}
-              alt={item.product.name}
-              width={48}
-              height={48}
-              unoptimized
-              className="size-12 rounded-xl border border-gray-100 object-cover"
-            />
-          ) : (
-            <div className="size-12 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-muted-foreground">
-              N/A
-            </div>
-          )}
+          <Image
+            src={item.product?.image_url || getProductImageFallback(item.product?.name)}
+            alt={item.product?.name || "Product"}
+            width={48}
+            height={48}
+            unoptimized
+            className="size-12 rounded-xl border border-gray-100 object-cover bg-gray-50"
+            onError={(e) => {
+              if (e.target.src !== getProductImageFallback(item.product?.name)) {
+                e.target.src = getProductImageFallback(item.product?.name);
+              }
+            }}
+          />
         </Link>
 
         <div className="flex-1 min-w-0">

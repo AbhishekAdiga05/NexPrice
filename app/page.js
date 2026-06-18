@@ -81,10 +81,11 @@ async function DashboardStats({ insights }) {
   return (
     <div className="mb-6 sm:mb-8">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {stats.map((s) => (
+        {stats.map((s, i) => (
           <div
             key={s.label}
-            className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 sm:p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 sm:p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4"
+            style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground/70">
@@ -99,7 +100,11 @@ async function DashboardStats({ insights }) {
                 ? "bg-gradient-to-r bg-clip-text text-transparent " + s.accent
                 : "text-foreground"
             }`}>
-              {s.value}
+              {typeof s.value === "number" ? (
+                <AnimatedCounter value={s.value} />
+              ) : (
+                s.value
+              )}
             </div>
             <div className="text-[11px] sm:text-xs text-muted-foreground font-medium mt-1.5 leading-none">
               {s.sub}

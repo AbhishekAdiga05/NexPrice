@@ -8,6 +8,7 @@ import SetPriceAlert from "./SetPriceAlert";
 import DealScoreBadge from "./DealScoreBadge";
 import StorePriceBadge from "./StorePriceBadge";
 import Image from "next/image";
+import { getProductImageFallback } from "@/lib/image-utils";
 import {
   Trash2,
   BarChart3,
@@ -16,6 +17,7 @@ import {
   ChevronUp,
   Store,
   TrendingDown,
+  TrendingUp,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
@@ -58,9 +60,33 @@ export default function ProductCard({ product }) {
   ).length;
   const targetReached = activeAlert && parseFloat(product.current_price) <= parseFloat(activeAlert.target_price);
 
+  const hasSavings = product.price_alerts?.some(
+    (a) => a.status === "triggered" && parseFloat(a.savings || 0) > 0
+  );
+  const cardTier = targetReached
+    ? "great"
+    : hasSavings
+      ? "good"
+      : triggeredCount > 0
+        ? "fair"
+        : "none";
+
+  const TIER_BORDERS = {
+    great: "border-t-emerald-400",
+    good: "border-t-blue-400",
+    fair: "border-t-amber-400",
+    none: "border-t-transparent",
+  };
+  const TIER_SHADOWS = {
+    great: "shadow-sm hover:shadow-emerald-200/40",
+    good: "shadow-sm hover:shadow-blue-200/40",
+    fair: "shadow-sm hover:shadow-amber-200/40",
+    none: "shadow-sm hover:shadow-lg",
+  };
+
   return (
     <motion.div layout className="group">
-      <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-lg hover:border-gray-200 transition-all duration-300 overflow-hidden">
+      <div className={`bg-white rounded-2xl border border-gray-200/80 border-t-2 ${TIER_BORDERS[cardTier]} ${TIER_SHADOWS[cardTier]} hover:shadow-lg transition-all duration-300 overflow-hidden`}>
         <div className="p-5">
           <div className="flex items-start gap-4">
             <Link
@@ -68,20 +94,19 @@ export default function ProductCard({ product }) {
               className="shrink-0"
             >
               <div className="size-14 sm:size-16 rounded-xl border border-gray-100 overflow-hidden bg-gray-50 shadow-sm">
-                {product.image_url ? (
-                  <Image
-                    src={product.image_url}
-                    alt={product.name}
-                    width={64}
-                    height={64}
-                    unoptimized
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  <div className="size-full flex items-center justify-center text-xs text-muted-foreground/50">
-                    N/A
-                  </div>
-                )}
+                <Image
+                  src={product.image_url || getProductImageFallback(product.name)}
+                  alt={product.name}
+                  width={64}
+                  height={64}
+                  unoptimized
+                  className="size-full object-cover"
+                  onError={(e) => {
+                    if (e.target.src !== getProductImageFallback(product.name)) {
+                      e.target.src = getProductImageFallback(product.name);
+                    }
+                  }}
+                />
               </div>
             </Link>
 
@@ -95,8 +120,18 @@ export default function ProductCard({ product }) {
                     {product.name}
                   </Link>
                   <div className="flex items-center gap-2.5 mt-1.5">
-                    <span className="text-lg sm:text-xl font-bold font-mono text-foreground tracking-tight">
+                    <span className="text-lg sm:text-xl font-bold font-mono text-foreground tracking-tight flex items-center gap-1.5">
                       {product.currency} {parseFloat(product.current_price).toFixed(2)}
+                      {targetReached && (
+                        <span className="inline-flex items-center justify-center size-4 rounded-full bg-emerald-100 text-emerald-600">
+                          <TrendingDown className="size-2.5" />
+                        </span>
+                      )}
+                      {activeAlert && !targetReached && (
+                        <span className="inline-flex items-center justify-center size-4 rounded-full bg-amber-100 text-amber-600">
+                          <TrendingUp className="size-2.5" />
+                        </span>
+                      )}
                     </span>
                     {targetPrice && (
                       <span className="text-xs text-muted-foreground font-mono bg-gray-50 px-2 py-0.5 rounded-lg border border-gray-100/80">
