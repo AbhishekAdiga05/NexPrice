@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import AuthButton from "./AuthButton";
+import { AuthButton } from "./AuthModal";
 import ThemeToggle from "./ThemeToggle";
 import { useEffect, useState } from "react";
 

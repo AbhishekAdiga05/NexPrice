@@ -33,7 +33,7 @@ const DEMO_PRICES = (() => {
   return data;
 })();
 
-export default function PriceHistoryPreview() {
+function PriceChartCard() {
   const minPrice = Math.min(...DEMO_PRICES.map((d) => d.price));
   const maxPrice = Math.max(...DEMO_PRICES.map((d) => d.price));
   const latestPrice = DEMO_PRICES[DEMO_PRICES.length - 1].price;
@@ -140,5 +140,23 @@ export default function PriceHistoryPreview() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PriceHistorySection() {
+  return (
+    <section id="price-trend" className="py-16 sm:py-28 px-4 sm:px-8 bg-orange-50/40">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
+            Price Trend Analysis
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground mt-3 max-w-2xl mx-auto">
+            See how prices move over time and get notified when they drop to your target.
+          </p>
+        </div>
+        <PriceChartCard />
+      </div>
+    </section>
   );
 }

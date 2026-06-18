@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { signOut } from "@/app/actions";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +11,40 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
+
+export function AuthButton({ user }) {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  if (user) {
+    return (
+      <form action={signOut}>
+        <Button variant="ghost" size="sm" type="submit" className="gap-2 text-muted-foreground hover:text-orange-600">
+          <LogOut className="size-3.5" />
+          Sign Out
+        </Button>
+      </form>
+    );
+  }
+
+  return (
+    <>
+      <Button
+        onClick={() => setShowAuthModal(true)}
+        variant="default"
+        size="sm"
+        className="gap-2"
+      >
+        Sign In
+      </Button>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
+    </>
+  );
+}
 
 export default function AuthModal({ isOpen, onClose }) {
   const supabase = createClient();
