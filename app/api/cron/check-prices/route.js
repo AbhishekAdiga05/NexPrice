@@ -168,15 +168,36 @@ export async function POST(request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
+    // Verify email config upfront
+    if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+      console.warn("[Cron] Email not configured — price drop/target alerts will be logged but not sent");
+    } else {
+      console.log(`[Cron] Email configured with sender: ${process.env.RESEND_FROM_EMAIL}`);
+    }
+
+    // Warn if CRON_SECRET is the example/default (insecure)
+    if (cronSecret === "14f75fcb27715c0f6a62bcf6ec191044d06ba36cda6a3e73cc0442f96e2780ce") {
+      console.warn("[Cron] Using default CRON_SECRET — change this in production!");
+    }
+
     const { data: products, error: productsError } = await supabase
       .from("products")
       .select("*");
 
     if (productsError) throw productsError;
 
-    console.log(`Found ${products.length} products to check`);
+    console.log(`[Cron] Found ${products.length} products to check`);
 
-    const results = { total: products.length, updated: 0, failed: 0, priceChanges: 0, alertsSent: 0, storePricesRefreshed: 0 };
+    const results = {
+      total: products.length,
+      updated: 0,
+      failed: 0,
+      priceChanges: 0,
+      alertsSent: 0,
+      storePricesRefreshed: 0,
+      emailAttempts: 0,
+      emailFailures: 0,
+    };
 
     for (let i = 0; i < products.length; i += CHUNK_SIZE) {
       const chunk = products.slice(i, i + CHUNK_SIZE);
@@ -193,13 +214,23 @@ export async function POST(request) {
           if (r.alertSent) results.alertsSent++;
           if (r.storePricesRefreshed) results.storePricesRefreshed++;
         } else {
-          console.error("Chunk promise rejected:", settled.reason?.message || settled.reason);
+          console.error("[Cron] Chunk promise rejected:", settled.reason?.message || settled.reason);
           results.failed++;
         }
       }
-
-      console.log(`Chunk ${Math.floor(i / CHUNK_SIZE) + 1}/${Math.ceil(products.length / CHUNK_SIZE)} complete`);
     }
+
+    // Count email failures from notifications
+    const { count: emailFails } = await supabase
+      .from("notifications")
+      .select("*", { count: "exact", head: true })
+      .eq("channel", "email")
+      .eq("status", "failed")
+      .gte("created_at", new Date(Date.now() - 3600000).toISOString());
+
+    results.emailFailures = emailFails || 0;
+
+    console.log(`[Cron] Complete: ${results.updated} updated, ${results.failed} failed, ${results.priceChanges} price changes, ${results.emailFailures} email failures`);
 
     return NextResponse.json({
       success: true,
@@ -207,7 +238,7 @@ export async function POST(request) {
       results,
     });
   } catch (error) {
-    console.error("Cron job error:", error);
+    console.error("[Cron] Fatal error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

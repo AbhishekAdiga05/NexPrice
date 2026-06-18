@@ -181,7 +181,7 @@ export default function ProductCard({ product }) {
               className="overflow-hidden border-t border-gray-100 bg-gray-50/50"
             >
               <div className="p-5">
-                <PriceChart productId={product.id} />
+                <PriceChart productId={product.id} alerts={product.price_alerts} />
               </div>
             </motion.div>
           )}

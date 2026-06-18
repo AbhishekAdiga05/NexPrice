@@ -26,6 +26,7 @@ import {
   Store,
   Sparkles,
 } from "lucide-react";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 
 // ─── Dashboard stat cards ───────────────────────────────────────────────────
 

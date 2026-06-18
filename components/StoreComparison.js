@@ -94,6 +94,7 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
   const lowestPrice = parseFloat(sorted[0].price);
   const highestPrice = parseFloat(sorted[sorted.length - 1].price);
   const totalSavings = highestPrice - lowestPrice;
+  const barMaxWidth = 100;
 
   return (
     <div className="bg-white rounded-xl border border-gray-200/80 shadow-card overflow-hidden">
@@ -114,6 +115,8 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
           const isCheapest = diff === 0;
           const diffPercent = lowestPrice > 0 ? ((diff / lowestPrice) * 100).toFixed(1) : "0";
           const colorClass = getStoreColor(store.store_name, index);
+          const barWidth = highestPrice > 0 ? (price / highestPrice) * barMaxWidth : 0;
+          const cheapestBarWidth = lowestPrice > 0 ? (lowestPrice / highestPrice) * barMaxWidth : 0;
 
           return (
             <a
@@ -125,51 +128,63 @@ export default function StoreComparison({ prices = [], currency = "INR" }) {
                 isCheapest ? "bg-orange-50/40" : ""
               }`}
             >
-              <div
-                className={`size-2.5 rounded-full shrink-0 ${colorClass} ${
-                  isCheapest ? "shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" : ""
-                }`}
-              />
-
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-foreground">
-                    {store.store_name}
-                  </span>
-                  {isCheapest && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-700 bg-orange-50 border border-orange-200/60 px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0">
-                      <Zap className="size-2.5" />
-                      Best Deal
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`size-2.5 rounded-full shrink-0 ${colorClass} ${
+                        isCheapest ? "shadow-[0_0_0_3px_rgba(249,115,22,0.15)]" : ""
+                      }`}
+                    />
+                    <span className="text-sm font-semibold text-foreground">
+                      {store.store_name}
                     </span>
-                  )}
+                    {isCheapest && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-700 bg-orange-50 border border-orange-200/60 px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0">
+                        <Zap className="size-2.5" />
+                        Best Deal
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-base font-bold font-mono text-foreground tracking-tight">
+                      {currency} {price.toFixed(2)}
+                    </span>
+                    {!isCheapest && (
+                      <span className="text-[11px] font-mono text-red-400/70">
+                        +{currency} {diff.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-base font-bold font-mono text-foreground tracking-tight">
-                    {currency} {price.toFixed(2)}
-                  </span>
-                  {!isCheapest && (
-                    <span className="text-[11px] font-mono text-muted-foreground/60">
-                      +{currency} {diff.toFixed(2)} ({diffPercent}% more)
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        isCheapest
+                          ? "bg-gradient-to-r from-orange-400 to-orange-500"
+                          : "bg-gray-200"
+                      }`}
+                      style={{ width: `${barWidth}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isCheapest && totalSavings > 0 && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200/60 px-2 py-1 rounded-lg whitespace-nowrap">
+                        <TrendingDown className="size-3" />
+                        Save {currency} {totalSavings.toFixed(2)}
+                      </span>
+                    )}
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground/50">
+                      <Clock className="size-3" />
+                      <span>{formatLastUpdated(store.last_updated)}</span>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground/40 group-hover:text-orange-500 transition-colors flex items-center gap-0.5">
+                      Visit <ExternalLink className="size-2.5" />
                     </span>
-                  )}
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex flex-col items-end gap-1 shrink-0">
-                {isCheapest && totalSavings > 0 && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200/60 px-2 py-1 rounded-lg whitespace-nowrap">
-                    <TrendingDown className="size-3" />
-                    Save {currency} {totalSavings.toFixed(2)}
-                  </span>
-                )}
-                <div className="flex items-center gap-1 text-[11px] text-muted-foreground/50">
-                  <Clock className="size-3" />
-                  <span>{formatLastUpdated(store.last_updated)}</span>
-                </div>
-                <span className="text-[11px] text-muted-foreground/40 group-hover:text-orange-500 transition-colors flex items-center gap-0.5">
-                  Visit <ExternalLink className="size-2.5" />
-                </span>
               </div>
             </a>
           );
