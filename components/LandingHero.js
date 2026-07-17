@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Store, TrendingDown, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Store, TrendingDown, Sparkles, Zap, Search } from "lucide-react";
 
 function HeroVisual() {
   const trendData = [[0,38],[1,28],[2,33],[3,20],[4,25],[5,16],[6,18],[7,8]];
@@ -162,14 +162,30 @@ export default function LandingHero({ onShowAuth }) {
           <p className="text-sm sm:text-lg text-secondary-foreground mt-4 sm:mt-6 leading-relaxed max-w-md mx-auto lg:mx-0">
             Monitor product prices across Amazon, Flipkart, and more. Find the best deal with one click.
           </p>
-          <div className="mt-6 sm:mt-10">
-            <button
-              onClick={onShowAuth}
-              className="group inline-flex items-center gap-2.5 rounded-xl font-semibold text-[15px] transition-all cursor-pointer shadow-sm hover:shadow-md active:scale-[0.98] h-12 px-7 bg-primary text-primary-foreground hover:bg-orange-600"
-            >
-              <span>Start Tracking</span>
-              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
+          <div className="mt-8 sm:mt-10 max-w-md mx-auto lg:mx-0 relative">
+            <div className="flex flex-col sm:flex-row items-center gap-3 p-1.5 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <div className="relative flex-1 w-full flex items-center">
+                <Search className="absolute left-3 size-4 text-muted-foreground/50" />
+                <input
+                  type="url"
+                  placeholder="Pls signin to start scraping"
+                  readOnly
+                  onClick={onShowAuth}
+                  className="w-full h-11 pl-10 pr-4 bg-transparent border-none focus:outline-none text-sm text-foreground cursor-pointer truncate"
+                />
+              </div>
+              <button
+                onClick={onShowAuth}
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl font-semibold text-[14px] transition-all cursor-pointer shadow-sm hover:shadow active:scale-[0.98] h-11 px-6 bg-primary text-primary-foreground hover:bg-orange-600 shrink-0"
+              >
+                <span>Track</span>
+                <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </button>
+            </div>
+            <p className="mt-3 text-[11px] text-muted-foreground font-medium text-center lg:text-left flex items-center justify-center lg:justify-start gap-1">
+              <Sparkles className="size-3 text-orange-400" />
+              Try it with an Amazon or Flipkart link
+            </p>
           </div>
         </div>
 
